@@ -1,0 +1,142 @@
+<h1>测试页面</h1>
+
+<h2>字符串输出</h2>
+<p><%=@tmp%></p>
+
+<h2>HTML输出</h2>
+<p><%=raw @tmp %></p>
+
+<h2>图片输出</h2>
+<p><%=image_path("up.png") %></p>
+<p><%=image_tag(asset_path "up.png") %></p>
+
+<h2>检验数据库</h2>
+<p><%=@city.name %></p>
+
+
+<h2>Bootstrap测试</h2>
+
+   
+
+<span class="label label-default">Default</span>
+<span class="label label-primary">Primary</span>
+<span class="label label-success">Success</span>
+<span class="label label-info">Info</span>
+<span class="label label-warning">Warning</span>
+<span class="label label-danger">Danger</span>
+
+<hr />
+<h1>以下内容待定</h1>
+<!--
+
+<h2>表单验证测试：</h2>
+<form id="myform">
+email:
+<input value="someone@nowhere.com" class="validate[required,custom[email]]" type="text" name="email" id="email" />
+<br/>
+
+date(my97测试):
+<input value="2010-12-01" class="validate[required,custom[date]]" type="text" name="date" id="date" onClick="WdatePicker()"/>
+<br/>
+
+onlyLetterNumber:
+<input value="too many spaces obviously" class="validate[required,custom[onlyLetterNumber]]" type="text" name="special" id="special" />
+<br/>
+<input class="submit" type="submit" value="验证表单"/>	
+</form>
+
+-->
+
+
+
+<script type="text/javascript">
+	// 对话框
+	function dialog(){
+		bootbox.dialog({
+		  message: "I am a custom dialog",
+		  title: "Custom title",
+		  buttons: {
+		    success: {
+		      label: "Success!",
+		      className: "btn-success",
+		      callback: function() {
+		        // Example.show("great success");
+		      }
+		    },
+		    danger: {
+		      label: "Danger!",
+		      className: "btn-danger",
+		      callback: function() {
+		        // Example.show("uh oh, look out!");
+		      }
+		    },
+		    main: {
+		      label: "Click ME!",
+		      className: "btn-primary",
+		      callback: function() {
+		        // Example.show("Primary button");
+		      }
+		    }
+		  }
+		});
+	}
+	$(function(){
+		$("#alert-example").on("click",dialog);
+
+		$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+
+		// jQuery("#myform").validationEngine('attach', {bindMethod:"live"});
+	});
+
+
+	// zTree 数据
+
+	var setting = {	};
+
+	var zNodes =[
+		{ name:"父节点1 - 展开", open:true,
+			children: [
+				{ name:"父节点11 - 折叠",
+					children: [
+						{ name:"叶子节点111"},
+						{ name:"叶子节点112"},
+						{ name:"叶子节点113"},
+						{ name:"叶子节点114"}
+					]},
+				{ name:"父节点12 - 折叠",
+					children: [
+						{ name:"叶子节点121"},
+						{ name:"叶子节点122"},
+						{ name:"叶子节点123"},
+						{ name:"叶子节点124"}
+					]},
+				{ name:"父节点13 - 没有子节点", isParent:true}
+			]},
+		{ name:"父节点2 - 折叠",
+			children: [
+				{ name:"父节点21 - 展开", open:true,
+					children: [
+						{ name:"叶子节点211"},
+						{ name:"叶子节点212"},
+						{ name:"叶子节点213"},
+						{ name:"叶子节点214"}
+					]},
+				{ name:"父节点22 - 折叠",
+					children: [
+						{ name:"叶子节点221"},
+						{ name:"叶子节点222"},
+						{ name:"叶子节点223"},
+						{ name:"叶子节点224"}
+					]},
+				{ name:"父节点23 - 折叠",
+					children: [
+						{ name:"叶子节点231"},
+						{ name:"叶子节点232"},
+						{ name:"叶子节点233"},
+						{ name:"叶子节点234"}
+					]}
+			]},
+		{ name:"父节点3 - 没有子节点", isParent:true}
+
+	];
+</script> 
