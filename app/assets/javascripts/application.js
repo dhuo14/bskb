@@ -15,4 +15,3 @@
 //= require plugins/bootstrap/js/bootstrap.min
 //= require plugins/back-to-top
 //= require app
-//= require_tree .

@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 class KobeController < ApplicationController
-  before_action :request_signed_in!
-  before_action :store_location, :init_themes
+  # before_action :request_signed_in!
+  # before_action :store_location, :init_themes
 
   def index
     @user = current_user
