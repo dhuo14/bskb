@@ -15,3 +15,5 @@
  *= require plugins/line-icons/line-icons
  *= require plugins/font-awesome/css/font-awesome.min
  */
+
+ .text-red{color:#ff0000;}

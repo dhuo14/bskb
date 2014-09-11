@@ -1,0 +1,142 @@
+<div class="col-md-12">
+    <!-- Reg-Form -->
+    <form class="sky-form" id="sky-form4" action="#" novalidate="novalidate">
+        <header>Registration form</header>
+        
+        <fieldset>   
+            <div class="row">
+                <section class="col col-6">
+                    <label class="label">Required field</label>
+                    <label class="input">
+                        <i class="icon-append fa fa-info"></i>
+                        <input type="text" placeholder="Username" name="username" class="required">
+                        <b class="tooltip tooltip-bottom-right">Needed to enter the website</b>
+                    </label>
+                </section>
+                <section class="col col-6">
+                    <label class="label">Email validation</label>
+                    <label class="input">
+                        <i class="icon-append fa fa-envelope"></i>
+                        <input type="email" placeholder="Email address" name="email" class='{required:true}'>
+                        <b class="tooltip tooltip-bottom-right">Needed to verify your account</b>
+                    </label>
+                </section>
+            </div>
+        </fieldset>
+        <fieldset>   
+            <div class="row">
+                <section class="col col-6">
+                    <label class="label">Inline radios</label>
+                    <div class="inline-group">
+                        <label class="radio"><input type="radio" name="radio-inline" class='{required:true}'><i class="rounded-x"></i>Alexandra</label>
+                        <label class="radio"><input type="radio" name="radio-inline"><i class="rounded-x"></i>Alice</label>
+                        <label class="radio"><input type="radio" name="radio-inline"><i class="rounded-x"></i>Anastasia</label>
+                        <label class="radio"><input type="radio" name="radio-inline"><i class="rounded-x"></i>Avelina</label>
+                        <label class="radio"><input type="radio" name="radio-inline"><i class="rounded-x"></i>Beatrice</label>
+                    </div>
+                </section>
+                <section class="col col-6">
+                    <label class="label">Inline checkboxes</label>
+                    <div class="inline-group">
+                        <label class="checkbox"><input type="checkbox" name="checkbox-inline" checked><i></i>Alexandra</label>
+                        <label class="checkbox"><input type="checkbox" name="checkbox-inline"><i></i>Alice</label>
+                        <label class="checkbox"><input type="checkbox" name="checkbox-inline"><i></i>Anastasia</label>
+                        <label class="checkbox"><input type="checkbox" name="checkbox-inline"><i></i>Avelina</label>
+                        <label class="checkbox"><input type="checkbox" name="checkbox-inline"><i></i>Beatrice</label>
+                    </div>
+                </section>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="row">
+                <section class="col col-6">
+                    <label class="label">Select</label>
+                    <label class="select">
+                        <select>
+                            <option value="0">Choose name</option>
+                            <option value="1">Alexandra</option>
+                            <option value="2">Alice</option>
+                            <option value="3">Anastasia</option>
+                            <option value="4">Avelina</option>
+                        </select>
+                    </label>
+                </section>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <section>
+                <label class="label">Multiple select</label>
+                <label class="select select-multiple">
+                    <select multiple>
+                        <option value="1">Alexandra</option>
+                        <option value="2">Alice</option>
+                        <option value="3">Anastasia</option>
+                        <option value="4">Avelina</option>
+                        <option value="5">Basilia</option>
+                        <option value="6">Beatrice</option>
+                        <option value="7">Cassandra</option>
+                        <option value="8">Clemencia</option>
+                        <option value="9">Desiderata</option>
+                    </select>
+                </label>
+                <div class="note"><strong>Note:</strong> hold down the ctrl/cmd button to select multiple options.</div>
+            </section>
+        </fieldset>
+            
+        <fieldset>
+            <div class="row">
+                <section class="col col-6">
+                    <label class="input">
+                        <input type="text" placeholder="First name" name="firstname">
+                    </label>
+                </section>
+                <section class="col col-6">
+                    <label class="input">
+                        <input type="text" placeholder="Last name" name="lastname">
+                    </label>
+                </section>
+            </div>
+            
+            <section>
+                <label class="select">
+                    <select name="gender">
+                        <option disabled="" selected="" value="0">Gender</option>
+                        <option value="1">Male</option>
+                        <option value="2">Female</option>
+                        <option value="3">Other</option>
+                    </select>
+                    <i></i>
+                </label>
+            </section>
+            
+            <section>
+                <label class="checkbox"><input type="checkbox" id="subscription" name="subscription"><i></i>I want to receive news and  special offers</label>
+                <label class="checkbox"><input type="checkbox" id="terms" name="terms"><i></i>I agree with the Terms and Conditions</label>
+            </section>
+        </fieldset>
+        <footer>
+            <button class="btn-u" type="submit"> 保 存 </button>
+            <button class="btn-u btn-u-default" type="reset"> 重 置 </button>
+        </footer>
+    </form>         
+    <!-- End Reg-Form -->
+</div>
+
+<div style="height:20px;"></div>
+
+<%
+js = %Q|
+    <script type="text/javascript">
+
+      $(function(){
+        $("#ok").on("click",function(){ 
+          alert("#############");
+        });
+      });
+
+    </script>|
+%>
+<div class='col-md-12'>
+<%#= _create_xml_form(@obj.class.xml,@obj,{"title"=>"创建新单位","button_id"=>"ok","validate_js"=>js,"only_show"=>false,"grid"=>2}) %>
+</div>

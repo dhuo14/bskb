@@ -4,7 +4,7 @@ var Validation = function () {
         
         //Validation
         initValidation: function () {
-	        $("#sky-form1").validate({                   
+	        $(".sky-form").validate({                   
 	            // Rules for form validation
 	            rules:
 	            {
@@ -14,57 +14,46 @@ var Validation = function () {
 	                },
 	                email:
 	                {
-	                    required: true,
 	                    email: true
 	                },
 	                url:
 	                {
-	                    required: true,
 	                    url: true
 	                },
 	                date:
 	                {
-	                    required: true,
 	                    date: true
 	                },
 	                min:
 	                {
-	                    required: true,
 	                    minlength: 5
 	                },
 	                max:
 	                {
-	                    required: true,
 	                    maxlength: 5
 	                },
 	                range:
 	                {
-	                    required: true,
 	                    rangelength: [5, 10]
 	                },
 	                digits:
 	                {
-	                    required: true,
 	                    digits: true
 	                },
 	                number:
 	                {
-	                    required: true,
 	                    number: true
 	                },
 	                minVal:
 	                {
-	                    required: true,
 	                    min: 5
 	                },
 	                maxVal:
 	                {
-	                    required: true,
 	                    max: 100
 	                },
 	                rangeVal:
 	                {
-	                    required: true,
 	                    range: [5, 100]
 	                }
 	            },
@@ -132,3 +121,7 @@ var Validation = function () {
 
     };
 }();
+
+jQuery(document).ready(function() {
+	Validation.initValidation();
+});

@@ -11,6 +11,13 @@ Bskb::Application.routes.draw do
 
   get 'errors' => 'errors#index'
 
+  resources :home  do
+    collection do
+      get :testform
+      post :testform
+    end
+  end
+
   resources :users  do
     collection do
       get :sign_in, :sign_up, :sign_out, :forgot_password

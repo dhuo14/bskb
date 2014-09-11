@@ -17,5 +17,9 @@ class HomeController < JamesController
 	def index
 	end
 	
+    def testform
+        @obj = Department.new
+        render :layout => "kobe"
+    end
 
 end

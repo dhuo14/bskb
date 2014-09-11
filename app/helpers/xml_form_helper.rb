@@ -39,43 +39,41 @@ module XmlFormHelper
     title = options.has_key?("title") ? options["title"] : "" 
     grid = options.has_key?("grid") ? options["grid"] : 1 
     only_show = options.has_key?("only_show") ? options["only_show"] : false 
-    str = "<div class='row'><div class='box col-sm-12'>"
-    unless title.blank?
-      str << "<div class='box-header'><div class='title'>#{title}</div><div class='actions'><a href='#'' class='btn box-remove btn-xs btn-link'><i class='icon-remove'></i></a><a href='#'' class='btn box-collapse btn-xs btn-link'><i></i></a></div></div>"
-    end
+    str = ""
     unless only_show
-      str << "<form class='form form-horizontal validate-form' id='#{form_id}' action='#{action}' style='margin-bottom: 0;' method='post'>" 
+      str << "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='post'>" 
       str << tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token)
     end
-    str << "<div class='box-content box-no-padding'>"
-    str << "<table style='margin-bottom:0;' class='table table-bordered'>"
+    unless title.blank?
+      str << "<header>#{title}</header>"
+    end
+
     doc = Nokogiri::XML(xml)
     # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'的
-    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='大文本'][@data_type!='富文本']")
+    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext']")
     tds.each_slice(grid).with_index do |node,i|
-      str << "<tr>"
-      node.each_with_index{|n,ii|
-        if i * grid + ii + 1 == tds.length
-          rest = grid - (ii + 1)
-        else 
-          rest = 0
-        end
-        str << _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,rest)
+      str << "<fieldset><div class='row'>"
+      node.each_with_index{|n|
+        str << _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid)
       }
-      str << "</tr>"
+      str << "</div></fieldset>"
     end
     # 再生成文本框和富文本框--针对大文本或者富文本
-    doc.xpath("/root/node[contains(@data_type,'文本')]").each_slice(1) do |node|
-      str << "<tr>"
-      node.each{|n|str << _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid-1)}
-      str << "</tr>"
+    doc.xpath("/root/node[contains(@data_type,'text')]").each_slice(1) do |node|
+      node.each{|n|
+        str << "<fieldset><div class='row'>"
+        str << _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid)
+        str << "</div></fieldset>"
+      }
     end
-    str << "</table>"
-    str << "</div>"
+
     unless only_show 
-      str << "<div style='padding:15px;'><button id='#{button_id}'class='btn btn-primary' type='submit'><i class='icon-save'></i> 保 存 </button></div></form>"
+      str << %Q|
+        <footer>
+            <button class="btn-u" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
+            <button class="btn-u btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
+        </footer>|
     end   
-    str << "</div>"
     str << options["validate_js"] if options.has_key?("validate_js") 
     return raw str.html_safe
   end
@@ -94,11 +92,14 @@ module XmlFormHelper
   #   rest 每行剩余的空白单元格
   #   
   # # */
-  def _create_text_field(table_name, value, options={}, only_show=false,rest=0)
+  def _create_text_field(table_name, value, options={}, only_show=false,grid=1)
     # 没有name和display=skip的直接跳过
     return "" unless options.has_key?("name") && !(options.has_key?("display") && options["display"].to_s == "skip")
     name = options["name"]  
-    column = options.has_key?("column") ? options["column"] : name 
+    column = options.has_key?("column") ? options["column"] : name
+    icon = options.has_key?("icon") ? options["icon"] : "info"  
+    data = options.has_key?("data") ? options["data"].to_s.split("|") : []  
+    
     if only_show 
       input_str = "<pre>#{value}</pre>"  # 仅仅显示的话不生成输入框
     else 
@@ -108,48 +109,143 @@ module XmlFormHelper
         return "<input type='hidden' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' />"
       end
       # 没有标注数据类型的默认为字符
-      data_type = options.has_key?("data_type") ? options["data_type"].to_s : "字符"
-      unless options.has_key?("maxlength")
-        options["maxlength"] = ["大文本","富文本"].include?(data_type) ? '8000' : '127' 
-      end
-      hint = options.has_key?("hint") ? "<span class='icon-question-sign has-popover' data-title='提示' data-placement='right' data-content='#{options["hint"]}'></span>" : ""
+      data_type = options.has_key?("data_type") ? options["data_type"].to_s : "text"
+      hint = (options.has_key?("hint") && !options["hint"].blank?) ? options["hint"] : ""
       opt = []
       opt << "disabled='disabled'" if options.has_key?("display") && options["display"].to_s == "disabled"
       opt << "readonly='readonly'" if options.has_key?("display") && options["display"].to_s == "readonly"
       opt << "placeholder='#{options["placeholder"]}'" if options.has_key?("placeholder")
-      opt << "data-rule-minlength='#{options["minlength"]}'" if options.has_key?("minlength")
-      opt << "data-rule-maxlength='#{options["maxlength"]}'" if options.has_key?("maxlength")
-      if options.has_key?("required") && options["required"].to_s == 'true'
-        opt << "data-rule-required='true'"
-        red_start = _red_text("*") 
-      else
-        red_start = ""
-      end
+      opt << "class='#{options["class"]}'" if options.has_key?("class")
+      name = name.to_s << _red_text("*") if options.has_key?("class") && options["class"].to_s.include?("required")
+      section = grid == 1 ? "<section>" : "<section class='col col-#{12/grid}'>"
+
       case data_type
-      when "大文本"
-        input_str = "<textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>"
-      when "富文本"
-        input_str = "<textarea class='autosize form-control' rows='4'>#{value}</textarea>"
-      when "数字"
-        opt <<  "data-rule-digits='true'"
-      when "日期"
-        opt <<  "data-rule-dateiso='true'"
-      when "IP"
-        opt <<  "data-rule-ipv4='true'"
-      when "email"
-        opt <<  "data-rule-email='true'"
-      when "URL"
-        opt <<  "data-rule-url='true'"
+      when "hidden"
+        return _create_hidden(table_name,column,value)
+      when "radio"
+        input_str = _create_radio(section,name,table_name,column,value,opt,hint,data)
+      when "checkbox"
+        input_str = _create_checkbox(section,name,table_name,column,value,opt,hint,data)
+      when "select"
+        input_str = _create_select(section,name,table_name,column,value,opt,hint,data)
+      when "multiple_select"
+        input_str = _create_multiple_select(section,name,table_name,column,value,opt,hint,data)
+      when "textarea"
+        input_str = _create_textarea(name,table_name,column,value,opt,hint)
+      when "richtext"
+        input_str = _create_richtext(name,table_name,column,value,opt,hint)
+      else
+        input_str = _create_text(section,name,table_name,column,value,opt,hint,icon)
       end
-      input_str = "<input type='text' class='form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' #{opt.join(" ")}>" if input_str.blank?
     end
-    if ["大文本","富文本"].include?(data_type)
-          str = "<td class='form-group'><div class='control-label'><label for='#{column}'>#{red_start} #{name} #{hint}</label></div></td><td class='controls' colspan='#{rest*2+1}'>#{input_str}</td>"
-    else
-      str = "<td class='form-group'><div class='control-label'><label for='#{column}'>#{red_start} #{name} #{hint}</label></div></td><td class='controls'>#{input_str}</td>"
-      rest.times { str << "<td></td><td></td>" }
+    return input_str
+  end
+
+# 隐藏输入框
+  def _create_hidden(table_name,column,value)
+    return "<input type='hidden' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' />"
+  end
+  # 普通文本
+  def _create_text(section,name,table_name,column,value,opt,hint,icon)
+    str = %Q|
+    #{section}
+        <label class="label">#{name}</label>
+        <label class="input">
+            <i class="icon-append fa fa-#{icon}"></i>
+            <input type='text' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' #{opt.join(" ")}>
+            #{hint.blank? ? "" : "<b class='tooltip tooltip-bottom-right'>#{hint}</b>"}
+        </label>
+    </section>|
+  end
+  # 单选
+  def _create_radio(section,name,table_name,column,value,opt,hint,data)
+    data_str = ""
+    data.each do |d|
+      checked = (value && value == d) ? 'checked' : ''
+      data_str << "<label class='radio'><input type='radio' name='#{table_name}[#{column}]' value='#{d}' #{checked}><i class='rounded-x'></i>#{d}</label>\n"
     end
-    return str
+    str = %Q|
+    #{section}
+        <label class="label">#{name}</label>
+        <div class="inline-group">
+            #{data_str}
+        </div>
+        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
+    </section>|
+  end
+  # 多选
+  def _create_checkbox(section,name,table_name,column,value,opt,hint,data)
+    data_str = ""
+    data.each do |d| 
+      checked = (value && value.split(",").include?(d)) ? 'checked' : ''
+      data_str << "<label class='checkbox'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d}' #{checked}><i></i>#{d}</label>\n"
+    end
+    str = %Q|
+    #{section}
+        <label class="label">#{name}</label>
+        <div class="inline-group">
+            #{data_str}
+        </div>
+        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
+    </section>|
+  end
+  # 下拉单选
+  def _create_select(section,name,table_name,column,value,opt,hint,data)
+    data_str = ""
+    data.each do |d| 
+      checked = (value && value == d) ? 'checked' : ''
+      data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
+    end
+    str = %Q|
+    #{section}
+        <label class="label">#{name}</label>
+        <label class="select">
+          <select>
+            #{data_str}
+          </select>
+        </label>
+        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
+    </section>|
+  end
+  # 下拉多选
+  def _create_multiple_select(section,name,table_name,column,value,opt,hint,data)
+    data_str = ""
+    data.each do |d| 
+      checked = (value && value.split(",").include?(d)) ? 'checked' : ''
+      data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
+    end
+    str = %Q|
+    #{section}
+        <label class="label">#{name}</label>
+        <label class="select select-multiple">
+          <select multiple>
+            #{data_str}
+          </select>
+        </label>
+        <div class='note'><strong>提示:</strong> #{hint.blank? ? '按住ctrl键可以多选。' : "#{hint}；按住ctrl键可以多选。" }</div>
+    </section>|
+  end
+  # 大文本
+  def _create_textarea(name,table_name,column,value,opt,hint)
+    str = %Q|
+    <section>
+        <label class="label">#{name}</label>
+        <label class="textarea textarea-resizable">
+            <textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>
+        </label>
+        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
+    </section>|
+  end
+  # 富文本
+  def _create_richtext(name,table_name,column,value,opt,hint)
+    str = %Q|
+    <section>
+        <label class="label">#{name}</label>
+        <label class="textarea textarea-resizable">
+            <textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>
+        </label>
+        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
+    </section>|
   end
 
 end
