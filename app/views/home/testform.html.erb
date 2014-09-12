@@ -1,16 +1,9 @@
 <script type="text/javascript">
     $(document).ready(function(){
-        $(".sky-form").validate({
-            rules: {
-                // check_max: { max: 3 },
-                // check_min: { min: 2 },
-                departments_org_code: { maxlength: 10, minlength: 5 },
-                min_length: { minlength: 5 }
-            },
-            message: {
-                check_max: { max: jQuery.validator.format("最多选{0} 项") },
-                check_min: { min: jQuery.validator.format("至少选{0} 项") }
-            }
+        $(".sky-form").validate();
+        $("#departments_org_code").rules("add", {
+            maxlength: 10,
+            minlength: 5
         });
     });
 </script>
