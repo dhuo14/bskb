@@ -1,22 +1,92 @@
-<div class='box-content'>
-	<%= simple_form_for [:kobe, @menu], :html => { :multipart => true } do |f| %>
+<%= form_for [:kobe, @menu], :html => { :multipart => true, :class => "sky-form" } do |f| %>
 
-	  <%= f.input :parent_id, as: :hidden %>
+<%= f.hidden_field :parent_id %>
 
-		<%= f.input :parent_name, label: '父节点名称', disabled: true %>
+<header>参数配置</header>
 
-		<%= f.input :name, label: '名称', placeholder: '名称', required: true %>
+<fieldset>  
+	<div class="row">
+		<section>
+			<label class="label col col-4">父节点名称</label>
+			<div class="col col-8">
+				<label class="input">
+					<!-- <i class="icon-append fa fa-user"></i> -->
+					<%= f.text_field :parent_name, placeholder: '父节点名称', disabled: true %>
+				</label>
+			</div>
+		</section>
+	</div>
+	<div class="row">
+		<section>
+			<label class="label col col-4">名称</label>
+			<div class="col col-8">
+				<label class="input">
+					<!-- <i class="icon-append fa fa-briefcase"></i> -->
+					<%= f.text_field :name, placeholder: '名称' %>
+				</label>
+			</div>
+		</section>
+	</div>
+	<div class="row">
+		<section>
+			<label class="label col col-4">相对路径</label>
+			<div class="col col-8">
+				<label class="input">
+					<!-- <i class="icon-append fa fa-envelope"></i> -->
+					<%= f.url_field :route_path,  placeholder: '相对路径' %>
+				</label>
+			</div>
+		</section>
+	</div>
+	<div class="row">
+		<section>
+			<label class="label col col-4">排序号</label>
+			<div class="col col-8">
+				<label class="input">
+					<!-- <i class="icon-append fa fa-phone"></i> -->
+					<%= f.number_field :sort,  placeholder: '只能填数字' %>
+				</label>
+			</div>
+		</section>
+	</div>
+	<div class="row">
+		<section>
+			<label class="label col col-4">图标</label>
+			<div class="col col-8">
+				<label class="input">
+					<!-- <i class="icon-append fa fa-briefcase"></i> -->
+					<%= f.text_field :icon, placeholder: '图标' %>
+				</label>
+			</div>
+		</section>
+	</div>
+	<div class="row">
+		<section>
+			<label class="label col col-4">状态</label>
+			<div class="col col-8 inline-group">
+				<label class="radio">
+					<input type="radio" checked="" name="radio-inline">
+					<%= f.radio_button :status, 1 %>
+					<i class="rounded-x"></i>
+					有效
+				</label>
+				<label class="radio">
+					<input type="radio" checked="" name="radio-inline">
+					<%= f.radio_button :status, 0 %>
+					<i class="rounded-x"></i>
+					无效
+				</label>
+			</div>
+		</section>
+	</div>
+</fieldset>
 
-		<%= f.input :route_path, label: 'URL', placeholder: 'URL', hint: '相对路径' %>
-
-		<%= f.input :status, label: '状态', as: :my_radio_buttons, collection: [['有效','1'],['无效','0']] %>
-
-		<%= f.input :sort, label: '排序号', placeholder: '只能填数字', required: true, required_type: { number: true } %>
-
-		<%= f.input :icon, label: '图标', as: :box_select, box_param: { 'array' => @icon, 'type' => 'icon' }, placeholder: '图标', required: true %>
-
-		<%= form_btn(f) %>                 
-		
-	<% end %>
+<footer>
+	<button type="submit" class="btn-u">Send request</button>
+	<div class="progress"></div>
+</footer>               
+<div class="message">
+	<i class="rounded-x fa fa-check"></i>
+	<p>Thanks for your order!<br>We'll contact you very soon.</p>
 </div>
-
+<% end %>   

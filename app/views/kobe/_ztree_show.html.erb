@@ -1,4 +1,4 @@
-<div class='box-content'>
+<div class='tag-box tag-box-v3'>
 	<ul id="ztree_show" class="ztree"></ul>
 </div>
 
@@ -239,7 +239,7 @@ function getForm(url) {
 		dataType: "html",
 		success: function(data) {
 			$("#form_div").html(data);
-			$.getScript("<%= asset_path 'reload_form.js' %>");
+			// $.getScript("<%= asset_path 'reload_form.js' %>");
 		},
 		error: function (data, textStatus){
 			bootbox.alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
