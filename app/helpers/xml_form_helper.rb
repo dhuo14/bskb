@@ -40,6 +40,8 @@ module XmlFormHelper
     grid = options.has_key?("grid") ? options["grid"] : 1 
     only_show = options.has_key?("only_show") ? options["only_show"] : false 
     str = ""
+    rules = []
+    messages = []
     unless only_show
       str << "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='post'>" 
       str << tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token)
@@ -53,8 +55,11 @@ module XmlFormHelper
     tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext']")
     tds.each_slice(grid).with_index do |node,i|
       str << "<fieldset><div class='row'>"
-      node.each_with_index{|n|
-        str << _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid)
+      node.each{|n|
+        result = _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid)
+        str << result[0]
+        rules << result[1] unless result[1].blank?
+        messages << result[2] unless result[2].blank?
       }
       str << "</div></fieldset>"
     end
@@ -62,7 +67,10 @@ module XmlFormHelper
     doc.xpath("/root/node[contains(@data_type,'text')]").each_slice(1) do |node|
       node.each{|n|
         str << "<fieldset><div class='row'>"
-        str << _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid)
+        result = _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid)
+        str << result[0]
+        rules << result[1] unless result[1].blank?
+        messages << result[2] unless result[2].blank?
         str << "</div></fieldset>"
       }
     end
@@ -72,9 +80,36 @@ module XmlFormHelper
         <footer>
             <button class="btn-u" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
             <button class="btn-u btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
-        </footer>|
-    end   
-    str << options["validate_js"] if options.has_key?("validate_js") 
+        </footer>|   
+      validate_js = %Q|
+      <script type="text/javascript">
+        var Validation_#{form_id} = function () {
+            return {       
+                initValidation: function () {
+                  $('##{form_id}').validate({                   
+                    rules:
+                    {
+                      #{rules.join(",")}
+                    },
+                    messages:
+                    {
+                      #{messages.join(",")}
+                    },                  
+                    errorPlacement: function(error, element)
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                  });
+                }
+
+            };
+        }();
+        jQuery(document).ready(function() {
+            Validation_#{form_id}.initValidation();
+        });
+      </script>|
+    end
+    str << validate_js
     return raw str.html_safe
   end
   
@@ -99,11 +134,14 @@ module XmlFormHelper
     column = options.has_key?("column") ? options["column"] : name
     icon = options.has_key?("icon") ? options["icon"] : "info"  
     data = options.has_key?("data") ? options["data"].to_s.split("|") : []  
+    input_str = ""
+    rules = ""
+    messages = ""
+    rusult = []
     
     if only_show 
       input_str = "<pre>#{value}</pre>"  # 仅仅显示的话不生成输入框
     else 
-      input_str = ""
       # 隐藏标签，一般是通过JS来赋值
       if options.has_key?("display") && options["display"].to_s == "hidden"
         return "<input type='hidden' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' />"
@@ -116,12 +154,23 @@ module XmlFormHelper
       opt << "readonly='readonly'" if options.has_key?("display") && options["display"].to_s == "readonly"
       opt << "placeholder='#{options["placeholder"]}'" if options.has_key?("placeholder")
       opt << "class='#{options["class"]}'" if options.has_key?("class")
-      name = name.to_s << _red_text("*") if options.has_key?("class") && options["class"].to_s.include?("required")
+      # 校验规则
+      if options.has_key?("rules") 
+        if options["rules"].to_s.include?("required:true")
+          name = name.to_s << _red_text("*") 
+        end
+        rules = "'#{table_name}[#{column}]':#{options["rules"]}"
+      end
+      # 校验提示消息
+      if options.has_key?("messages") 
+        messages = "'#{table_name}[#{column}]':'#{options["messages"]}'"
+      end
+
       section = grid == 1 ? "<section>" : "<section class='col col-#{12/grid}'>"
 
       case data_type
       when "hidden"
-        return _create_hidden(table_name,column,value)
+        input_str = _create_hidden(table_name,column,value)
       when "radio"
         input_str = _create_radio(section,name,table_name,column,value,opt,hint,data)
       when "checkbox"
@@ -138,7 +187,10 @@ module XmlFormHelper
         input_str = _create_text(section,name,table_name,column,value,opt,hint,icon)
       end
     end
-    return input_str
+    rusult.push(input_str)
+    rusult.push(rules)
+    rusult.push(messages)
+    return rusult
   end
 
 # 隐藏输入框
