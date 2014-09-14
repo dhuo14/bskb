@@ -21,31 +21,72 @@ module XmlFormHelper
     end
   end
 
+  # 生成XML表格函数
+  # /*options参数说明
+  #   title  表单标题 可有可无
+  #   grid 每一行显示几个输入框
+  # */
+  def _show_xml_table(obj,options={})
+    xml = obj.class.xml
+    grid = options.has_key?("grid") ? options["grid"] : 2
+    str = "<div class='panel panel-grey margin-bottom-40'>"
+    tbody = ""
+    if options.has_key?("title") && !options["title"].blank?
+      str << %Q|
+      <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-info-circle "></i> #{options["title"]}</h3>
+      </div>|
+    end  
+    doc = Nokogiri::XML(xml)
+    # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'的
+    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext']")
+    tds.each_slice(grid).with_index do |node,i|
+      tbody << "<tr>"
+      node.each_with_index{|n,ii|
+        tbody << "<td>#{n.attributes["name"]}</td><td>#{_get_column_value(obj,n)}</td>"
+        tbody << "<td></td><td></td>" * (grid-ii-1) if (n == node.last) && (ii != grid -1)
+      }
+      tbody << "</tr>"
+    end
+    # 再生成文本框和富文本框--针对大文本或者富文本
+    doc.xpath("/root/node[contains(@data_type,'text')]").each_slice(1) do |node|
+      node.each{|n|
+        tbody << "<tr>"
+          tbody << "<td>#{n.attributes["name"]}</td><td colspan='#{grid*2-1}'>#{_get_column_value(obj,n)}</td>"
+        tbody << "</tr>"
+      }
+    end
+
+    str << %Q|
+      <table class="table table-striped table-bordered">
+        <tbody>
+          #{tbody}
+        </tbody>
+      </table>
+    </div>|
+    return raw str.html_safe
+  end
+
   # 生成XML表单函数
   # /*options参数说明
   #   form_id 表单ID
-  #   button_id 按钮ID,与自定义的validate_js配合使用
   #   validate_js 表单自定义验证JS
   #   action 提交的路径
   #   title  表单标题 可有可无
   #   grid 每一行显示几个输入框
-  #   only_show 在shouw/audit等只需要显示内容的页面设为true，则自动去除form,input,button等标签 
   # */
-  def _create_xml_form(xml,obj,options={})
+  def _create_xml_form(obj,options={})
+    xml = obj.class.xml
     table_name = obj.class.to_s.tableize
     form_id = options.has_key?("form_id") ? options["form_id"] : "myform" 
-    button_id = options.has_key?("button_id") ? options["button_id"] : "mybutton"
     action = options.has_key?("action") ? options["action"] : "" 
     title = options.has_key?("title") ? options["title"] : "" 
     grid = options.has_key?("grid") ? options["grid"] : 1 
-    only_show = options.has_key?("only_show") ? options["only_show"] : false 
     str = ""
     rules = []
     messages = []
-    unless only_show
-      str << "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='post'>" 
-      str << tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token)
-    end
+    str << "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='post'>" 
+    str << tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token)
     unless title.blank?
       str << "<header>#{title}</header>"
     end
@@ -56,7 +97,7 @@ module XmlFormHelper
     tds.each_slice(grid).with_index do |node,i|
       str << "<fieldset><div class='row'>"
       node.each{|n|
-        result = _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid)
+        result = _create_text_field(table_name,_get_column_value(obj,n),n.attributes,grid)
         str << result[0]
         rules << result[1] unless result[1].blank?
         messages << result[2] unless result[2].blank?
@@ -67,7 +108,7 @@ module XmlFormHelper
     doc.xpath("/root/node[contains(@data_type,'text')]").each_slice(1) do |node|
       node.each{|n|
         str << "<fieldset><div class='row'>"
-        result = _create_text_field(table_name,_get_column_value(obj,n),n.attributes,only_show,grid)
+        result = _create_text_field(table_name,_get_column_value(obj,n),n.attributes,grid)
         str << result[0]
         rules << result[1] unless result[1].blank?
         messages << result[2] unless result[2].blank?
@@ -75,41 +116,38 @@ module XmlFormHelper
       }
     end
 
-    unless only_show 
-      str << %Q|
-        <footer>
-            <button class="btn-u" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
-            <button class="btn-u btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
-        </footer>|   
-      validate_js = %Q|
-      <script type="text/javascript">
-        var Validation_#{form_id} = function () {
-            return {       
-                initValidation: function () {
-                  $('##{form_id}').validate({                   
-                    rules:
-                    {
-                      #{rules.join(",")}
-                    },
-                    messages:
-                    {
-                      #{messages.join(",")}
-                    },                  
-                    errorPlacement: function(error, element)
-                    {
-                        error.insertAfter(element.parent());
-                    }
-                  });
-                }
+    str << %Q|
+      <footer>
+          <button class="btn-u" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
+          <button class="btn-u btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
+      </footer>|   
+    str << %Q|
+    <script type="text/javascript">
+      var Validation_#{form_id} = function () {
+          return {       
+              initValidation: function () {
+                $('##{form_id}').validate({                   
+                  rules:
+                  {
+                    #{rules.join(",")}
+                  },
+                  messages:
+                  {
+                    #{messages.join(",")}
+                  },                  
+                  errorPlacement: function(error, element)
+                  {
+                      error.insertAfter(element.parent());
+                  }
+                });
+              }
 
-            };
-        }();
-        jQuery(document).ready(function() {
-            Validation_#{form_id}.initValidation();
-        });
-      </script>|
-    end
-    str << validate_js
+          };
+      }();
+      jQuery(document).ready(function() {
+          Validation_#{form_id}.initValidation();
+      });
+    </script>|
     return raw str.html_safe
   end
   
@@ -127,7 +165,7 @@ module XmlFormHelper
   #   rest 每行剩余的空白单元格
   #   
   # # */
-  def _create_text_field(table_name, value, options={}, only_show=false,grid=1)
+  def _create_text_field(table_name, value, options={}, grid=1)
     # 没有name和display=skip的直接跳过
     return "" unless options.has_key?("name") && !(options.has_key?("display") && options["display"].to_s == "skip")
     name = options["name"]  
@@ -139,53 +177,49 @@ module XmlFormHelper
     messages = ""
     rusult = []
     
-    if only_show 
-      input_str = "<pre>#{value}</pre>"  # 仅仅显示的话不生成输入框
-    else 
-      # 隐藏标签，一般是通过JS来赋值
-      if options.has_key?("display") && options["display"].to_s == "hidden"
-        return "<input type='hidden' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' />"
+    # 隐藏标签，一般是通过JS来赋值
+    if options.has_key?("display") && options["display"].to_s == "hidden"
+      return "<input type='hidden' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' />"
+    end
+    # 没有标注数据类型的默认为字符
+    data_type = options.has_key?("data_type") ? options["data_type"].to_s : "text"
+    hint = (options.has_key?("hint") && !options["hint"].blank?) ? options["hint"] : ""
+    opt = []
+    opt << "disabled='disabled'" if options.has_key?("display") && options["display"].to_s == "disabled"
+    opt << "readonly='readonly'" if options.has_key?("display") && options["display"].to_s == "readonly"
+    opt << "placeholder='#{options["placeholder"]}'" if options.has_key?("placeholder")
+    opt << "class='#{options["class"]}'" if options.has_key?("class")
+    # 校验规则
+    if options.has_key?("rules") 
+      if options["rules"].to_s.include?("required:true")
+        name = name.to_s << _red_text("*") 
       end
-      # 没有标注数据类型的默认为字符
-      data_type = options.has_key?("data_type") ? options["data_type"].to_s : "text"
-      hint = (options.has_key?("hint") && !options["hint"].blank?) ? options["hint"] : ""
-      opt = []
-      opt << "disabled='disabled'" if options.has_key?("display") && options["display"].to_s == "disabled"
-      opt << "readonly='readonly'" if options.has_key?("display") && options["display"].to_s == "readonly"
-      opt << "placeholder='#{options["placeholder"]}'" if options.has_key?("placeholder")
-      opt << "class='#{options["class"]}'" if options.has_key?("class")
-      # 校验规则
-      if options.has_key?("rules") 
-        if options["rules"].to_s.include?("required:true")
-          name = name.to_s << _red_text("*") 
-        end
-        rules = "'#{table_name}[#{column}]':#{options["rules"]}"
-      end
-      # 校验提示消息
-      if options.has_key?("messages") 
-        messages = "'#{table_name}[#{column}]':'#{options["messages"]}'"
-      end
+      rules = "'#{table_name}[#{column}]':#{options["rules"]}"
+    end
+    # 校验提示消息
+    if options.has_key?("messages") 
+      messages = "'#{table_name}[#{column}]':'#{options["messages"]}'"
+    end
 
-      section = grid == 1 ? "<section>" : "<section class='col col-#{12/grid}'>"
+    section = grid == 1 ? "<section>" : "<section class='col col-#{12/grid}'>"
 
-      case data_type
-      when "hidden"
-        input_str = _create_hidden(table_name,column,value)
-      when "radio"
-        input_str = _create_radio(section,name,table_name,column,value,opt,hint,data)
-      when "checkbox"
-        input_str = _create_checkbox(section,name,table_name,column,value,opt,hint,data)
-      when "select"
-        input_str = _create_select(section,name,table_name,column,value,opt,hint,data)
-      when "multiple_select"
-        input_str = _create_multiple_select(section,name,table_name,column,value,opt,hint,data)
-      when "textarea"
-        input_str = _create_textarea(name,table_name,column,value,opt,hint)
-      when "richtext"
-        input_str = _create_richtext(name,table_name,column,value,opt,hint)
-      else
-        input_str = _create_text(section,name,table_name,column,value,opt,hint,icon)
-      end
+    case data_type
+    when "hidden"
+      input_str = _create_hidden(table_name,column,value)
+    when "radio"
+      input_str = _create_radio(section,name,table_name,column,value,opt,hint,data)
+    when "checkbox"
+      input_str = _create_checkbox(section,name,table_name,column,value,opt,hint,data)
+    when "select"
+      input_str = _create_select(section,name,table_name,column,value,opt,hint,data)
+    when "multiple_select"
+      input_str = _create_multiple_select(section,name,table_name,column,value,opt,hint,data)
+    when "textarea"
+      input_str = _create_textarea(name,table_name,column,value,opt,hint)
+    when "richtext"
+      input_str = _create_richtext(name,table_name,column,value,opt,hint)
+    else
+      input_str = _create_text(section,name,table_name,column,value,opt,hint,icon)
     end
     rusult.push(input_str)
     rusult.push(rules)

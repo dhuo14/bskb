@@ -19,6 +19,7 @@ class HomeController < JamesController
 	
     def testform
         @obj = Department.new
+        @obj2 = Department.find(1)
         render :layout => "kobe"
     end
 
