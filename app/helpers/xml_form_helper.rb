@@ -80,20 +80,21 @@ module XmlFormHelper
     table_name = obj.class.to_s.tableize
     form_id = options.has_key?("form_id") ? options["form_id"] : "myform" 
     action = options.has_key?("action") ? options["action"] : "" 
+    method = options.has_key?("method") ? options["method"] : "post"
     title = options.has_key?("title") ? options["title"] : "" 
     grid = options.has_key?("grid") ? options["grid"] : 1 
     str = ""
     rules = []
     messages = []
-    str << "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='post'>" 
+    str << "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='#{method}'>" 
     str << tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token)
     unless title.blank?
       str << "<header>#{title}</header>"
     end
 
     doc = Nokogiri::XML(xml)
-    # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'的
-    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext']")
+    # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'、'隐藏'的
+    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext'][@data_type!='hidden']")
     tds.each_slice(grid).with_index do |node,i|
       str << "<fieldset><div class='row'>"
       node.each{|n|
@@ -104,17 +105,15 @@ module XmlFormHelper
       }
       str << "</div></fieldset>"
     end
-    # 再生成文本框和富文本框--针对大文本或者富文本
-    doc.xpath("/root/node[contains(@data_type,'text')]").each_slice(1) do |node|
-      node.each{|n|
-        str << "<fieldset><div class='row'>"
-        result = _create_text_field(table_name,_get_column_value(obj,n),n.attributes,grid)
-        str << result[0]
-        rules << result[1] unless result[1].blank?
-        messages << result[2] unless result[2].blank?
-        str << "</div></fieldset>"
-      }
-    end
+    # 再生成文本框和富文本框--针对大文本、富文本或者隐藏域
+    doc.xpath("/root/node[@data_type='textarea'] | /root/node[@data_type='richtext'] | /root/node[@data_type='hidden']").each{|n|
+      str << "<fieldset><div class='row'>" unless n.attributes["data_type"].to_s == "hidden"
+      result = _create_text_field(table_name,_get_column_value(obj,n),n.attributes,grid)
+      str << result[0]
+      rules << result[1] unless result[1].blank?
+      messages << result[2] unless result[2].blank?
+      str << "</div></fieldset>" unless n.attributes["data_type"].to_s == "hidden"
+    }
 
     str << %Q|
       <footer>
