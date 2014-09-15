@@ -5,8 +5,7 @@ module AboutXml
   #   title  表单标题 可有可无
   #   grid 每一行显示几个输入框
   # */
-  def _show_xml_table(obj,options={})
-    xml = obj.class.xml
+  def _show_xml_table(xml,obj,options={})
     grid = options.has_key?("grid") ? options["grid"] : 2
     str = "<div class='panel panel-grey margin-bottom-40'>"
     tbody = ""
@@ -54,8 +53,7 @@ module AboutXml
   #   title  表单标题 可有可无
   #   grid 每一行显示几个输入框
   # */
-  def _create_xml_form(obj,options={})
-    xml = obj.class.xml
+  def _create_xml_form(xml,obj,options={})
     table_name = obj.class.to_s.tableize
     form_id = options.has_key?("form_id") ? options["form_id"] : "myform" 
     action = options.has_key?("action") ? options["action"] : "" 
