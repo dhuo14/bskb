@@ -63,12 +63,14 @@ module AboutXml
     str = ""
     rules = []
     messages = []
-    str << "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='#{method}'>" 
-    str << tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token)
+    # str = "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='post'>" 
+    # str << tag(:input, :type => "hidden", :name => "utf8", :value => "&#x2713;")
+    # str << tag(:input, :type => "hidden", :name => "_method", :value => method)
+    # str << tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token)
+    str = form_tag(action, method: method, class: 'sky-form', id: form_id).to_str
     unless title.blank?
       str << "<header>#{title}</header>"
     end
-
     doc = Nokogiri::XML(xml)
     # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'、'隐藏'的
     tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext'][@data_type!='hidden']")
@@ -96,7 +98,8 @@ module AboutXml
       <footer>
           <button class="btn-u" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
           <button class="btn-u btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
-      </footer>|   
+      </footer>| 
+    str << "</form>"  
     str << %Q|
     <script type="text/javascript">
       var Validation_#{form_id} = function () {
@@ -335,4 +338,5 @@ module AboutXml
   def _form_states(data_type,opt)
   	return (opt & ["disabled='disabled'","readonly='readonly'"]).empty? ? data_type : "#{data_type} state-disabled"
   end
+
 end

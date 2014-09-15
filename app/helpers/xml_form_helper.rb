@@ -27,7 +27,7 @@ module XmlFormHelper
         result = (result == true) ? "是" : "否"
       elsif for_what == "form"
         result = (result == true) ? 1 : 0
-    end
+      end
     end
     return result
   end
