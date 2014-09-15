@@ -63,10 +63,6 @@ module AboutXml
     str = ""
     rules = []
     messages = []
-    # str = "<form class='sky-form' id='#{form_id}' action='#{action}' novalidate='novalidate' method='post'>" 
-    # str << tag(:input, :type => "hidden", :name => "utf8", :value => "&#x2713;")
-    # str << tag(:input, :type => "hidden", :name => "_method", :value => method)
-    # str << tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token)
     str = form_tag(action, method: method, class: 'sky-form', id: form_id).to_str
     unless title.blank?
       str << "<header>#{title}</header>"
