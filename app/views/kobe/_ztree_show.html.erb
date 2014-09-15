@@ -221,16 +221,9 @@ function addTreeNode() {
 	hideRMenu();
 	var node = zTree.getSelectedNodes()[0];
 	var url = '<%= "/#{params[:controller]}/new" %>'
-	getForm(url);
-	if (node) {
-		$('<%= "input##{controller_name.singularize}_parent_id" %>').val(node.id);
-		$('<%= "input##{controller_name.singularize}_parent_name" %>').val(node.name);
-	}else {
-		$('<%= "input##{controller_name.singularize}_parent_id" %>').val('');
-		$('<%= "input##{controller_name.singularize}_parent_name" %>').val('');
-	}
+	getForm(url,node);
 }
-function getForm(url) {
+function getForm(url,node) {
 	$.ajax({
 		type: "get",
 		url: url,
@@ -239,7 +232,13 @@ function getForm(url) {
 		dataType: "html",
 		success: function(data) {
 			$("#form_div").html(data);
-			// $.getScript("<%= asset_path 'reload_form.js' %>");
+			if (node) {
+				$('<%= "input##{controller_name}_parent_id" %>').val(node.id);
+				$('<%= "input##{controller_name}_parent_name" %>').val(node.name);
+			}else {
+				$('<%= "input##{controller_name}_parent_id" %>').val('');
+				$('<%= "input##{controller_name}_parent_name" %>').val('');
+			}
 		},
 		error: function (data, textStatus){
 			bootbox.alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
@@ -250,8 +249,9 @@ function editTreeNode() {
 	hideRMenu();
 	var node = zTree.getSelectedNodes()[0];
 	if (node) {
-		var url = '<%= "/#{params[:controller]}/" %>' + node.id + "/edit"
-		getForm(url);
+		var url = '<%= "/#{params[:controller]}/" %>' + node.id + "/edit";
+		var parent_node = node.getParentNode();
+		getForm(url,parent_node);
 	}
 }
 function removeTreeNode() {
@@ -280,7 +280,7 @@ function ajaxDestroyNode(node,msg) {
 				success: function(data) {
 					zTree.removeNode(node);
 					var url = '<%= "/#{params[:controller]}/new" %>'
-					getForm(url);
+					getForm(url,'');
 					$.jGrowl(data);
 				},
 				error: function (data, textStatus){

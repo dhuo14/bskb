@@ -61,7 +61,7 @@ class Kobe::MenusController < KobeController
 
     # 只允许传递过来的参数
     def menu_params  
-      params.require(:menu).permit(:name, :url, :icon, :sort, :status, :parent_id)  
+      params.require(:menus).permit(:name, :route_path, :icon, :sort, :status, :parent_id)  
     end
 
     def get_menu

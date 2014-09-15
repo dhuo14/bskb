@@ -1,9 +1,9 @@
 <div class='col-md-12'>
-    <%= _create_xml_form(@obj2,{"title"=>"创建新单位","grid"=>3}) %>
+    <%= _create_xml_form(@obj2.class.xml,@obj2,{"title"=>"创建新单位","grid"=>3}) %>
 </div>
 
 <p>&nbsp;</p>
 
 <div class='col-md-12'>
-    <%= _show_xml_table(@obj,{"title"=>"单位信息","grid"=>2}) %>
+    <%= _show_xml_table(@obj.class.xml,@obj,{"title"=>"单位信息","grid"=>2}) %>
 </div>

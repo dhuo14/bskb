@@ -2,5 +2,5 @@
   <%= render :partial => '/kobe/ztree_show',:locals=>{:act => "index", :get_path => ztree_kobe_menus_path, :post_path => move_kobe_menus_path} %>
 </div>
 <div class='col-sm-7 col-lg-8' id="form_div">
-   <%= render :partial => 'form',:locals=>{:act=>"index"} %>
+   <%= render :partial => 'form',:locals=>{:act=>"index",:method=>"post",:action=>"/kobe/menus"} %>
 </div>
