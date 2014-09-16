@@ -16,7 +16,7 @@ class Menu < ActiveRecord::Base
 	      <node name='名称' column='name' rules='{required:true}'/>
 	      <node name='相对路径' column='route_path' rules='{required:true}'/>
 	      <node name='排序号' column='sort' rules='{required:true, digits:true}' hint='只能输入数字'/>
-	      <node name='状态' icon='status' data_type='radio' data='[[1,"有效"],[0,"无效"]]' rules='{required:true}'/>
+	      <node name='状态' column='status' data_type='radio' data='[[1,"有效"],[0,"无效"]]' rules='{required:true}'/>
 	      <node name='图标' column='icon' rules='{required:true}'/>
 	    </root>
 	  }

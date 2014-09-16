@@ -1,5 +1,5 @@
 # -*- encoding : utf-8 -*-
-module AboutXml
+module CreateXmlForm
   # 生成XML表格函数
   # /*options参数说明
   #   title  表单标题 可有可无

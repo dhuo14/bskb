@@ -21,7 +21,7 @@ class Kobe::MenusController < KobeController
   end
 
   def create
-    menu = Menu.new(menu_params)
+    menu = Menu.new(xml_form_params(Menu))
     if menu.save
       tips_get("操作成功。")
       redirect_to kobe_menus_path
@@ -32,7 +32,7 @@ class Kobe::MenusController < KobeController
   end
 
   def update
-    if @menu.update(menu_params)
+    if @menu.update(xml_form_params(Menu))
       tips_get("操作成功。")
       redirect_to kobe_menus_path
     else
@@ -58,11 +58,6 @@ class Kobe::MenusController < KobeController
   end
 
   private  
-
-    # 只允许传递过来的参数
-    def menu_params  
-      params.require(:menus).permit(:name, :route_path, :icon, :sort, :status, :parent_id)  
-    end
 
     def get_menu
       @menu = Menu.find(params[:id]) unless params[:id].blank?

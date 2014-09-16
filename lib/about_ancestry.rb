@@ -39,7 +39,6 @@ module AboutAncestry
 	    end
 	    return "targetId=#{target_id},sourceId=#{source_id},moveType=#{move_type},isCopy=#{is_copy}"
 	  end
-
   end
 
 	# 获取父节点名称
@@ -52,8 +51,6 @@ module AboutAncestry
     # self.parent_id.nil? ? 0 : self.parent_id
     self.ancestry.nil? ? 0 : self.ancestry.split('/').last
   end
-
-
 
   # 同级目录内移动
   def siblings_move(target_node,move_type)

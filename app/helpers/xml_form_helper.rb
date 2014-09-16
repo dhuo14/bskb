@@ -1,6 +1,6 @@
 # -*- encoding : utf-8 -*-
 module XmlFormHelper
-  include AboutXml
+  include CreateXmlForm
 
   # 红色标记的文本，例如必填项*
   def _red_text(txt)
@@ -9,6 +9,9 @@ module XmlFormHelper
 
   # 获取某实例的字段值
   def _get_column_value(obj,node,options={})
+    # 父节点特殊处理
+    return obj.parent_id if node["name"] == "parent_id" && obj.attributes.include?("ancestry")
+    # 一般情况
     result = ""
     details_column = options.has_key?("details_column") ? options["details_column"] : "details"
     if node.attributes.has_key?("column") && obj.class.attribute_method?(node["column"])
