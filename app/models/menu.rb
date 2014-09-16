@@ -12,7 +12,7 @@ class Menu < ActiveRecord::Base
 	    <?xml version='1.0' encoding='UTF-8'?>
 	    <root>
 	    	<node name='parent_id' data_type='hidden'/>
-	    	<node name='父节点名称' column='parent_name' display='disabled'/>
+	    	<node name='父节点名称' display='disabled'/>
 	      <node name='名称' column='name' rules='{required:true}'/>
 	      <node name='相对路径' column='route_path' rules='{required:true}'/>
 	      <node name='排序号' column='sort' rules='{required:true, digits:true}' hint='只能输入数字'/>

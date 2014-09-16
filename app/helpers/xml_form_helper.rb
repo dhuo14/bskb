@@ -10,7 +10,10 @@ module XmlFormHelper
   # 获取某实例的字段值
   def _get_column_value(obj,node,options={})
     # 父节点特殊处理
-    return obj.parent_id if node["name"] == "parent_id" && obj.attributes.include?("ancestry")
+    if obj.attributes.include?("ancestry")
+      return obj.parent_id if node["name"] == "parent_id" 
+      return obj.parent_name if node["name"] == "父节点名称"
+    end
     # 一般情况
     result = ""
     details_column = options.has_key?("details_column") ? options["details_column"] : "details"

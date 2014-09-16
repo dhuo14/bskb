@@ -219,12 +219,13 @@ module CreateXmlForm
     data_str = ""
     form_state = _form_states('radio',opt) 
     data.each do |d|
+      options = opt.clone
       if d.class == Array 
-        opt << "checked" if (value && value == d[0])
-        data_str << "<label class='#{form_state}'><input type='radio' name='#{table_name}[#{column}]' value='#{d[0]}' #{opt.join(" ")}><i class='rounded-x'></i>#{d[1]}</label>\n"
+        options << "checked" if (value && value == d[0])
+        data_str << "<label class='#{form_state}'><input type='radio' name='#{table_name}[#{column}]' value='#{d[0]}' #{options.join(" ")}><i class='rounded-x'></i>#{d[1]}</label>\n"
       else
-        opt << "checked" if (value && value == d)
-        data_str << "<label class='#{form_state}'><input type='radio' name='#{table_name}[#{column}]' value='#{d}' #{opt.join(" ")}><i class='rounded-x'></i>#{d}</label>\n"
+        options << "checked" if (value && value == d)
+        data_str << "<label class='#{form_state}'><input type='radio' name='#{table_name}[#{column}]' value='#{d}' #{options.join(" ")}><i class='rounded-x'></i>#{d}</label>\n"
       end
     end
     str = %Q|
@@ -241,12 +242,13 @@ module CreateXmlForm
     data_str = ""
     form_state = _form_states('checkbox',opt)
     data.each do |d| 
+      options = opt.clone
       if d.class == Array
-        opt << "checked" if (value && value.split(",").include?(d[0]))
-        data_str << "<label class='#{form_state}'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d[0]}' #{opt.join(" ")}><i></i>#{d[1]}</label>\n"
+        options << "checked" if (value && value.split(",").include?(d[0]))
+        data_str << "<label class='#{form_state}'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d[0]}' #{options.join(" ")}><i></i>#{d[1]}</label>\n"
       else
-        opt << "checked" if (value && value.split(",").include?(d))
-        data_str << "<label class='#{form_state}'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d}' #{opt.join(" ")}><i></i>#{d}</label>\n"
+        options << "checked" if (value && value.split(",").include?(d))
+        data_str << "<label class='#{form_state}'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d}' #{options.join(" ")}><i></i>#{d}</label>\n"
       end
     end
     str = %Q|

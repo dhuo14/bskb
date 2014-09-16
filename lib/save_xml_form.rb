@@ -42,7 +42,7 @@ module SaveXmlForm
     doc.encoding = "UTF-8"
     doc << "<root>"
     data.each do |key,value|
-      next if key = "parent_id"
+      next if ["parent_id","父节点名称"].include?(key)
       node = doc.root.add_child("<node>").first
       node["name"] = key
       node["value"] = value
