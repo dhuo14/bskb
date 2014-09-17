@@ -62,6 +62,14 @@ Bskb::Application.routes.draw do
         post :move, :save_params, :save_attr, :remove_params
       end
     end
+    # 意见反馈
+    resources :suggestions do
+      post :mark_as_read, :mark_as_unread, on: :member
+      collection do
+        get :list
+        post :batch_opt
+      end
+    end
   end
 # 后台end
 

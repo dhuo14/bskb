@@ -15,8 +15,9 @@ class ApplicationController < ActionController::Base
 
   # 当前用户
   def current_user
-    remember_token = User.encrypt(cookies[:remember_token])
-    @current_user ||= User.find_by(remember_token:remember_token)
+    @current_user = User.find(1)
+    # remember_token = User.encrypt(cookies[:remember_token])
+    # @current_user ||= User.find_by(remember_token:remember_token)
   end
  
   # 是否登录?
@@ -25,8 +26,8 @@ class ApplicationController < ActionController::Base
   end
   
   # 后退页面
-  def redirect_back_or(default)
-    redirect_to(session[:return_to] || default)
+  def redirect_back_or(default=nil)
+    redirect_to(default || session[:return_to])
     session.delete(:return_to)
   end
 

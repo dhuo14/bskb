@@ -12,6 +12,7 @@
 //
 //= require plugins/jquery-1.10.2.min
 //= require plugins/jquery-migrate-1.2.1.min
+//= require jquery_ujs 
 //= require plugins/bootstrap/js/bootstrap.min
 //= require plugins/back-to-top
 //= require app

@@ -77,6 +77,15 @@ module SaveXmlForm
     return result
   end
 
+  # 批量改变状态并写入日志
+  def batch_change_status_and_write_logs(model,id_array,status,content,remark='')
+    str = %Q{
+      <node 操作时间="#{Time.new.to_s}" 操作人ID="#{current_user.id.to_s}" 操作人姓名="#{current_user.name.to_s}" 操作人单位="#{current_user.department.nil? ? "暂无" : current_user.department.name.to_s}" 操作内容="#{content}" 当前状态="#{status_to_cn(model,status)}" 备注="#{remark}" IP地址="#{request.remote_ip}|#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}"/>
+      </root>
+    }
+    model.where(id: id_array).update_all("status = #{status}, logs = replace(logs,'</root>','#{str}')")
+  end
+
 private
 
   #XML_FORM表单提交后生成的参数，返回二维数组，第一维是存入数据库的column参数，第二维是拼成details的name参数
@@ -168,4 +177,9 @@ private
     return prepare_logs_content(obj,"修改数据",remark)
   end
 
+  # 状态汉化
+  def status_to_cn(model,status)
+    arr = Dictionary.status[model.to_s.tableize]
+    str = arr.nil? ? "未知" : arr.find{|n|n[1] == status}[0]
+  end
 end
