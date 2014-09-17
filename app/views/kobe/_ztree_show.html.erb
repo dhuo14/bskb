@@ -176,7 +176,7 @@
 				dataType: "text",
 				data: json_data ,
 				error: function (data, textStatus){
-					bootbox.alert("操作失败失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
+					alert("操作失败失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
 				}
 			})
 		}
@@ -232,16 +232,9 @@ function getForm(url,node) {
 		dataType: "html",
 		success: function(data) {
 			$("#form_div").html(data);
-			if (node) {
-				$('<%= "input##{controller_name}_parent_id" %>').val(node.id);
-				$('<%= "input##{controller_name}_parent_name" %>').val(node.name);
-			}else {
-				$('<%= "input##{controller_name}_parent_id" %>').val('');
-				$('<%= "input##{controller_name}_parent_name" %>').val('');
-			}
 		},
 		error: function (data, textStatus){
-			bootbox.alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
+			alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
 		}
 	});
 }
@@ -269,32 +262,27 @@ function removeTreeNode() {
 }
 
 function ajaxDestroyNode(node,msg) {
-	bootbox.confirm(msg, function(result) {
-		if(result){
-			$.ajax({
-				type: "delete",
-				url: '<%= "/#{params[:controller]}/" %>' + node.id,
-				async: false,
-				cache: false,
-				dataType: "text",
-				success: function(data) {
-					zTree.removeNode(node);
-					var url = '<%= "/#{params[:controller]}/new" %>'
-					getForm(url,'');
-					$.jGrowl(data);
-				},
-				error: function (data, textStatus){
-					bootbox.alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
-				}
-			});
-		}
-	});
+	var result = confirm(msg);
+	if(result){
+		$.ajax({
+			type: "delete",
+			url: '<%= "/#{params[:controller]}/" %>' + node.id,
+			async: false,
+			cache: false,
+			dataType: "text",
+			success: function(data) {
+				zTree.removeNode(node);
+				addTreeNode();
+				alert(data);
+			},
+			error: function (data, textStatus){
+				alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
+			}
+		});
+	}
 }
 
 // 右键菜单函数end
-
-
-
 
 		// 初始化zTree的数据，包括后台更新后重新加载树
 		function init_ztree(){
