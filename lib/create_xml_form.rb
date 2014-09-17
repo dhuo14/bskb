@@ -7,13 +7,22 @@ module CreateXmlForm
   # */
   def _show_xml_table(xml,obj,options={})
     grid = options.has_key?("grid") ? options["grid"] : 2
-    str = "<div class='panel panel-grey margin-bottom-40'>"
+    str = %Q|
+    <div class='tab-v2'>
+      <ul class='nav nav-tabs'>
+        <li class='active'><a data-toggle='tab' href='#info-#{obj.id.to_s}'><i class="fa fa-info-circle"></i> 详细信息</a></li>
+        <li class=''><a data-toggle='tab' href='#logs-#{obj.id.to_s}'><i class="fa fa-clock-o"></i> 历史记录</a></li>
+      </ul>                
+      <div class='tab-content'>
+        <div id='info-#{obj.id.to_s}' class='tab-pane fade in active'>|
     tbody = ""
     if options.has_key?("title") && !options["title"].blank?
       str << %Q|
       <div class="panel-heading">
-          <h3 class="panel-title"><i class="fa fa-info-circle "></i> #{options["title"]}</h3>
+          <h3>#{options["title"]}</h3>
       </div>|
+    else
+      str << "<br />"
     end  
     doc = Nokogiri::XML(xml)
     # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'的
@@ -36,11 +45,18 @@ module CreateXmlForm
     end
 
     str << %Q|
-      <table class="table table-striped table-bordered">
-        <tbody>
-          #{tbody}
-        </tbody>
-      </table>
+          <table class="table table-striped table-bordered">
+            <tbody>
+              #{tbody}
+            </tbody>
+          </table>
+        </div>
+        <div id='logs-#{obj.id.to_s}' class='tab-pane fade in'>
+          <ul class='timeline-v2'>
+            #{show_logs(obj.logs)}
+          </ul>
+        </div>
+      </div>
     </div>|
     return raw str.html_safe
   end
@@ -335,6 +351,26 @@ module CreateXmlForm
   # 样式是否只读
   def _form_states(data_type,opt)
   	return (opt & ["disabled='disabled'","readonly='readonly'"]).empty? ? data_type : "#{data_type} state-disabled"
+  end
+
+  def show_logs(logs)
+    return "暂无记录" if logs.blank?
+    str = ""
+    doc = Nokogiri::XML(logs)
+    doc.xpath("/root/node").each do |n|
+      opt_time = n.attributes["操作时间"].to_s.split(" ")
+      str << %Q|
+      <li>
+        <time class='cbp_tmtime' datetime=''><span>#{opt_time[1]}</span> <span>#{opt_time[0]}</span></time>
+      <i class='cbp_tmicon rounded-x hidden-xs'></i>
+        <div class='cbp_tmlabel'>
+          <h2>#{n.attributes["操作内容"]}</h2>
+          <p>#{n.attributes["备注"]}</p>
+          <p>状态:<span class='label rounded label-u'>#{n.attributes["当前状态"]}</span> 姓名:#{n.attributes["操作人姓名"]} ID:#{n.attributes["操作人ID"]} 单位:[#{n.attributes["操作人单位"]}] IP:#{n.attributes["IP地址"]}</p>
+        </div>
+      </li>|
+    end
+    return str
   end
 
 end

@@ -14,6 +14,7 @@ class Kobe::MenusController < KobeController
 
   def new
   	@menu = Menu.new
+    @menu.parent_id = params[:pid] unless params[:pid].blank?
   end
 
   def edit
