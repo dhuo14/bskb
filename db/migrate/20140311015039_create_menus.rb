@@ -9,7 +9,8 @@ class CreateMenus < ActiveRecord::Migration
     t.string :route_path             , :comment => "url"
     t.integer :status                , :comment => "状态", :limit => 2, :default => 0 ,:null => false
 	  t.integer :sort                  , :comment => "排序"
-
+    t.text :logs                     , :comment => "日志"
+    
     t.timestamps
     end
     add_index :menus, :name,                :unique => true
