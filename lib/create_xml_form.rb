@@ -21,7 +21,7 @@ module CreateXmlForm
     tds.each_slice(grid).with_index do |node,i|
       tbody << "<tr>"
       node.each_with_index{|n,ii|
-        tbody << "<td>#{n.attributes["name"]}</td><td>#{_get_column_value(obj,n,{"for_what"=>"table"})}</td>"
+        tbody << "<td>#{n.attributes["name"]}</td><td>#{get_node_value(obj,n,{"for_what"=>"table"})}</td>"
         tbody << "<td></td><td></td>" * (grid-ii-1) if (n == node.last) && (ii != grid -1)
       }
       tbody << "</tr>"
@@ -30,7 +30,7 @@ module CreateXmlForm
     doc.xpath("/root/node[contains(@data_type,'text')]").each_slice(1) do |node|
       node.each{|n|
         tbody << "<tr>"
-          tbody << "<td>#{n.attributes["name"]}</td><td colspan='#{grid*2-1}'>#{_get_column_value(obj,n)}</td>"
+          tbody << "<td>#{n.attributes["name"]}</td><td colspan='#{grid*2-1}'>#{get_node_value(obj,n)}</td>"
         tbody << "</tr>"
       }
     end
@@ -73,7 +73,7 @@ module CreateXmlForm
     tds.each_slice(grid).with_index do |node,i|
       str << "<fieldset><div class='row'>"
       node.each{|n|
-        result = _create_text_field(table_name,_get_column_value(obj,n,{"for_what"=>"form"}),n.attributes,grid)
+        result = _create_text_field(table_name,get_node_value(obj,n,{"for_what"=>"form"}),n.attributes,grid)
         str << result[0]
         rules << result[1] unless result[1].blank?
         messages << result[2] unless result[2].blank?
@@ -83,7 +83,7 @@ module CreateXmlForm
     # 再生成文本框和富文本框--针对大文本、富文本或者隐藏域
     doc.xpath("/root/node[@data_type='textarea'] | /root/node[@data_type='richtext'] | /root/node[@data_type='hidden']").each{|n|
       str << "<fieldset><div class='row'>" unless n.attributes["data_type"].to_s == "hidden"
-      result = _create_text_field(table_name,_get_column_value(obj,n,{"for_what"=>"form"}),n.attributes,grid)
+      result = _create_text_field(table_name,get_node_value(obj,n,{"for_what"=>"form"}),n.attributes,grid)
       str << result[0]
       rules << result[1] unless result[1].blank?
       messages << result[2] unless result[2].blank?

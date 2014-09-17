@@ -1,13 +1,11 @@
 class ApplicationController < ActionController::Base
 
-  include SaveXmlForm
-  
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
   # 开发给view层用的方法
-  helper_method :current_user, :signed_in?, :redirect_back_or, :cando_list
+  helper_method :current_user, :signed_in?, :redirect_back_or, :cando_list, :get_node_value
 
   # cancan 权限校验
   rescue_from CanCan::AccessDenied do |exception|
@@ -70,29 +68,6 @@ class ApplicationController < ActionController::Base
       # 这里是发送邮件的代码，暂缺
     end
 
-    #  写入日志 确保表里面有logs和status字段才能用这个函数
-    def write_logs(record,content,remark='',user=current_user)
-      unless user.is_webmaster?  # 特殊情况下超级管理员后台修改不记录
-        unless record.logs.nil?
-          new_doc = Nokogiri::XML(record.logs)
-        else
-          new_doc = Nokogiri::XML::Document.new()
-          new_doc.encoding = "UTF-8"
-          new_doc << "<root>"
-        end
-        node = new_doc.root.add_child("<node>").first
-        node["操作时间"] = Time.new.to_s
-        node["操作人ID"] = user.id.to_s
-        node["操作人姓名"] = user.name.to_s
-        node["操作人单位"] = user.department.nil? ? "暂无" : user.department.name.to_s
-        node["操作内容"] = content
-        node["当前状态"] = (!record.attribute_names.include?("status") || record.status.nil?) ? "-" : record.status
-        node["备注"] = remark
-        node["IP地址"] = "#{request.remote_ip}|#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}"
-        record.update_columns("logs" => new_doc.to_s)
-      end
-    end
-
     # 可以操作列表
     def cando_list(obj)
       arr = [] 
@@ -107,5 +82,7 @@ class ApplicationController < ActionController::Base
       arr << ['icon-share','转发', edit_kobe_article_path(obj)] 
       arr << ['icon-legal','审核', edit_kobe_article_path(obj)] 
     end
+
+    include SaveXmlForm
 
 end

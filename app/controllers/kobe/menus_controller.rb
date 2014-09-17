@@ -21,9 +21,19 @@ class Kobe::MenusController < KobeController
   end
 
   def create
-    menu = Menu.new(xml_form_params(Menu))
-    if menu.save
-      tips_get("操作成功。")
+    # other_attrs = {"name" => "我是新名字,会覆盖哦"}
+    # menu = create_and_write_logs(Menu,other_attrs)
+    # if menu
+    #   menu.XXXX
+    #   tips_get("操作成功。")
+    #   redirect_to kobe_menus_path
+    # else
+    #   flash_get(menu.errors.full_messages)
+    #   render 'index'
+    # end
+
+    if create_and_write_logs(Menu)
+      tips_get("创建成功。")
       redirect_to kobe_menus_path
     else
       flash_get(menu.errors.full_messages)
@@ -32,8 +42,8 @@ class Kobe::MenusController < KobeController
   end
 
   def update
-    if @menu.update(xml_form_params(Menu))
-      tips_get("操作成功。")
+    if update_and_write_logs(@menu,other_attrs)
+      tips_get("修改成功。")
       redirect_to kobe_menus_path
     else
       flash_get(@menu.errors.full_messages)
