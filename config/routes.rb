@@ -45,7 +45,7 @@ Bskb::Application.routes.draw do
         get :category_json
       end
     end
-    resources :menus, :except => :show do
+    resources :menus do
       collection do
         get :ztree
         post :move

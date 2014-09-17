@@ -220,7 +220,7 @@ function onBodyMouseDown(event){
 function addTreeNode() {
 	hideRMenu();
 	var node = zTree.getSelectedNodes()[0];
-	var url = '<%= "/#{params[:controller]}/new" %>'
+	var url = '<%= "/#{params[:controller]}/new?pid=" %>' + node.id;
 	getForm(url,node);
 }
 function getForm(url,node) {
