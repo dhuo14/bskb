@@ -37,7 +37,7 @@ module ApplicationHelper
   end
 
   # 操作列表
-  def oprate_btn(obj)
+  def oprate_btn2(obj)
     arr = cando_list(obj)
     if arr.length < 5
       return arr.map{|a|link_to(a[1], a[2], class: a[0])}.join("&nbsp;").html_safe
@@ -45,6 +45,35 @@ module ApplicationHelper
       tmp = arr.map{|a|"<li>#{link_to(a[1], a[2], class: a[0])}</li>"}.join
       return "<div class='btn-group dropdown' style='margin-bottom:5px'><button class='btn'> 操作 </button><button class='btn dropdown-toggle' data-toggle='dropdown'><span class='caret'></span></button><ul class='dropdown-menu'>#{tmp}</ul></div>".html_safe
     end
+  end
+
+
+  # 可以操作列表
+  def oprate_btn(obj)
+    arr = [] 
+    # 查看详细
+    arr << link_to(raw("<i class='fa fa-search-plus'></i> 详细"), kobe_suggestion_path(obj), target: "_blank")
+    # 标记为已读
+    arr << link_to(raw("<i class='fa fa-eye'></i> 标记为已读"), mark_as_read_kobe_suggestion_path(obj), method: :post)
+    # 标记为未读
+    arr << link_to(raw("<i class='fa fa-eye-slash'></i> 标记为未读"), mark_as_unread_kobe_suggestion_path(obj), method: :post)
+    # 删除
+    arr << link_to(raw("<i class='fa fa-trash-o'></i> 删除"), kobe_suggestion_path(obj), method: :delete, data: { confirm: "确定要删除吗?" })
+    # 彻底删除
+    arr << link_to(raw("<i class='fa fa-times'></i> 彻底删除"), kobe_suggestion_path(obj), method: :delete, data: { confirm: "确定要删除吗?" })
+    top_one = arr.shift.gsub("<a","<a class='btn btn-default' type='button'")
+    tmp = arr.map{|c|"<li>#{c}</li>"}.join("\n")
+    str = %Q|
+    <div class='btn-group'>
+      #{top_one}
+      <button data-toggle='dropdown' class='btn btn-default dropdown-toggle' type='button'>
+        <i class='fa fa-sort-desc'></i>
+      </button>
+      <ul role='menu' class='dropdown-menu'>
+        #{tmp}
+      </ul>
+    </div>|
+    return raw str.html_safe
   end
 
   def show_index(index, per = 20)

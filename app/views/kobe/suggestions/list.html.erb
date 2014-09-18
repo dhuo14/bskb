@@ -49,19 +49,7 @@
                     <td><%= s.email %></td>
                     <td class="hidden-sm"><%= link_to s.content, kobe_suggestion_path(s.id), target: "_blank" %></td>
                     <td><%= s.status_to_badge %></td>
-                    <td>
-                        <%= link_to kobe_suggestion_path(s.id), method: :delete, data: { confirm: "确定要删除吗?" } do %>
-                        <button class='btn btn-danger btn-xs delete_btn'><i class='fa fa-trash-o'></i> 删除</button>
-                        <% end %>
-                        <%= link_to mark_as_read_kobe_suggestion_path(s.id), method: :post do %>
-                        <button class='btn btn-info btn-xs read_btn' ><i class='fa fa-check-square-o'></i> 标记为已读</button>
-                        <% end %>
-                        <%= link_to mark_as_unread_kobe_suggestion_path(s.id), method: :post do %>
-                        <button class="btn btn-warning btn-xs unread_btn" >
-                            <i class="fa fa-minus-square-o"></i> 标记为未读
-                        </button>
-                        <% end %>
-                    </td>
+                    <td><%= oprate_btn(s) %></td>
                 </tr>
                 <% end %>
             </tbody>
@@ -69,28 +57,3 @@
         <% end %>
     </div>                      
 </div>
-
-<script type="text/javascript">
-//全选、取消全选的事件  
-function selectAll(){  
-    if ($("#check_all").attr("checked")) {  
-        $(":checkbox").attr("checked", true);  
-    } else {  
-        $(":checkbox").attr("checked", false);  
-    }  
-}  
-//子复选框的事件  
-function setSelectAll(){  
-    //当没有选中某个子复选框时，SelectAll取消选中  
-    if (!$(this).checked) {  
-        $("#check_all").attr("checked", false);  
-    }  
-    var chsub = $(".list_table tbody input[type='checkbox']").length; //获取subcheck的个数  
-    var checkedsub = $(".list_table tbody input[type='checkbox']:checked").length; //获取选中的subcheck的个数  
-    if (checkedsub == chsub) {  
-        $("#check_all").attr("checked", true);  
-    }else {
-        $("#check_all").attr("checked", false); 
-    }
-} 
-</script>

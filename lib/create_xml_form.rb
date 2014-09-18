@@ -52,9 +52,7 @@ module CreateXmlForm
           </table>
         </div>
         <div id='logs-#{obj.id.to_s}' class='tab-pane fade in'>
-          <ul class='timeline-v2'>
-            #{show_logs(obj.logs)}
-          </ul>
+          #{show_logs(obj)}
         </div>
       </div>
     </div>|
@@ -353,24 +351,33 @@ module CreateXmlForm
   	return (opt & ["disabled='disabled'","readonly='readonly'"]).empty? ? data_type : "#{data_type} state-disabled"
   end
 
-  def show_logs(logs)
-    return "暂无记录" if logs.blank?
-    str = ""
-    doc = Nokogiri::XML(logs)
+  def show_logs(obj)
+    return "暂无记录" if obj.logs.blank?
+    icons = Dictionary.icons
+    str = []
+    doc = Nokogiri::XML(obj.logs)
     doc.xpath("/root/node").each do |n|
       opt_time = n.attributes["操作时间"].to_s.split(" ")
+      act = n.attributes["操作内容"].to_s[0,2]
+      icon = icons.has_key?(act) ? icons[act] : icons["其他"]
+      infobar = []
+      infobar << "状态:#{obj.status_to_badge(n.attributes["当前状态"].to_s.to_i)}" if n.attributes.has_key?("当前状态")
+      infobar << "姓名:#{n.attributes["操作人姓名"]}"
+      infobar << "ID:#{n.attributes["操作人ID"]}"
+      infobar << "单位:#{n.attributes["操作人单位"]}"
+      infobar << "IP地址:#{n.attributes["IP地址"]}"
       str << %Q|
       <li>
         <time class='cbp_tmtime' datetime=''><span>#{opt_time[1]}</span> <span>#{opt_time[0]}</span></time>
       <i class='cbp_tmicon rounded-x hidden-xs'></i>
         <div class='cbp_tmlabel'>
-          <h2>#{n.attributes["操作内容"]}</h2>
+          <h2><i class="fa #{icon}"></i> #{n.attributes["操作内容"]}</h2>
           <p>#{n.attributes["备注"]}</p>
-          <p>状态:<span class='label rounded label-u'>#{n.attributes["当前状态"]}</span> 姓名:#{n.attributes["操作人姓名"]} ID:#{n.attributes["操作人ID"]} 单位:[#{n.attributes["操作人单位"]}] IP:#{n.attributes["IP地址"]}</p>
+          <p>#{infobar.join("&nbsp;&nbsp;")}</p>
         </div>
       </li>|
     end
-    return str
+    return "<ul class='timeline-v2'>#{str.reverse.join}</ul>"
   end
 
 end

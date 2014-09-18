@@ -30,7 +30,23 @@ defaults: &defaults
   # 标签
   tags:
     articles: ['党建','人才','档案','办公']
-
+  icons:
+    "录入": "fa-pencil-square-o"
+    "填写": "fa-pencil"
+    "修改": "fa-wrench"
+    "审核": "fa-gavel"
+    "授权": "fa-unlock"
+    "确认": "fa-check-square-o"
+    "退回": "fa-times"
+    "评价": "fa-thumbs-o-up"
+    "删除": "fa-trash-o"
+    "移动": "fa-arrows-v"
+    "邮件": "fa-envelope"
+    "提交": "fa-paper-plane-o"
+    "下单": "fa-shopping-cart"
+    "打印": "fa-print"
+    "标记": "fa-flag"
+    "其他": "fa-tag"
 
 development:
   <<: *defaults

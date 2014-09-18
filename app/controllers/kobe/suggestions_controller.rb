@@ -55,10 +55,10 @@ class Kobe::SuggestionsController < KobeController
     redirect_to list_kobe_suggestions_path
   end
 
-
   private  
 
     def get_suggestion
       @suggestion = Suggestion.find(params[:id]) unless params[:id].blank? 
     end
+
 end

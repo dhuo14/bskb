@@ -143,7 +143,8 @@ ActiveRecord::Schema.define(version: 20140915080843) do
     t.string   "route_path",                                        comment: "url"
     t.integer  "status",         limit: 2, default: 0, null: false, comment: "状态"
     t.integer  "sort",                                              comment: "排序"
-    t.text     "logs",                                              comment: "日志"
+    t.text     "details"
+    t.text     "logs"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

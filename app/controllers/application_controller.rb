@@ -26,8 +26,8 @@ class ApplicationController < ActionController::Base
   end
   
   # 后退页面
-  def redirect_back_or(default=nil)
-    redirect_to(default || session[:return_to])
+  def redirect_back_or(default=root_path)
+    redirect_to(session[:return_to] || default)
     session.delete(:return_to)
   end
 
@@ -67,21 +67,6 @@ class ApplicationController < ActionController::Base
     # 发送邮件
     def send_email(email,title,content)
       # 这里是发送邮件的代码，暂缺
-    end
-
-    # 可以操作列表
-    def cando_list(obj)
-      arr = [] 
-      arr << ['icon-zoom-in','详细', edit_kobe_article_path(obj)] 
-      arr << ['icon-wrench','修改', edit_kobe_article_path(obj)]
-      arr << ['icon-edit','补录', edit_kobe_article_path(obj)]
-      arr << ['icon-trash','删除', edit_kobe_article_path(obj)]
-      arr << ['icon-print','打印', edit_kobe_article_path(obj)] 
-      arr << ['icon-check','确认', edit_kobe_article_path(obj)]
-      arr << ['icon-key','权限', edit_kobe_article_path(obj)] 
-      arr << ['icon-star-empty','评论', edit_kobe_article_path(obj)] 
-      arr << ['icon-share','转发', edit_kobe_article_path(obj)] 
-      arr << ['icon-legal','审核', edit_kobe_article_path(obj)] 
     end
 
     include SaveXmlForm
