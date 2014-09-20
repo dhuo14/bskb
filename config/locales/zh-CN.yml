@@ -1,0 +1,19 @@
+zh-CN: 
+  views:
+    pagination:
+      first: "首页"
+      last: "末页"
+      previous: "&laquo; 上一页"
+      next: "下一页 &raquo;"
+      truncate: "..."
+  date:
+    order:
+      - :year
+      - :month
+      - :day
+  unauthorized:
+    manage:
+      all: "抱歉，您没有相关操作权限！Not authorized to %{action} %{subject}."
+      user: "抱歉，您没有相关操作权限！Not allowed to manage other user accounts."
+    update:
+      project: "抱歉，您没有相关操作权限！Not allowed to update this project."

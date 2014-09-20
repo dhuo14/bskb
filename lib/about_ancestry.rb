@@ -2,11 +2,11 @@
 module AboutAncestry
 
 	def self.included(base)
-    base.extend(ClassMethods)
+    base.extend(AncestryClassMethods)
   end
 
   # 拓展类方法
-  module ClassMethods
+  module AncestryClassMethods
 	  def get_json(name)
 	    if name.blank?
 	      nodes = self.all

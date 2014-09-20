@@ -18,24 +18,24 @@ class Kobe::SuggestionsController < KobeController
   end
 
   def list
-    @suggestions = Suggestion.all
+    @suggestions = Suggestion.all.page params[:page]
   end
 
   def destroy
-    change_status_and_write_logs(@suggestion,98,'删除')
-    redirect_to list_kobe_suggestions_path
+    change_status_and_write_logs(@suggestion,Suggestion.cn_to_status("已删除"),'删除')
+    redirect_back_or list_kobe_suggestions_path
   end
 
   # 标记为已读
   def mark_as_read
-    change_status_and_write_logs(@suggestion,3,'标记为已读')
-    redirect_to list_kobe_suggestions_path
+    change_status_and_write_logs(@suggestion,Suggestion.cn_to_status("已读"),'标记为已读')
+    redirect_back_or list_kobe_suggestions_path
   end
 
   # 标记为未读
   def mark_as_unread
-    change_status_and_write_logs(@suggestion,0,'标记为未读')
-    redirect_to list_kobe_suggestions_path
+    change_status_and_write_logs(@suggestion,Suggestion.cn_to_status("未读"),'标记为未读')
+    redirect_back_or list_kobe_suggestions_path
   end
 
   # 批量处理(删除、标记为已读、标记为未读)
@@ -43,16 +43,16 @@ class Kobe::SuggestionsController < KobeController
     unless params[:check].blank?
       case params[:batch_opt]
       when "delete"
-        batch_change_status_and_write_logs(Suggestion, params[:check].to_a,98,'删除')
+        batch_change_status_and_write_logs(Suggestion, params[:check].to_a,Suggestion.cn_to_status("已删除"),'删除')
       when "read"
-        batch_change_status_and_write_logs(Suggestion, params[:check].to_a, 3, '标记为已读')
+        batch_change_status_and_write_logs(Suggestion, params[:check].to_a, Suggestion.cn_to_status("已读"), '标记为已读')
       when "unread"
-        batch_change_status_and_write_logs(Suggestion, params[:check].to_a, 0, '标记为未读')
+        batch_change_status_and_write_logs(Suggestion, params[:check].to_a, Suggestion.cn_to_status("未读"), '标记为未读')
       when "clean"
         Suggestion.destroy_all(id: params[:check].to_a)
       end
     end 
-    redirect_to list_kobe_suggestions_path
+    redirect_back_or list_kobe_suggestions_path
   end
 
   private  

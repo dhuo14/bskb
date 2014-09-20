@@ -7,6 +7,7 @@ class Department < ActiveRecord::Base
   default_scope -> {order(:ancestry, :sort, :id)}
 
   include AboutAncestry
+  include AboutStatus
 
 	def self.xml(who='',options={})
 	  %Q{

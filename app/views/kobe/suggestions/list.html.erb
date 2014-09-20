@@ -22,19 +22,19 @@
                 彻底删除
             </button>
         </div>
-        <table class="table table-bordered list_table">
+        <table class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th>
+                    <th class="select_all">
                         <label class="checkbox">
                             <input type="checkbox" name="check_all" id="check_all" onclick="selectAll();"><i></i>
                         </label>
                     </th>
-                    <th>序号</th>
+                    <th class="index">序号</th>
                     <th>Email</th>
                     <th class="hidden-sm">意见</th>
-                    <th>状态</th>
-                    <th>操作</th>
+                    <th class="status">状态</th>
+                    <th class="cando">操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,15 +45,16 @@
                             <input type="checkbox" name="check[]" value="<%= s.id %>" onclick="setSelectAll();"><i></i>
                         </label>
                     </td>
-                    <td><%= index+1 %></td>
+                    <td><%= show_index(index) %></td>
                     <td><%= s.email %></td>
-                    <td class="hidden-sm"><%= link_to s.content, kobe_suggestion_path(s.id), target: "_blank" %></td>
+                    <td><%= s.content %></td>
                     <td><%= s.status_to_badge %></td>
                     <td><%= oprate_btn(s) %></td>
                 </tr>
                 <% end %>
             </tbody>
         </table>
+        <%= paginate @suggestions %> 
         <% end %>
-    </div>                      
+    </div>                     
 </div>

@@ -16,5 +16,9 @@
  *= require plugins/font-awesome/css/font-awesome.min
  */
 
- .text-red{color:#ff0000;}
- table td {word-break: break-all;}
+.text-red{color:#ff0000;}
+table td {word-break: break-all;}
+table th.select_all {width:36px;}
+table th.index {width:56px;}
+table th.status {width:92px;}
+table th.cando {width:114px;}
