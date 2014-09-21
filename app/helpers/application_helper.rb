@@ -47,6 +47,17 @@ module ApplicationHelper
     end
   end
 
+  # 格式化日期
+  def show_date(d)
+    return "" unless d.is_a?(Date) || d.is_a?(Time)
+    d.strftime("%Y-%m-%d")
+  end
+
+  # 格式化时间
+  def show_time(t)
+    return "" unless d.is_a?(Time)
+    t.strftime("%Y-%m-%d %H:%M:%S")
+  end
 
   # 可以操作列表
   def oprate_btn(obj)
@@ -61,24 +72,39 @@ module ApplicationHelper
     arr << link_to(raw("<i class='fa fa-trash-o'></i> 删除"), kobe_suggestion_path(obj), method: :delete, data: { confirm: "确定要删除吗?" })
     # 彻底删除
     arr << link_to(raw("<i class='fa fa-times'></i> 彻底删除"), kobe_suggestion_path(obj), method: :delete, data: { confirm: "确定要删除吗?" })
-    top_one = arr.shift.gsub("<a","<a class='btn btn-default' type='button'")
-    tmp = arr.map{|c|"<li>#{c}</li>"}.join("\n")
-    str = %Q|
-    <div class='btn-group'>
-      #{top_one}
-      <button data-toggle='dropdown' class='btn btn-default dropdown-toggle' type='button'>
-        <i class='fa fa-sort-desc'></i>
-      </button>
-      <ul role='menu' class='dropdown-menu'>
-        #{tmp}
-      </ul>
-    </div>|
-    return raw str.html_safe
+    return btn_grop(arr)
   end
 
   def show_index(index, per = 20)
     params[:page] ||= 1
     (params[:page].to_i - 1) * per + index + 1
+  end
+
+  # 按钮组
+  def btn_grop(arr)
+    return "" if arr.blank?
+    first = arr.shift
+    unless first.index("<a").nil?
+      first.gsub!("<a","<a class='btn btn-sm btn-default' type='button'")
+      top = %Q|#{first}
+      <button data-toggle='dropdown' class='btn btn-sm btn-default dropdown-toggle' type='button'>
+        <i class='fa fa-sort-desc'></i>
+      </button>|
+    else
+      top = %Q|<button class='btn btn-sm btn-default dropdown-toggle' data-toggle='dropdown' type='button'>
+        #{first}
+        <i class='fa fa-angle-down'></i>
+      </button>|
+    end
+    tmp = arr.map{|c|"<li>#{c}</li>"}.join("\n")
+    str = %Q|
+    <div class='btn-group'>
+      #{top}
+      <ul role='menu' class='dropdown-menu'>
+        #{tmp}
+      </ul>
+    </div>|
+    return raw str.html_safe
   end
 
 end

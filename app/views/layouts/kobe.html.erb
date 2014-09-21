@@ -27,7 +27,7 @@
             <div class="modal-content">
             <div class="modal-header">
             <button class="close" aria-hidden="true" data-dismiss="modal" type="button">×</button>
-            <h4 id="myModalLabel" class="modal-title">意见反馈</h4>
+            <h4 id="myModalLabel" class="modal-title"><i class="fa fa-question-circle"></i> 问题或意见建议</h4>
             </div>
             <%= _create_xml_form(Suggestion.xml,Suggestion.new,{"grid"=>1,"form_id"=>"suggestion_form","action"=>kobe_suggestions_path}) %>
             </div>

@@ -125,7 +125,7 @@ private
       doc << "<root>"
     end
     node = doc.root.add_child("<node>").first
-    node["操作时间"] = Time.new.to_s
+    node["操作时间"] = Time.now.to_s(:db)
     node["操作人ID"] = user.id.to_s
     node["操作人姓名"] = user.name.to_s
     node["操作人单位"] = user.department.nil? ? "暂无" : user.department.name.to_s

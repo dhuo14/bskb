@@ -361,7 +361,7 @@ module CreateXmlForm
       act = n.attributes["操作内容"].to_s[0,2]
       icon = icons.has_key?(act) ? icons[act] : icons["其他"]
       infobar = []
-      infobar << "状态:#{obj.status_to_badge(n.attributes["当前状态"].to_s.to_i)}" if n.attributes.has_key?("当前状态")
+      infobar << "状态:#{obj.status_badge(n.attributes["当前状态"].to_s.to_i)}" if n.attributes.has_key?("当前状态")
       infobar << "姓名:#{n.attributes["操作人姓名"]}"
       infobar << "ID:#{n.attributes["操作人ID"]}"
       infobar << "单位:#{n.attributes["操作人单位"]}"
