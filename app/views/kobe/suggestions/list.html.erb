@@ -43,7 +43,7 @@
                     <th class="index">序号</th>
                     <th>Email</th>
                     <th class="hidden-sm">意见</th>
-                    <th class="status"><%= btn_grop(["全部状态","<a href='/kobe/suggestions/list?s=3'>未读</a>","<a href='/kobe/suggestions/list?s=3'>已读</a>","<a href='/kobe/suggestions/list?s=3'>已处理</a>"]) %></th>
+                    <th class="status_bar"><%= btn_grop(["全部状态","<a href='/kobe/suggestions/list?s=3'>未读</a>","<a href='/kobe/suggestions/list?s=3'>已读</a>","<a href='/kobe/suggestions/list?s=3'>已处理</a>"]) %></th>
                     <th class="date"><%= btn_grop(["最近三个月","<a href='/kobe/suggestions/list?s=3'>最近半年</a>","<a href='/kobe/suggestions/list?s=3'>最近一年</a>","<a href='/kobe/suggestions/list?s=3'>全部时间</a>"]) %></th>
                     <th class="cando">操作</th>
                 </tr>
@@ -59,7 +59,7 @@
                     <td><%= show_index(index) %></td>
                     <td><%= s.email %></td>
                     <td><%= s.content %></td>
-                    <td><%= s.status_badge %></td>
+                    <td><%= s.status_bar %></td>
                     <td><%= show_date(s.created_at) %></td>
                     <td><%= oprate_btn(s) %></td>
                 </tr>

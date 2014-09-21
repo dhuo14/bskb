@@ -39,7 +39,7 @@ module AboutStatus
 	end
 
 	# 状态进度条
-	def status_progress_bar(status=self.status)
+	def status_bar(status=self.status)
 		arr = self.status_array(status)
 		return "" if arr.blank?
 		return %Q|
