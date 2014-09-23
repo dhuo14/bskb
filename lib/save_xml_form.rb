@@ -50,13 +50,6 @@ module SaveXmlForm
     return obj.update(attribute)
   end
 
-  # 改变状态并写入日志
-  def change_status_and_write_logs(obj,status,content,remark='')
-    obj.status = status
-    doc = prepare_logs_content(obj,content,remark)
-    obj.update_columns("logs" => doc,"status" => status)
-  end
-
   #  手动写入日志 确保表里面有logs和status字段才能用这个函数
   def write_logs(obj,content,remark='')
     doc = prepare_logs_content(obj,content,remark)
@@ -77,10 +70,9 @@ module SaveXmlForm
     return result
   end
 
-  # 批量改变状态并写入日志
-  def batch_change_status_and_write_logs(model,id_array,status,content,remark='')
-    str = %Q{\n  <node 操作时间="#{Time.new.to_s}" 操作人ID="#{current_user.id.to_s}" 操作人姓名="#{current_user.name.to_s}" 操作人单位="#{current_user.department.nil? ? "暂无" : current_user.department.name.to_s}" 操作内容="#{content}" 当前状态="#{status}" 备注="#{remark}" IP地址="#{request.remote_ip}|#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}"/>\n</root>}
-    model.where(id: id_array).update_all("status = #{status}, logs = replace(logs,'</root>','#{str}')")
+  # 批量操作要替换的日志
+  def batch_logs(status,content,remark='来自批量操作')
+    return %Q|<node 操作时间="#{Time.new.to_s(:db)}" 操作人ID="#{current_user.id}" 操作人姓名="#{current_user.name}" 操作人单位="#{current_user.department.nil? ? "暂无" : current_user.department.name}" 操作内容="#{content}" 当前状态="#{status}" 备注="#{remark}" IP地址="#{request.remote_ip}[#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}]"/></root>|
   end
 
 private

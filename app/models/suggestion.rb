@@ -3,6 +3,16 @@ class Suggestion < ActiveRecord::Base
 
 	include AboutStatus
 
+	def self.status_array
+		[
+	    ["未读",0,"orange",10,[1,4,101],[1,0]],
+	    ["已读",1,"blue",50,[0,4],[3,4]],
+	    ["已处理",3,"u",100,[1,4],[3,4]],
+	    ["不需处理",4,"purple",100,[0,1,101],[3,4]],
+	    ["已删除",101,"red",100,[0,1,3,4],nil]
+    ]
+  end
+
   def self.xml(who='',options={})
 	  %Q{
 	    <?xml version='1.0' encoding='UTF-8'?>
