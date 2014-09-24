@@ -4,3 +4,31 @@
  *= require plugins/sky-forms/version-2.0.1/css/custom-sky-forms
  *= require pages/page_log_reg_v1
 */
+
+.step {
+  border-bottom: 2px solid #eee;
+  position: relative;
+  z-index: 99;
+  margin-bottom: 20px;
+	background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+.step .nav-justified {
+  position: relative;
+  top: 2px;
+}
+.step .nav-justified > .active > a {
+  color: #006633;
+}
+.step .nav-justified > li > a, .step .nav-justified > li > a:hover, .step .nav-justified > li > a:focus, .step .nav-justified > .active > a, .step .nav-justified > .active > a:hover, .step .nav-justified > .active > a:focus {
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+.step .nav-justified > .active > a {
+  border-bottom: 2px solid #72c02c;
+}
+.step .nav-justified > li > a {
+  padding: 9px 30px 9px 20px;
+  color: #687074;
+  font-size: 15px;
+  font-weight: 400;
+  text-transform: uppercase;
+}

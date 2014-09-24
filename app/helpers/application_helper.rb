@@ -107,21 +107,25 @@ module ApplicationHelper
     return raw str.html_safe
   end
 
-  # 
   def step(arr,step)
     str = %Q{
-    <div class="header">
-    <div class="navbar navbar-default">
-      <ul class="nav navbar-nav">
+    <div class="step">
+      <ul class="nav nav-justified">
     }
     arr.each_with_index do |a, index|
+      li_cls = ''
+      span_cls = 'badge-light'
+      if step.to_i >= (index+1)
+        li_cls = ' class="active"'
+        span_cls = 'badge-u'
+      end
+      i = (index+1) == arr.length ? '<i class="fa fa-check"></i>' : (index+1) 
       str << %Q{
-        <li#{step.to_i >= (index+1) ? ' class="active"' : ''}><a>#{a}</a></li>
+        <li#{li_cls}><a><span class="badge rounded-2x #{span_cls}">#{i}</span> #{a}</a></li>
       }
     end
     str << %Q{
       </ul>     
-    </div>     
     </div>
     }
     return raw str.html_safe
