@@ -1,6 +1,6 @@
 # -*- encoding : utf-8 -*-
 class KobeController < ApplicationController
-  # before_action :request_signed_in!
+  before_action :request_signed_in!
   before_action :store_location, :init_themes
 
   def index
@@ -50,7 +50,7 @@ class KobeController < ApplicationController
   
   # 准备主界面的素材 ---- #未读短信息
   def init_themes
-    # @unread_notifications = current_user.unread_notifications
+    @unread_notifications = current_user.unread_notifications
   end
 
   

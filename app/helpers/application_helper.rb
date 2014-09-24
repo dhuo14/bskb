@@ -107,4 +107,24 @@ module ApplicationHelper
     return raw str.html_safe
   end
 
+  # 
+  def step(arr,step)
+    str = %Q{
+    <div class="header">
+    <div class="navbar navbar-default">
+      <ul class="nav navbar-nav">
+    }
+    arr.each_with_index do |a, index|
+      str << %Q{
+        <li#{step.to_i >= (index+1) ? ' class="active"' : ''}><a>#{a}</a></li>
+      }
+    end
+    str << %Q{
+      </ul>     
+    </div>     
+    </div>
+    }
+    return raw str.html_safe
+  end
+
 end

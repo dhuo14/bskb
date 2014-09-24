@@ -10,7 +10,7 @@ class CreateUsers < ActiveRecord::Migration
       t.date :birthday, :comment => "出生日期"
       t.string :portrait, :comment => "头像"
       t.string :gender, :limit => 2, :comment => "性别"
-      t.string :birthday, :limit => 10, :comment => "出生日期"
+      # t.string :birthday, :limit => 10, :comment => "出生日期"
       t.string :identity_num, :comment => "身份证"
       t.string :identity_pic, :comment => "身份证图片"
       t.string :email, :null => false, :comment => "电子邮箱"
@@ -27,7 +27,7 @@ class CreateUsers < ActiveRecord::Migration
       t.text :logs , :comment => "日志"
       t.timestamps
     end
-    add_index :users, :email,                :unique => true
+    # add_index :users, :email,                :unique => true
     add_index :users, :mobile,               :unique => true
     add_index :users, :login,                :unique => true
   end
