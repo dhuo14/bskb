@@ -33,8 +33,8 @@ var Validation_sign_up_form = function () {
 			$('#sign_up_form').validate({                   
 				rules:
 				{
-					"user[dep]": { required: true, maxlength: 30, minlength: 6 },
-					"user[login]": { required: true, maxlength: 20, minlength: 6 },
+					"user[dep]": { required: true, maxlength: 30, minlength: 6, remote: { url: '/users/valid_dep_name', type: "post" } },
+					"user[login]": { required: true, maxlength: 20, minlength: 6, remote: { url: '/users/valid_user_login', type: "post" } },
 					"user[email]": { required: true, email: true },
 					"user[password]": { required: true, maxlength: 20, minlength: 6 },
 					"user[password_confirmation]": { required: true, maxlength: 20, minlength: 6, equalTo: '#user_password' },

@@ -1,6 +1,7 @@
 # -*- encoding : utf-8 -*-
 class UsersController < JamesController
 
+  skip_before_action :verify_authenticity_token, :only => [ :valid_dep_name, :valid_user_login ]
   before_action :get_step_array, :only => [:sign_up, :edit_dep, :edit_user, :show]
 
   def sign_in
@@ -117,6 +118,15 @@ class UsersController < JamesController
 
   def show
   end
+
+  def valid_dep_name
+    render :text => Department.where(name: params[:user][:dep]).blank? ? true : false
+  end
+
+  def valid_user_login
+    render :text => User.where(login: params[:user][:login]).blank? ? true : false
+  end
+
 
   private  
 
