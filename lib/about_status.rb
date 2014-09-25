@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
 module AboutStatus
+
 	def self.included(base)
     base.extend(StatusClassMethods)
   end
@@ -16,8 +17,9 @@ module AboutStatus
 	  # 批量改变状态并写入日志
 	  def batch_change_status_and_write_logs(id_array,status,batch_logs)
 			status = self.class.get_status_attributes(status)[1] unless status.is_a?(Integer)
-	    self.where(id: id_array).update_all("status = #{status}, logs = replace(logs,'</root>','  #{batch_logs}\n</root>')")
+	    self.where(id: id_array).update_all("status = #{status}, logs = replace(logs,'</root>','  #{batch_logs.gsub('$STATUS$',status.to_s)}\n</root>')")
 	  end
+
 	end
 
 	# 状态标签

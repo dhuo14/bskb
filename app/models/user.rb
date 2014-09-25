@@ -18,12 +18,19 @@ class User < ActiveRecord::Base
 
   include AboutStatus
 
+  # 为了在Model层使用current_user
+  def self.current
+    Thread.current[:user]
+  end
+  
+  def self.current=(user)
+    Thread.current[:user] = user
+  end
+
   # 是否超级管理员,超级管理员不留操作痕迹
   def admin?
     self.roles.map(&:name).include?("系统管理员")
   end
-
-
 
   def User.new_remember_token
     SecureRandom.urlsafe_base64

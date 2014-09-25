@@ -15,4 +15,20 @@
 //= require jquery_ujs 
 //= require plugins/bootstrap/js/bootstrap.min
 //= require plugins/back-to-top
+//= require plugins/jquery.query
 //= require app
+
+$(function() {
+	// 状态筛选,用于list列表页面
+	$(".status_filter").on('click',function(){
+		var newUrl = $.query.REMOVE("page");
+		newUrl = $.query.set("status_filter", $(this).attr("value")).toString(); //如果存在会替换掉存在的参数的值
+		location.href = newUrl;
+	})
+	// 日期筛选,用于list列表页面
+	$(".date_filter").on('click',function(){
+		var newUrl = $.query.REMOVE("page");
+		newUrl = $.query.set("date_filter", $(this).attr("value")).toString(); //如果存在会替换掉存在的参数的值
+		location.href = newUrl;
+	})
+});

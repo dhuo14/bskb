@@ -1,112 +1,76 @@
 # -*- encoding : utf-8 -*-
 module ApplicationHelper
 
-  # 显示未读的系统消息（状态栏消息）
-  def show_notification(obj)
-    str = %Q|
-            <li>
-              <a href='#'>
-                <div class='widget-body'>
-                  <div class='pull-left icon'>
-                    <i class='#{obj.category.icon} #{obj.category.icon_color}'></i>
-                  </div>
-                  <div class='pull-left text'>
-                    #{obj.content}
-                    <small class='text-muted'>#{obj.created_at}</small>
-                  </div>
-                </div>
-              </a>
-            </li>
-    |
-    return str.html_safe
-  end
-
-  # simple_form表单提交按钮
-  def form_btn(f)
-    str = %Q|
-    <div class="form-actions form-actions-padding-sm" style="background-color: #FFFFFF;">
-      <div class="row">
-        <div class="col-sm-9 col-sm-offset-3">
-          #{ f.button :submit, ' 保 存 ', :class => 'btn-primary btn-lg' } &nbsp;&nbsp; 
-          #{ f.button :button, ' 重 置 ', :type => 'reset', :class => 'btn-lg' }
-        </div>
-      </div>
-     </div>
-    |
-    return str.html_safe
-  end
-
-  # 操作列表
-  def oprate_btn2(obj)
-    arr = cando_list(obj)
-    if arr.length < 5
-      return arr.map{|a|link_to(a[1], a[2], class: a[0])}.join("&nbsp;").html_safe
-    else 
-      tmp = arr.map{|a|"<li>#{link_to(a[1], a[2], class: a[0])}</li>"}.join
-      return "<div class='btn-group dropdown' style='margin-bottom:5px'><button class='btn'> 操作 </button><button class='btn dropdown-toggle' data-toggle='dropdown'><span class='caret'></span></button><ul class='dropdown-menu'>#{tmp}</ul></div>".html_safe
-    end
-  end
-
   # 格式化日期
   def show_date(d)
-    return "" unless d.is_a?(Date) || d.is_a?(Time)
-    d.strftime("%Y-%m-%d")
+    (d.is_a?(Date) || d.is_a?(Time)) ? d.strftime("%Y-%m-%d") : d
   end
 
   # 格式化时间
   def show_time(t)
-    return "" unless d.is_a?(Time)
-    t.strftime("%Y-%m-%d %H:%M:%S")
+    d.is_a?(Time) ? t.strftime("%Y-%m-%d %H:%M:%S") : t
   end
 
-  # 可以操作列表
-  def oprate_btn(obj)
-    arr = [] 
-    # 查看详细
-    arr << link_to(raw("<i class='fa fa-search-plus'></i> 详细"), kobe_suggestion_path(obj), target: "_blank")
-    # 标记为已读
-    arr << link_to(raw("<i class='fa fa-eye'></i> 标记为已读"), mark_as_read_kobe_suggestion_path(obj), method: :post)
-    # 标记为未读
-    arr << link_to(raw("<i class='fa fa-eye-slash'></i> 标记为未读"), mark_as_unread_kobe_suggestion_path(obj), method: :post)
-    # 删除
-    arr << link_to(raw("<i class='fa fa-trash-o'></i> 删除"), kobe_suggestion_path(obj), method: :delete, data: { confirm: "确定要删除吗?" })
-    # 彻底删除
-    arr << link_to(raw("<i class='fa fa-times'></i> 彻底删除"), kobe_suggestion_path(obj), method: :delete, data: { confirm: "确定要删除吗?" })
-    return btn_grop(arr)
-  end
-
+  # 显示序号
   def show_index(index, per = 20)
     params[:page] ||= 1
     (params[:page].to_i - 1) * per + index + 1
   end
 
-  # 按钮组
-  def btn_grop(arr)
-    return "" if arr.blank?
-    first = arr.shift
-    unless first.index("<a").nil?
-      first.gsub!("<a","<a class='btn btn-sm btn-default' type='button'")
-      top = %Q|#{first}
-      <button data-toggle='dropdown' class='btn btn-sm btn-default dropdown-toggle' type='button'>
-        <i class='fa fa-sort-desc'></i>
-      </button>|
+  # 将数组转化为a链接,btn是否显示为按钮样式，配合btn_group方法使用
+  def arr_to_link(arr,btn=true)
+    unless arr.is_a?(Array)
+      return arr
     else
-      top = %Q|<button class='btn btn-sm btn-default dropdown-toggle' data-toggle='dropdown' type='button'>
-        #{first}
-        <i class='fa fa-angle-down'></i>
-      </button>|
+      if arr.length < 3 
+        opts = btn ? {class: "btn btn-sm btn-default"} : {}
+      else
+        opts = arr[2]
+        opts[:class] = "btn btn-sm btn-default" if btn
+      end
+      return link_to(arr[0].html_safe,arr[1],opts)
     end
-    tmp = arr.map{|c|"<li>#{c}</li>"}.join("\n")
-    str = %Q|
-    <div class='btn-group'>
-      #{top}
-      <ul role='menu' class='dropdown-menu'>
-        #{tmp}
-      </ul>
-    </div>|
-    return raw str.html_safe
   end
 
+  # 按钮组,一般应用与操作列表和状态、时间筛选
+  def btn_group(arr,dropdown=true)
+    return "" if arr.blank?
+    unless dropdown || arr.length > 10
+      return raw arr.map{|a|arr_to_link(a)}.join.html_safe
+    else 
+      first = arr_to_link(arr.shift)
+      if first.index("<a").nil?
+        top = "<button data-toggle='dropdown' class='btn btn-sm btn-default dropdown-toggle' type='button'>#{first} <i class='fa fa-sort-desc'></i></button>"
+      else
+        top = "#{first}<button data-toggle='dropdown' class='btn btn-sm btn-default dropdown-toggle' type='button'><i class='fa fa-sort-desc'></i></button>"
+      end
+      # 如果有多个元素就使用按钮组
+      unless arr.blank?
+        li = arr.map{|c|"<li>#{arr_to_link(c,false)}</li>"}.join("\n")
+        str = %Q|
+        <div class='btn-group'>
+          #{top}
+          <ul role='menu' class='dropdown-menu'>
+            #{li}
+          </ul>
+        </div>|
+      else
+        str = first
+      end
+      return raw str.html_safe
+    end
+  end
+
+  # 列表标题栏的筛选过滤器
+  def head_filter(name,arr)
+    current = params[name] || "all"
+    limited = arr.find{|a|a[1].to_s == current }
+    arr.delete_if{|a|a[1] == limited[1]}.map!{|a|"<a href='javascript:void(0)' class='#{name}' value='#{a[1]}'>#{a[0]}</a>"}
+    arr.unshift(limited[0])
+    return btn_group(arr,true)
+  end
+
+  # 显示步骤,用于用户注册页面
   def step(arr,step)
     str = %Q{
     <div class="step">
@@ -120,9 +84,7 @@ module ApplicationHelper
         span_cls = 'badge-u'
       end
       i = (index+1) == arr.length ? '<i class="fa fa-check"></i>' : (index+1) 
-      str << %Q{
-        <li#{li_cls}><a><span class="badge rounded-2x #{span_cls}">#{i}</span> #{a}</a></li>
-      }
+      str << "<li#{li_cls}><a><span class='badge rounded-2x #{span_cls}'>#{i}</span> #{a}</a></li>"
     end
     str << %Q{
       </ul>     

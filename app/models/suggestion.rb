@@ -3,17 +3,7 @@ class Suggestion < ActiveRecord::Base
 
 	include AboutStatus
 
-	def self.status_array
-		[
-	    ["未读",0,"orange",10,[1,4,101],[1,0]],
-	    ["已读",1,"blue",50,[0,4],[3,4]],
-	    ["已处理",3,"u",100,[1,4],[3,4]],
-	    ["不需处理",4,"purple",100,[0,1,101],[3,4]],
-	    ["已删除",101,"red",100,[0,1,3,4],nil]
-    ]
-  end
-
-  def self.xml(who='',options={})
+	def self.xml(who='',options={})
 	  %Q{
 	    <?xml version='1.0' encoding='UTF-8'?>
 	    <root>
@@ -24,5 +14,50 @@ class Suggestion < ActiveRecord::Base
 	    </root>
 	  }
 	end
+
+	# 中文意思 状态值 标签颜色 进度 
+	def self.status_array
+		[
+	    ["未读",0,"orange",10,[1,4,101],[1,0]],
+	    ["已读",1,"blue",50,[0,4],[3,4]],
+	    ["已处理",3,"u",100,[1,4],[3,4]],
+	    ["不需处理",4,"purple",100,[0,1,101],[3,4]],
+	    ["已删除",404,"red",100,[0,1,3,4],nil]
+    ]
+  end
+
+	# 列表中的状态筛选,current_status当前状态不可以点击
+  def self.status_filter(action='')
+  	# 列表中不允许出现的
+  	limited = [404]
+  	arr = self.status_array.delete_if{|a|limited.include?(a[1])}.map{|a|[a[0],a[1]]}
+  end
+
+  def cando_list(action='')
+    arr = [] 
+    # 查看详细
+    if [0,1,2,3,4,404].include?(self.status)
+    	arr << ["<i class='fa fa-search-plus'></i> 详细", "/kobe/suggestions/#{self.id}", target: "_blank"]
+   	end
+    # 标记为已读
+    if [0,4,404].include?(self.status)
+    	arr << ["<i class='fa fa-eye'></i> 标记为已读", "/kobe/suggestions/#{self.id}/mark_as_read", method: :post]
+    end
+    # 标记为未读
+    if [1,404].include?(self.status)
+    	arr << ["<i class='fa fa-eye-slash'></i> 标记为未读", "/kobe/suggestions/#{self.id}/mark_as_unread", method: :post]
+    end
+    # 删除
+    if [0,1,3,4].include?(self.status)
+	    arr << ["<i class='fa fa-trash-o'></i> 删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "确定要删除吗?"}]
+	  end
+    # 彻底删除
+    if self.status == 404
+	    arr << ["<i class='fa fa-times'></i> 彻底删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "删除后不可恢复，确定要删除吗?"}]
+	  end
+	  return arr
+  end
+
+
 
 end

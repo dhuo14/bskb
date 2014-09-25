@@ -18,7 +18,12 @@ class Kobe::SuggestionsController < KobeController
   end
 
   def list
-    @suggestions = Suggestion.all.page params[:page]
+    unless params[:status_filter].blank?
+      @suggestions = Suggestion.where(["status = ?", params[:status_filter].to_i]).page params[:page]
+    else
+      @suggestions = Suggestion.all.page params[:page]
+    end
+    # binding.pry
   end
 
   def destroy
@@ -47,13 +52,13 @@ class Kobe::SuggestionsController < KobeController
       case params[:batch_opt]
       when "delete"
         status = Suggestion.get_status_attributes("已删除")[1]
-        logs = batch_logs(status,"删除")
+        logs = batch_logs("删除")
       when "read"
         status = Suggestion.get_status_attributes("已读")[1]
-        logs = batch_logs(status,"标记为已读")
+        logs = batch_logs("标记为已读")
       when "unread"
         status = Suggestion.get_status_attributes("未读")[1]
-        logs = batch_logs(status,"标记为未读")
+        logs = batch_logs("标记为未读")
       when "clean"
         Suggestion.destroy_all(id: params[:check].to_a)
       end
