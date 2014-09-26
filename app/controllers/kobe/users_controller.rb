@@ -1,7 +1,9 @@
 # -*- encoding : utf-8 -*-
 class Kobe::UsersController < KobeController
-  # before_action :get_user, :only => [:profile, :rest_account, :update]
+
   before_action :get_user, :only => [:edit, :show, :update]
+  layout :false, :only => [ :show, :edit ]
+
 
   def edit
   end
@@ -10,6 +12,23 @@ class Kobe::UsersController < KobeController
   end
 
   def profile
+    @ha = {
+      "main" => { "icon" => "fa-bar-chart-o", "title" => "Overall" },
+      "dep" => { 
+        "icon" => "fa-group", "title" => "单位信息", 
+        "status" => current_user.department.org_code.blank?,
+        "url" => kobe_department_path(current_user.department)
+      },
+      "photo" => { "icon" => "fa-list", "title" => "证件扫描件" },
+      "zizhi" => { "icon" => "fa-cubes", "title" => "资质证书" },
+      "user" => { 
+        "icon" => "fa-user", "title" => "用户信息", 
+        "status" => current_user.name.blank?, 
+        "url" => kobe_user_path(current_user),
+        "opt" => current_user.cando_list
+      }
+    }
+    @act ||= 'main'
   end
 
   
@@ -22,7 +41,7 @@ class Kobe::UsersController < KobeController
   def update()
     if update_and_write_logs(@user)
       tips_get("更新用户信息成功。")
-      redirect_to kobe_user_path(@user)
+      redirect_to profile_kobe_users_path
     else
       flash_get(@user.errors.full_messages)
       redirect_back_or

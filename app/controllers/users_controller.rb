@@ -25,7 +25,7 @@ class UsersController < JamesController
       sign_in_user(user, params[:user][:remember_me] == '1')
       if user.name.blank?
         flash_get('抱歉，您的资料还未填写，请先维护您的个人信息。',"info")
-        redirect_to root_path
+        redirect_to profile_kobe_users_path
       else
         redirect_back_or
       end

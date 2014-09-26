@@ -1,6 +1,7 @@
 # -*- encoding : utf-8 -*-
 class Kobe::DepartmentsController < KobeController
   before_action :get_dep, :only => [ :show, :edit, :update ]
+  layout :false, :only => [ :show, :edit ]
 
   def index
   end

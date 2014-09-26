@@ -40,10 +40,58 @@ class User < ActiveRecord::Base
     Digest::SHA1.hexdigest(token.to_s)
   end
 
-
   # 获取当前人的菜单
   def show_menus
     return menus_ul(Menu.to_depth(0))
+  end
+
+  def self.status_array
+    [
+      ["资料未填写",0,"light",10], 
+      ["正常",1,"u",100], 
+      ["冻结",2,"yellow",100], 
+      ["未审核",3,"orange",20],
+      ["已删除",98,"red",100]
+    ]
+  end
+
+  def self.xml(who='',options={})
+    %Q{
+      <?xml version='1.0' encoding='UTF-8'?>
+      <root>
+        <node name='登录名' column='login' rules='{required:true, maxlength:20, minlength:6}' display='disabled'/>
+        <node name='电子邮箱' column='email' rules='{required:true, email: true}' display='disabled'/>
+        <node name='姓名' column='name' rules='{required:true}'/>
+        <node name='出生日期' column='birthday' icon='calendar' rules='{required:true, dateISO:true}'/>
+        <node name='性别' column='gender' data_type='radio' rules='{required:true}' data='["男","女"]'/>
+        <node name='身份证' column='identity_num'/>
+        <node name='手机' column='mobile' rules='{required:true}'/>
+        <node name='是否公开' column='is_visible' rules='{required:true}' data_type='radio' data='[[1,"是"],[0,"否"]]'/>
+        <node name='电话' column='tel'/>
+        <node name='传真' column='fax'/>
+        <node name='是否管理员' column='is_admin' data_type='radio' data='[[1,"是"],[0,"否"]]' rules='{required:true}'/>
+        <node name='职务' column='duty'/>
+        <node name='职称' column='professional_title'/>
+        <node name='个人简历' column='bio' data_type='textarea'/>
+      </root>
+    }
+  end
+
+  def cando_list(action='')
+    arr = [] 
+    # 修改
+    if [0,404].include?(self.status)
+      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','user .show_content')"]
+    end
+    # 删除
+    if [0,1,3,4].include?(self.status)
+      arr << ["<i class='fa fa-trash-o'></i> 删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "确定要删除吗?"}]
+    end
+    # 彻底删除
+    if self.status == 404
+      arr << ["<i class='fa fa-times'></i> 彻底删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "删除后不可恢复，确定要删除吗?"}]
+    end
+    return arr
   end
 
   private
@@ -79,38 +127,6 @@ class User < ActiveRecord::Base
       str << "</li>"
     end
     return str
-  end
-
-  def self.status_array
-    [
-      ["资料未填写",0,"light",10], 
-      ["正常",1,"u",100], 
-      ["冻结",2,"yellow",100], 
-      ["未审核",3,"orange",20],
-      ["已删除",98,"red",100]
-    ]
-  end
-
-  def self.xml(who='',options={})
-    %Q{
-      <?xml version='1.0' encoding='UTF-8'?>
-      <root>
-        <node name='登录名' column='login' rules='{required:true, maxlength:20, minlength:6}' display='disabled'/>
-        <node name='电子邮箱' column='email' rules='{required:true, email: true}' display='disabled'/>
-        <node name='姓名' column='name' rules='{required:true}'/>
-        <node name='出生日期' column='birthday' icon='calendar' rules='{required:true, dateISO:true}'/>
-        <node name='性别' column='gender' data_type='radio' rules='{required:true}' data='["男","女"]'/>
-        <node name='身份证' column='identity_num'/>
-        <node name='手机' column='mobile' rules='{required:true}'/>
-        <node name='是否公开' column='is_visible' rules='{required:true}' data_type='radio' data='[[1,"是"],[0,"否"]]'/>
-        <node name='电话' column='tel'/>
-        <node name='传真' column='fax'/>
-        <node name='是否管理员' column='is_admin' data_type='radio' data='[[1,"是"],[0,"否"]]' rules='{required:true}'/>
-        <node name='职务' column='duty'/>
-        <node name='职称' column='professional_title'/>
-        <node name='个人简历' column='bio' data_type='textarea'/>
-      </root>
-    }
   end
 
 end
