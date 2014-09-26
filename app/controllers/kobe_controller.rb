@@ -53,6 +53,47 @@ class KobeController < ApplicationController
     @unread_notifications = current_user.unread_notifications
   end
 
+  # 获取列表的查询条件,arr应该是一个二维数组,类似于[["name = ? ", "xxx"],["user_id = ? ",11]]
+  def get_conditions(arr=[])
+    # 列表标题栏筛选的条件
+    filter_arr = head_filter
+    arr = arr | filter_arr
+    unless arr.blank?
+      keys = []
+      arr.each{|a| 
+        keys << a.delete_at(0)
+      }
+      return arr.flatten!.unshift(keys.join(" and "))
+    else 
+      return []
+    end
+  end
+
+  # 列表标题栏的筛选
+  def head_filter
+    arr = []
+    unless params[:status_filter].blank? || params[:status_filter] == "all"
+      arr << ["status = ?", params[:status_filter].to_i]
+    end 
+    unless params[:date_filter].blank? || params[:date_filter] == "all"
+      arr << ["created_at >= ?", translate_cn_date(params[:date_filter])]
+    end
+    return arr
+  end
+
+  # 翻译日期,数据来源参照kobe_helper的date_filter方法
+  def translate_cn_date(d)
+    case d
+    when "3m"
+      return Time.now.midnight - 3.month
+    when "6m"
+      return Time.now.midnight - 6.month
+    when "1y"
+      return Time.now.midnight - 1.year
+    when "ty"
+      return Time.now.beginning_of_year
+    end
+  end
   
 
 end

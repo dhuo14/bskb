@@ -72,24 +72,16 @@ module ApplicationHelper
 
   # 显示步骤,用于用户注册页面
   def step(arr,step)
-    str = %Q{
+    len = arr.length
+    active = Array.new(len){|i| i < step ? " class='active'" : ""}
+    color = Array.new(len){|i| i < step ? "badge-u" : "badge-light"}
+    arr.map!.with_index{|a,i|"<li#{active[i]}><a><span class='badge rounded-2x #{color[i]}'>#{i+1}</span> #{a}</a></li>"}
+    str = %Q|
     <div class="step">
       <ul class="nav nav-justified">
-    }
-    arr.each_with_index do |a, index|
-      li_cls = ''
-      span_cls = 'badge-light'
-      if step.to_i >= (index+1)
-        li_cls = ' class="active"'
-        span_cls = 'badge-u'
-      end
-      i = (index+1) == arr.length ? '<i class="fa fa-check"></i>' : (index+1) 
-      str << "<li#{li_cls}><a><span class='badge rounded-2x #{span_cls}'>#{i}</span> #{a}</a></li>"
-    end
-    str << %Q{
+        #{arr.join}
       </ul>     
-    </div>
-    }
+    </div>|
     return raw str.html_safe
   end
 

@@ -18,12 +18,7 @@ class Kobe::SuggestionsController < KobeController
   end
 
   def list
-    unless params[:status_filter].blank?
-      @suggestions = Suggestion.where(["status = ?", params[:status_filter].to_i]).page params[:page]
-    else
-      @suggestions = Suggestion.all.page params[:page]
-    end
-    # binding.pry
+    @suggestions = Suggestion.where(get_conditions).page params[:page]
   end
 
   def destroy
