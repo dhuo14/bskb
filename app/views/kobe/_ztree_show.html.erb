@@ -220,10 +220,13 @@ function onBodyMouseDown(event){
 function addTreeNode() {
 	hideRMenu();
 	var node = zTree.getSelectedNodes()[0];
-	var url = '<%= "/#{params[:controller]}/new?pid=" %>' + node.id;
-	getForm(url,node);
+	var url = '<%= "/#{params[:controller]}/new?pid=" %>'
+	if (node){
+		 url += node.id;
+	}
+	getForm(url);
 }
-function getForm(url,node) {
+function getForm(url) {
 	$.ajax({
 		type: "get",
 		url: url,
@@ -243,8 +246,7 @@ function editTreeNode() {
 	var node = zTree.getSelectedNodes()[0];
 	if (node) {
 		var url = '<%= "/#{params[:controller]}/" %>' + node.id + "/edit";
-		var parent_node = node.getParentNode();
-		getForm(url,parent_node);
+		getForm(url);
 	}
 }
 function removeTreeNode() {
