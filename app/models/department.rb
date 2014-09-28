@@ -43,4 +43,13 @@ class Department < ActiveRecord::Base
 	    </root>
 	  }
 	end
+
+	def cando_list(action='')
+    arr = [] 
+    # 修改
+    if [0,404].include?(self.status)
+      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/edit','dep .show_content')"]
+    end
+    return arr
+  end
 end

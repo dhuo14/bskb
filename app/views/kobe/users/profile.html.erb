@@ -1,1 +1,9 @@
 <%= user_profile(@ha, @act) %>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    <% unless @ha[@act]["url"].blank? %>
+    show_content('<%= @ha[@act]["url"] %>', '<%= "#{@act} .show_content" %>')
+    <% end %>
+  });
+</script>

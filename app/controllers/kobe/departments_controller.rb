@@ -17,7 +17,7 @@ class Kobe::DepartmentsController < KobeController
   def update
     if update_and_write_logs(@dep)
       tips_get("更新单位信息成功。")
-      redirect_to kobe_department_path(@dep)
+      redirect_to profile_kobe_users_path("dep")
     else
       flash_get(@dep.errors.full_messages)
       redirect_back_or

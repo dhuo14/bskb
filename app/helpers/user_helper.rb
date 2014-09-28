@@ -14,7 +14,7 @@ module UserHelper
 	# 		"icon" => "fa-user", "title" => "用户信息", 
 	# 		"status" => current_user.name.blank?, 
 	# 		"url" => kobe_user_path(current_user),
-	# 		"opt" => btn_group(Suggestion.find(1).cando_list)
+	# 		"opt" => current_user.cando_list
 	# 	}
 	# }
 	# 左侧菜单 

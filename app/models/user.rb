@@ -84,7 +84,7 @@ class User < ActiveRecord::Base
       arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','user .show_content')"]
     end
     # 删除
-    if [0,1,3,4].include?(self.status)
+    if [0,3,4].include?(self.status)
       arr << ["<i class='fa fa-trash-o'></i> 删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "确定要删除吗?"}]
     end
     # 彻底删除

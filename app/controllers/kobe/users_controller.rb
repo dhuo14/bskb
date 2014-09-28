@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 class Kobe::UsersController < KobeController
 
-  before_action :get_user, :only => [:edit, :show, :update]
+  before_action :get_user, :only => [:edit, :show, :update, :profile]
   layout :false, :only => [ :show, :edit ]
 
 
@@ -16,19 +16,20 @@ class Kobe::UsersController < KobeController
       "main" => { "icon" => "fa-bar-chart-o", "title" => "Overall" },
       "dep" => { 
         "icon" => "fa-group", "title" => "单位信息", 
-        "status" => current_user.department.org_code.blank?,
-        "url" => kobe_department_path(current_user.department)
+        "status" => @user.department.org_code.blank?,
+        "url" => kobe_department_path(@user.department),
+        "opt" => @user.department.cando_list
       },
       "photo" => { "icon" => "fa-list", "title" => "证件扫描件" },
       "zizhi" => { "icon" => "fa-cubes", "title" => "资质证书" },
       "user" => { 
         "icon" => "fa-user", "title" => "用户信息", 
-        "status" => current_user.name.blank?, 
-        "url" => kobe_user_path(current_user),
-        "opt" => current_user.cando_list
+        "status" => @user.name.blank?, 
+        "url" => kobe_user_path(@user),
+        "opt" => @user.cando_list
       }
     }
-    @act ||= 'main'
+    @act = params[:format].blank? ? "main" : params[:format]
   end
 
   
@@ -41,7 +42,7 @@ class Kobe::UsersController < KobeController
   def update()
     if update_and_write_logs(@user)
       tips_get("更新用户信息成功。")
-      redirect_to profile_kobe_users_path
+      redirect_to profile_kobe_users_path("user")
     else
       flash_get(@user.errors.full_messages)
       redirect_back_or
@@ -61,6 +62,7 @@ class Kobe::UsersController < KobeController
   # end
 
   def get_user
-    @user = User.find(params[:id]) unless params[:id].blank? 
+    params[:id] ||= current_user.id
+    @user = User.find(params[:id])
   end
 end
