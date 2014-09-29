@@ -26,4 +26,12 @@ Bskb::Application.configure do
   # This option may cause significant delays in view rendering with a large
   # number of complex assets.
   config.assets.debug = true
+
+  config.dev_tweaks.autoload_rules do
+    keep :all
+
+    skip '/favicon.ico'
+    skip :assets
+    keep :forced
+  end
 end

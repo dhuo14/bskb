@@ -16,9 +16,19 @@
 //= require plugins/bootstrap/js/bootstrap.min
 //= require plugins/back-to-top
 //= require plugins/jquery.query
+//= require plugins/dialog-min
 //= require app
 
+
 $(function() {
+
+	// 初始化
+  App.init();
+  // Masking.initMasking();
+  Datepicker.initDatepicker();
+  // Validation.initValidation();
+  // Treepicker.initTreepicker();
+
 	// 状态筛选,用于list列表页面
 	$(".status_filter").on('click',function(){
 		var newUrl = $.query.REMOVE("page");
@@ -31,4 +41,5 @@ $(function() {
 		newUrl = $.query.set("date_filter", $(this).attr("value")).toString(); //如果存在会替换掉存在的参数的值
 		location.href = newUrl;
 	})
+
 });

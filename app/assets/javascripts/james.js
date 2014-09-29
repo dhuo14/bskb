@@ -1,6 +1,6 @@
 //= require application
-//= require plugins/sky-forms/version-2.0.1/js/jquery.form.min
-//= require plugins/sky-forms/version-2.0.1/js/jquery.validate.min
+//= require form
+//= require plugins/jquery.ztree.all-3.5
 
 // 登录sign_in_form验证
 var Validation_sign_in_form = function () {

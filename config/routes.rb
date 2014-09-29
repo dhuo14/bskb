@@ -11,9 +11,9 @@ Bskb::Application.routes.draw do
 
   get 'errors' => 'errors#index'
 
-  resources :home  do
+  resources :home, :only => :index  do 
     collection do
-      get :testform
+      get :testform, :ajax_test, :test
       post :testform
     end
   end

@@ -12,6 +12,7 @@
  *= require plugins/bootstrap/css/bootstrap.min
  *= require style
  *= require plugins/themes/default
+ *= require plugins/ui-dialog
  *= require plugins/line-icons/line-icons
  *= require plugins/font-awesome/css/font-awesome.min
  */

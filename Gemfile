@@ -99,4 +99,6 @@ group :development, :test do
 	# 这2个加起来是自动，报错的地方会停下来，也能写代码
   gem "better_errors", "~> 1.1.0"
   gem "binding_of_caller", "~> 0.7.2"
+  # 开发模式加速
+  gem 'rails-dev-tweaks', '~> 1.2.0'
 end
