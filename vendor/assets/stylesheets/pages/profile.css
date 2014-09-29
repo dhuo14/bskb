@@ -761,7 +761,7 @@
 
 /*Profile History
 ------------------------------------*/
-.profile .timeline-v2:before {
+/*.profile .timeline-v2:before {
 	background: #eee;
 }
 
@@ -786,7 +786,7 @@
 		border-right-color: transparent;
 	}
 }
-
+*/
 /*Profile Settings
 ------------------------------------*/
 /*Profile Edit*/
@@ -809,7 +809,7 @@
 
 /*Tab*/
 .profile .tab-content {
-	padding: 0;
+	/*padding: 0;*/
 }
 
 @media (max-width: 768px) {
