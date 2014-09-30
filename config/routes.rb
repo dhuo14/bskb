@@ -13,7 +13,7 @@ Bskb::Application.routes.draw do
 
   resources :home, :only => :index  do 
     collection do
-      get :testform, :ajax_test, :test
+      get :testform, :ajax_test, :test, :json_test
       post :testform
     end
   end

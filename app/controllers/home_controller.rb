@@ -10,10 +10,15 @@ class HomeController < JamesController
         <br/>
         <p>默认时间格式：#{Time.new.to_s(:db)}</p>"
         @city = Area.find(1)
+        render :layout => "kobe"
 	end
 
     def ajax_test
         render :text => "这是来自ajax的内容。"
+    end
+
+    def json_test
+        ztree_json(Menu)
     end
 
 	def index

@@ -14,7 +14,7 @@ module AboutAncestry
 	      sql = "SELECT DISTINCT a.id,a.name,a.ancestry FROM #{self.to_s.tableize} a INNER JOIN  #{self.to_s.tableize} b ON (FIND_IN_SET(a.id,REPLACE(b.ancestry,'/',',')) > 0 OR a.id=b.id OR (LOCATE(CONCAT(b.ancestry,'/',b.id),a.ancestry)>0)) WHERE b.name LIKE ? ORDER BY a.ancestry"
 	      nodes = self.find_by_sql([sql,"%#{name}%"])
 	    end
-	    json = nodes.map{|n|"{id:#{n.id}, pId:#{n.pid}, name:'#{n.name}'}"}
+	    json = nodes.map{|n|%Q|{"id":#{n.id}, "pId":#{n.pid}, "name":"#{n.name}"}|}
 	    return "[#{json.join(", ")}]" 
 	  end
 
