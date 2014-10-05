@@ -24,7 +24,7 @@
 		display: none;
 	}
 	.ztree_tips{
-		margin: 4px;
+		margin-bottom: 4px;
 	}
 </style>   
 
@@ -41,7 +41,7 @@
 <h2>表单验证测试：</h2>
 
 <%= form_tag('/posts', class: 'sky-form', id: "myform") do -%>
-	<input type="hidden" id="departments_area" name="departments[area]" value='18,23' />
+	<input type="hidden" id="departments_area" name="departments[area]" value='3,5,7' />
 	<input type="hidden" id="departments_postnumber" name="departments[postnumber]" value='23' />
 	<fieldset>
 		<div class="row">
@@ -57,7 +57,7 @@
 	        <label class="label">所在地区</label>
 	        <label class="input">
 	            <i class="icon-append fa fa-chevron-down"></i>
-	            <input type="text" name="departments[所在地区]" id="departments_所在地区" class="tree_checkbox" url="/home/json_test" value="1,3,5,7,9" limited="2" partner='departments_area'>
+	            <input type="text" name="departments[所在地区]" id="departments_所在地区" class="tree_checkbox" url="/home/json_test" value="3,5,7" limited="3" partner='departments_area'>
 	        </label>
 		    </section>
 		    <section class="col col-4">
@@ -108,7 +108,7 @@
 	</div>
 
 
-<div id="dialog_select" class="invisible">
+<div id="dialog_select" class="uninvisible">
 
 </div>
 
@@ -123,7 +123,6 @@
 
 	// 超高时自动出现y方向滚动条
 	function overflow_y_auto(id) {
-		// alert($('#' + id).height());
 		if ($('#' + id).height() > 460) {
 	    $('#' + id).width($('#' + id).width() + 20);
 	    $('#' + id).addClass("overflow_y_auto");
@@ -131,7 +130,7 @@
 	}
 
 	// Box选择器
-	function BoxSelect(d,id,url,check_type,params){
+	function BoxSelect(d,id,url,chkStyle,params){
 		d.show();
 		$.ajax({
 		  type: 'get',
@@ -149,52 +148,45 @@
 	}
 
 	// 树形选择器
-	function zTreeSelect(d,id,url,check_type,params){
+	function zTreeSelect(d,id,url,chkStyle,params){
 		// 插入搜索框
-		// $("#" + id).append("<div class='input-group'><input type='text' placeholder='请输入关键字...' class='form-control input-sm'><span class='input-group-btn'><button type='button' class='btn btn-success btn-sm'>搜索</button></span></div>");
+		$("#" + id).append("<div id='filter_" + id + "' class='input-group'><input type='text' placeholder='请输入关键字...' class='form-control input-sm'><span class='input-group-btn'><button type='button' class='btn btn-success btn-sm ztree_filter_btn'>搜索</button></span></div>");
 		// 插入树形DIV
 		$("#" + id).append("<div id='zTree_"+ id +"' class='ztree'></div>");
 		params = params || {}
-		// var otherparam = (params == undefined) ? {} : {'query' : params};
-		$.ajax({
-		  type: 'get',
-		  url: url,
-		  dataType: 'json',
-		  date: params,
-		  cache: false,
-		  success: function(data){
-		  	var zTree_id = "zTree_" + id;
-		  	$.fn.zTree.init($("#" + zTree_id), ztree_setting(check_type), data);
-		  	d.title("请选择...");
-		  	d.content($("#"+id));
-				//默认勾上已选项
-				var partner_id = getPartnerId(getInputId(zTree_id));
-				var vArray = $("#" + partner_id).attr("value").split(",");
-				var treeObj = $.fn.zTree.getZTreeObj(zTree_id);
-				var node;
-				$.each(vArray, function(n, v) {
-					node = treeObj.getNodeByParam("id",v);
-					if (node){
-						treeObj.checkNode(node, true, true)
-					}
-				});
-		  },
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				// alert(textStatus);
-				d.title("抱歉，出错了！");
-				d.content("加载失败，请刷新页面重试。");
-			}
-		});
+		var treeId = "zTree_" + id;
+		initZtree(d,treeId,url,chkStyle,params,false);
+		// $.ajax({
+		//   type: 'get',
+		//   url: url,
+		//   dataType: 'json',
+		//   date: params,
+		//   cache: false,
+		//   success: function(data){
+		//   	$.fn.zTree.init($("#" + zTree_id), ztree_setting(chkStyle), data);
+		//   	d.title("请选择...");
+		//   	d.content($("#"+id));
+		// 		//默认勾上已选项
+		// 		var partner_id = getPartnerId(getInputId(zTree_id));
+		// 		var vArray = $("#" + partner_id).attr("value").split(",");
+		// 		var treeObj = $.fn.zTree.getZTreeObj(zTree_id);
+		// 		initCheckStatus(treeObj,vArray);
+		//   },
+		// 	error: function(XMLHttpRequest, textStatus, errorThrown) {
+		// 		// alert(textStatus);
+		// 		d.title("抱歉，出错了！");
+		// 		d.content("加载失败，请刷新页面重试。");
+		// 	}
+		// });
 	}
 
 	// 显示选择对话框
-	function showDialog(dom,id,url,dialog_type,check_type,params){
+	function showDialog(dom,id,url,dialog_type,chkStyle,params){
 		id += "_Dialog";
 		dialog_type = dialog_type || "tree";
-		check_type = check_type || "checkbox";
+		chkStyle = chkStyle || "checkbox";
 		var d = dialog.get(id);
   	if (!d){
-  		alert("不存在，开始创建");
 			d = dialog({
 				id: id,
 				title: '加载中...',
@@ -213,15 +205,14 @@
 			});
 			d.show();
 			$("#dialog_select").append('<div id="'+ id +'" class="dialog"></div>');
-			$("#" + id).prepend('<div id="tips_'+ id +'" class="dialog_tips"></div>')
+			// $("#" + id).prepend('<div id="tips_'+ id +'" class="dialog_tips text-red">&nbsp;</div>');
 			if (dialog_type == "tree"){
-				zTreeSelect(d,id,url,check_type,params);
+				zTreeSelect(d,id,url,chkStyle,params);
 			}else{
-				BoxSelect(d,id,url,check_type,params);
+				BoxSelect(d,id,url,chkStyle,params);
 			}
 		}
 		else{
-			alert("已经存在，直接显示");
 			d.show();
 		}
 	}
@@ -236,6 +227,14 @@
 	  $('.tree_radio').on("click",function(){
 	  	showDialog(this,$(this).attr("id"),$(this).attr("url"),"tree","radio");
 		});
+
+		// 树形搜索
+		$('body').on('click', '.ztree_filter_btn', function(){
+			var treeId = $(this).parents("div:first").siblings(".ztree").attr("id");
+			var name = $(this).parent().prev().val();
+			ztreeFilter(treeId,name);
+		});
+
 		// 弹框复选框
 	  $('.box_checkbox').on("click",function(){
 	  	showDialog(this,$(this).attr("id"),$(this).attr("url"),"box","checkbox");
@@ -259,12 +258,24 @@
 		}
 	}
 
+
+
 	// 从树形ID获得Tips的ID
 	function getTipsId(id){
-		if(id.indexOf("zTree_") == 0 && id.lastIndexOf("box_") > 0){
+		if(id.indexOf("zTree_") == 0 && id.lastIndexOf("_Dialog") > 0){
 			return id.replace("zTree_","tips_");
 		}else if(id.indexOf("box_") == 0 && id.lastIndexOf("_Dialog") > 0){
 			return id.replace("box_","tips_");
+		}
+	}
+
+	// 设置提示信息
+	function setTips(id,tips){
+		var tips_id = getTipsId(id);
+		if(!document.getElementById(tips_id)){
+			$("#" + id).before('<div id="'+ tips_id +'" class="dialog_tips text-red">' + tips + '</div>');
+		}else{
+			$("#" + tips_id).html(tips);
 		}
 	}
 
@@ -273,13 +284,88 @@
 		return $("#" + id).attr("partner");
 	}
 
+	// 从INPUT的ID获得dialog的ID
+	function getDialogId(id){
+		return id + "_Dialog";
+	}	
+
+	// 获取选择框的类型radio还是checkbox
+	function getChkStyle(input_id){
+		if ($("#" + input_id).hasClass("tree_radio") || $("#" + input_id).hasClass("box_radio")){
+			return "radio";
+		}else{
+			return "checkbox";
+		}
+	}
+	
+
+	// 根据值初始化复选框的勾选状态
+	function initCheckStatus(treeObj,vArray){
+		var node;
+		$.each(vArray, function(n, v) {
+			node = treeObj.getNodeByParam("id",v);
+			if (node){
+				treeObj.checkNode(node, true, true)
+			}
+		});
+	}
+
+	// 点击搜索按钮
+	function ztreeFilter(treeId,name){
+		var input_id = getInputId(treeId);
+		var dialog_id = getDialogId(input_id);
+		var url = $("#" + input_id).attr("url");
+		var d = dialog.get(dialog_id);
+		if (!d){
+			d = dialog({
+    		id: dialog_id
+			});
+		}
+		var chkStyle = getChkStyle(input_id);
+		var params = name == undefined ? {} : {'name' : name};
+		var treeObj = $.fn.zTree.getZTreeObj(treeId);
+		if (treeObj){
+			$.fn.zTree.destroy(treeId);
+		}
+		initZtree(d,treeId,url,chkStyle,params,true);
+	}
+
+	// 初始化树
+	function initZtree(d,treeId,url,chkStyle,params,filter){
+		$.ajax({
+		  type: 'get',
+		  url: url,
+		  dataType: 'json',
+		  data: params,
+		  cache: false,
+		  success: function(data){
+		  	var input_id = getInputId(treeId);
+		  	$.fn.zTree.init($("#" + treeId), ztree_setting(chkStyle), data);
+		  	d.title("请选择...");
+		  	if (!filter){
+		  		d.content($("#" + getDialogId(input_id)));
+		  	}
+				//默认勾上已选项
+				var partner_id = getPartnerId(input_id);
+				var vArray = $("#" + partner_id).val().split(",");
+				var treeObj = $.fn.zTree.getZTreeObj(treeId);
+				initCheckStatus(treeObj,vArray);
+		  },
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				// alert(textStatus);
+				d.title("抱歉，出错了！");
+				d.content("加载失败，请刷新页面重试。");
+			}
+		});	
+	}
+
 	// zTree的设置
-	function ztree_setting(check_type) {
-		check_type = check_type || "checkbox";
+	function ztree_setting(chkStyle) {
+		chkStyle = chkStyle || "checkbox";
 	  var setting = {
       check: {
           enable: true,
-          chkStyle: check_type,
+          chkStyle: chkStyle,
           autoCheckTrigger: true,
           chkboxType: { "Y": "ps", "N": "ps" },
           radioType: "all"
@@ -308,8 +394,8 @@
     var input_id = getInputId(treeId);
     var partner_id = getPartnerId(input_id);
     var dialog_id = input_id + "_Dialog"
-    var is_radio = $("#" + input_id).hasClass("tree_radio");
-    if (is_radio) {
+    var chkStyle = getChkStyle(input_id);
+    if (chkStyle == "radio") {
     	// 如果是radio
     	$("#" + input_id).val(treeNode.name);
 	    $("#" + partner_id).val(treeNode.id);
@@ -326,20 +412,17 @@
 			var check_count = 0;
 			var too_much = false;
 	    $.each(nodes, function(n, node) {
-	        if (!node.isParent) {
-	            check_count += 1;
-	            if (check_count > limited) {
-	              too_much = true;
-	            }
-	            else {
-	              node_id.push(node.id);
-	              node_name.push(node.name);
-	            }
-	        }
-	        if (too_much == true) {
-	          $("#tips_id").html("选择太多，超过了预设值["+ limited +"]！");
-	          treeObj.checkNode(node, false, false);
-	        }
+        if (!node.isParent) {
+          check_count += 1;
+          if (check_count > limited) {
+            setTips(treeId,"选择项不能超过"+ limited +"个！");
+          }
+          else {
+          	setTips(treeId,"&nbsp;");
+            node_id.push(node.id);
+            node_name.push(node.name);
+          }
+        }
 	    });
 	    $("#" + input_id).val(node_name.join(","));
 	    $("#" + partner_id).val(node_id.join(","));
