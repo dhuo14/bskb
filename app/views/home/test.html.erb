@@ -26,6 +26,16 @@
 	.ztree_tips{
 		margin-bottom: 4px;
 	}
+	.dialog_box{
+		margin-top: 8px;
+	}
+	.clear_both{
+		clear:both;
+	}
+	.box_select_item{
+		margin: 0 28px 0 28px;
+		clear:both;
+	}
 </style>   
 
 <span class="label label-default">Default</span>
@@ -43,6 +53,8 @@
 <%= form_tag('/posts', class: 'sky-form', id: "myform") do -%>
 	<input type="hidden" id="departments_area" name="departments[area]" value='3,5,7' />
 	<input type="hidden" id="departments_postnumber" name="departments[postnumber]" value='23' />
+	<input type="hidden" id="departments_area2" name="departments[area2]" value='3,5,7' />
+	<input type="hidden" id="departments_postnumber2" name="departments[postnumber2]" value='23' />
 	<fieldset>
 		<div class="row">
 		    <section class="col col-4">
@@ -65,6 +77,30 @@
 		        <label class="input">
 		            <i class="icon-append fa fa-info"></i>
 		            <input type="text" name="departments[area_id]" id="departments_area_id" class="tree_radio" url="/home/json_test" value="2" partner='departments_postnumber'>
+		        </label>
+		    </section>
+	    </div>
+	    <div class="row">
+		    <section class="col col-4">
+		        <label class="label">成立日期<span class="text-red">*</span></label>
+		        <label class="input">
+		            <i class="icon-append fa fa-calendar"></i>
+		            <input type="text" value="" name="departments2[成立日期]" id="departments_成立日期2" class="date_select">
+		            <b class="tooltip tooltip-bottom-right">以营业执照中的成立日期为准</b>
+		        </label>
+		    </section>
+		    <section class="col col-4">
+	        <label class="label">所在地区</label>
+	        <label class="input">
+	            <i class="icon-append fa fa-chevron-down"></i>
+	            <input type="text" name="departments2[所在地区]" id="departments_所在地区2" class="box_checkbox" url="/home/json_test" value="3,5,7" limited="3" partner='departments_area2'>
+	        </label>
+		    </section>
+		    <section class="col col-4">
+		        <label class="label">邮政编码<span class="text-red">*</span></label>
+		        <label class="input">
+		            <i class="icon-append fa fa-info"></i>
+		            <input type="text" name="departments2[area_id]" id="departments_area_id2" class="box_radio" url="/home/json_test" value="2" partner='departments_postnumber2'>
 		        </label>
 		    </section>
 	    </div>
@@ -122,29 +158,30 @@
 <script type="text/javascript">
 
 	// 超高时自动出现y方向滚动条
-	function overflow_y_auto(id) {
-		if ($('#' + id).height() > 460) {
-	    $('#' + id).width($('#' + id).width() + 20);
-	    $('#' + id).addClass("overflow_y_auto");
+	function overflow_y_auto(id,type) {
+		type = type || "ztree";
+		if(type == "ztree"){
+			if ($('#' + id).height() > 460) {
+		    $('#' + id).width($('#' + id).width() + 20);
+		    $('#' + id).addClass("overflow_y_auto");
+			}
+		}else{
+			if ($('#' + id).height() > 680) {
+		    $('#' + id).addClass("overflow_y_auto");
+			}
 		}
+
 	}
 
 	// Box选择器
 	function BoxSelect(d,id,url,chkStyle,params){
-		d.show();
-		$.ajax({
-		  type: 'get',
-		  url: url,
-		  dataType: 'json',
-		  success: function(data){
-		  	// d.title("请选择...");
-		  	// d.content($("#ztree_show"));
-		  },
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				alert(textStatus);
-			},
-		  cache: false
-		});
+		// 插入搜索框
+		$("#" + id).append("<div id='filter_" + id + "' class='input-group'><input type='text' placeholder='请输入关键字...' class='form-control input-sm'><span class='input-group-btn'><button type='button' class='btn btn-success btn-sm box_filter_btn'>搜索</button></span></div>");
+		// 插入树形DIV
+		$("#" + id).append("<div id='box_"+ id +"' class='sky-form dialog_box'></div>");
+		params = params || {}
+		var boxId = "box_" + id;
+		initBox(d,boxId,url,chkStyle,params,false);
 	}
 
 	// 树形选择器
@@ -156,28 +193,6 @@
 		params = params || {}
 		var treeId = "zTree_" + id;
 		initZtree(d,treeId,url,chkStyle,params,false);
-		// $.ajax({
-		//   type: 'get',
-		//   url: url,
-		//   dataType: 'json',
-		//   date: params,
-		//   cache: false,
-		//   success: function(data){
-		//   	$.fn.zTree.init($("#" + zTree_id), ztree_setting(chkStyle), data);
-		//   	d.title("请选择...");
-		//   	d.content($("#"+id));
-		// 		//默认勾上已选项
-		// 		var partner_id = getPartnerId(getInputId(zTree_id));
-		// 		var vArray = $("#" + partner_id).attr("value").split(",");
-		// 		var treeObj = $.fn.zTree.getZTreeObj(zTree_id);
-		// 		initCheckStatus(treeObj,vArray);
-		//   },
-		// 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-		// 		// alert(textStatus);
-		// 		d.title("抱歉，出错了！");
-		// 		d.content("加载失败，请刷新页面重试。");
-		// 	}
-		// });
 	}
 
 	// 显示选择对话框
@@ -205,7 +220,6 @@
 			});
 			d.show();
 			$("#dialog_select").append('<div id="'+ id +'" class="dialog"></div>');
-			// $("#" + id).prepend('<div id="tips_'+ id +'" class="dialog_tips text-red">&nbsp;</div>');
 			if (dialog_type == "tree"){
 				zTreeSelect(d,id,url,chkStyle,params);
 			}else{
@@ -240,14 +254,47 @@
 	  	showDialog(this,$(this).attr("id"),$(this).attr("url"),"box","checkbox");
 		});
 		// 弹框单选框
-	  $('.box_checkbox').on("click",function(){
+	  $('.box_radio').on("click",function(){
 	  	showDialog(this,$(this).attr("id"),$(this).attr("url"),"box","radio");
 		});
 
+	  // 弹框单选框选中后触发事件
+		$('body').on('click','.dialog_box input[type="radio"]',function(){
+			var input_id = $(this).attr("name");
+			var partner_id = getPartnerId(input_id);
+			var name = $(this).parent().text();
+			var id = $(this).val();
+			$("#" + input_id).val(name);
+			$("#" + partner_id).val(id);
+			var dialog_id = getDialogId(input_id);
+			var d = dialog.get(dialog_id);
+			if (d){
+				d.close();
+			}
+		});
+
+		// 弹框复选框选中后触发事件
+		$('body').on('click','.dialog_box input[type="checkbox"]',function(){
+			// 后代全选或者取消全选
+			var status = $(this).attr("checked") == "checked" ? true : false;
+			$(this).parent().next(".box_select_item").find("input[type='checkbox']").attr("checked",status);
+			var input_id = $(this).attr("name");
+			var partner_id = getPartnerId(input_id);
+			var dialog_id = getDialogId(input_id);
+			ids = [];
+			names = [];
+			$("#" + dialog_id + " input[type='checkbox']:checked").each(function(){
+				// 只取叶子节点
+				if ($(this).parent().next(".box_select_item").find("input[type='checkbox']").length == 0){
+					ids.push($(this).val());
+					names.push($(this).parent().text());
+				}
+			});
+			$("#" + input_id).val(names.join(","));
+			$("#" + partner_id).val(ids.join(","));
+		});
+
 	});
-
-
-	// 树形选择器开始
 
 	// 从树形ID获取INPUT的ID
 	function getInputId(id){
@@ -257,8 +304,6 @@
 			return id.substring(4,id.lastIndexOf("_Dialog"));
 		}
 	}
-
-
 
 	// 从树形ID获得Tips的ID
 	function getTipsId(id){
@@ -297,10 +342,9 @@
 			return "checkbox";
 		}
 	}
-	
 
 	// 根据值初始化复选框的勾选状态
-	function initCheckStatus(treeObj,vArray){
+	function initZtreeCheckStatus(treeObj,vArray){
 		var node;
 		$.each(vArray, function(n, v) {
 			node = treeObj.getNodeByParam("id",v);
@@ -326,6 +370,7 @@
 		var treeObj = $.fn.zTree.getZTreeObj(treeId);
 		if (treeObj){
 			$.fn.zTree.destroy(treeId);
+			$("#" + treeId).html("正在搜索...");
 		}
 		initZtree(d,treeId,url,chkStyle,params,true);
 	}
@@ -339,17 +384,21 @@
 		  data: params,
 		  cache: false,
 		  success: function(data){
-		  	var input_id = getInputId(treeId);
-		  	$.fn.zTree.init($("#" + treeId), ztree_setting(chkStyle), data);
-		  	d.title("请选择...");
-		  	if (!filter){
-		  		d.content($("#" + getDialogId(input_id)));
+		  	if (data.length == 0){
+		  		$("#" + treeId).html("搜索结果为空，请换个关键字试试。");
+		  	}else{
+		  		var input_id = getInputId(treeId);
+			  	$.fn.zTree.init($("#" + treeId), ztree_setting(chkStyle), data);
+			  	d.title("请选择...");
+			  	if (!filter){
+			  		d.content($("#" + getDialogId(input_id)));
+			  	}
+					//默认勾上已选项
+					var partner_id = getPartnerId(input_id);
+					var vArray = $("#" + partner_id).val().split(",");
+					var treeObj = $.fn.zTree.getZTreeObj(treeId);
+					initZtreeCheckStatus(treeObj,vArray);
 		  	}
-				//默认勾上已选项
-				var partner_id = getPartnerId(input_id);
-				var vArray = $("#" + partner_id).val().split(",");
-				var treeObj = $.fn.zTree.getZTreeObj(treeId);
-				initCheckStatus(treeObj,vArray);
 		  },
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				// alert(textStatus);
@@ -357,6 +406,74 @@
 				d.content("加载失败，请刷新页面重试。");
 			}
 		});	
+	}
+
+	// 初始化BOX
+	function initBox(d,boxId,url,chkStyle,params,filter){
+		$.ajax({
+		  type: 'get',
+		  url: url,
+		  dataType: 'json',
+		  data: params,
+		  cache: false,
+		  success: function(data){
+		  	if (data.length == 0){
+		  		$("#" + boxId).html("搜索结果为空，请换个关键字试试。");
+		  	}else{
+		  		var input_id = getInputId(boxId);
+			  	d.title("请选择...");
+					var partner_id = getPartnerId(input_id);
+					var vArray = $("#" + partner_id).val().split(",");
+					var arr = convertSimpleData(data);
+					var content = '<section><fieldset>';
+					$.each(arr, function (index, obj) {  
+						content += create_box_item(input_id,obj,chkStyle,false);
+			    });  
+					content += '</fieldset></section>';
+					$("#" + boxId).html(content);
+					overflow_y_auto(boxId,"box");
+					if (!filter){
+			  		d.content($("#" + getDialogId(input_id)));
+			  	}
+		  	}
+		  },
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				// alert(textStatus);
+				d.title("抱歉，出错了！");
+				d.content("加载失败，请刷新页面重试。");
+			}
+		});	
+	}
+
+	// 创建box的选项
+	function create_box_item(input_id,obj,chkStyle,clear_both){
+		chkStyle = chkStyle || "checkbox";
+		var iconStyle  = chkStyle == "checkbox" ? '<i></i>' : '<i class="rounded-x"></i>';
+		clear_both = clear_both || false;
+		var cls = clear_both ? chkStyle + " clear_both" : chkStyle
+		var content;
+		// 判断是否有孙子,如果有孙子，儿子必须强制换行（即清除float)
+		var has_grandson = false;
+		if (obj.children != undefined){
+			var tmp = $.grep(obj.children,function(child){
+			  return child.children != undefined
+			});
+			if (tmp.length > 0){
+				has_grandson = true;
+			}
+		}
+		if (obj.children == undefined){
+			content = '<label class="' + cls + '"><input type="'+ chkStyle +'" name="'+ input_id +'" value="'+ obj.id +'">' + iconStyle + obj.name +'</label>';
+		}
+		else{
+			content = '<label class="'+ chkStyle +' clear_both"><input type="'+ chkStyle +'" name="'+ input_id +'" value="'+ obj.id +'">' + iconStyle + obj.name +'</label>';
+			content += '<div class="box_select_item"><div class="inline-group">';
+			$.each(obj.children, function (index, child) {  
+				content += create_box_item(input_id,child,chkStyle,has_grandson);
+	    });
+	    content += '</div></div>';
+		}
+		return content;
 	}
 
 	// zTree的设置
@@ -428,6 +545,50 @@
 	    $("#" + partner_id).val(node_id.join(","));
 	  }
   }
+
+  // simpleData 将简单的带PID形式的JSON转化为嵌套数组的JSON
+  function convertSimpleData(rows){
+			function exists(rows, parentId){
+				for(var i=0; i<rows.length; i++){
+					if (rows[i].id == parentId) return true;
+				}
+				return false;
+			}
+			
+			var nodes = [];
+			// get the top level nodes
+			for(var i=0; i<rows.length; i++){
+				var row = rows[i];
+				if (!exists(rows, row.pId)){
+					nodes.push({
+						id:row.id,
+						name:row.name
+					});
+				}
+			}
+			
+			var toDo = [];
+			for(var i=0; i<nodes.length; i++){
+				toDo.push(nodes[i]);
+			}
+			while(toDo.length){
+				var node = toDo.shift();	// the parent node
+				// get the children nodes
+				for(var i=0; i<rows.length; i++){
+					var row = rows[i];
+					if (row.pId == node.id){
+						var child = {id:row.id,name:row.name};
+						if (node.children){
+							node.children.push(child);
+						} else {
+							node.children = [child];
+						}
+						toDo.push(child);
+					}
+				}
+			}
+			return nodes;
+		}
 
 </script> 
 
