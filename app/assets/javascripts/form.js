@@ -5,3 +5,4 @@
 //= require plugins/masking
 //= require plugins/datepicker
 //= require plugins/treepicker
+//= require plugins/dialog-select

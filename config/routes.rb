@@ -18,6 +18,12 @@ Bskb::Application.routes.draw do
     end
   end
 
+  resources :json, :only => :index  do 
+    collection do
+      get :areas, :menus, :categories, :roles
+    end
+  end
+
   resources :users  do
     collection do
       get :sign_in, :sign_up, :sign_out, :forgot_password, :edit_dep, :edit_user

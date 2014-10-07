@@ -47,7 +47,7 @@ module SaveXmlForm
   def update_and_write_logs(obj,other_attrs={})
     attribute = prepare_params_for_save(obj.class,other_attrs)
     attribute["logs"] = get_edit_spoor(obj)
-    return obj.update(attribute)
+    return obj.update_attributes(attribute)
   end
 
   #  手动写入日志 确保表里面有logs和status字段才能用这个函数
@@ -134,13 +134,13 @@ private
     doc = Nokogiri::XML(model.xml)
     all_params = params.require(model.to_s.tableize.to_sym)
     doc.xpath("/root/node").each{|node|
-      attr_name = node.attributes["name"].to_str
+      attr_name = node.attributes.has_key?("name") ? node.attributes["name"] : node.attributes["column"]
       if node.attributes.has_key?("column")
         new_value = all_params[node.attributes["column"].to_str]
       else
         new_value = all_params[node.attributes["name"].to_str]
       end 
-      spoor << "<tr><td>#{attr_name}</td><td>#{new_value}</td></tr>" unless new_value.to_s.blank?
+      spoor << "<tr><td>#{attr_name.to_str}</td><td>#{new_value}</td></tr>" unless new_value.to_s.blank?
     }
     remark = %Q|<font class='view_logs_detail'>详细信息</font><div class='logs_detail'><table class='table table-bordered'><thead><tr><th>参数名称</th><th>参数值</th></tr></thead><tbody>#{spoor}</tbody></table></div>|.html_safe
     return prepare_logs_content(model.new,"录入数据",remark)
@@ -153,14 +153,14 @@ private
     doc = Nokogiri::XML(model.xml)
     all_params = params.require(model.to_s.tableize.to_sym)
     doc.xpath("/root/node").each{|node|
-      attr_name = node.attributes["name"].to_str
+      attr_name = node.attributes.has_key?("name") ? node.attributes["name"] : node.attributes["column"]
       if node.attributes.has_key?("column")
         new_value = all_params[node.attributes["column"].to_str]
       else
         new_value = all_params[node.attributes["name"].to_str]
       end 
       old_value = get_node_value(obj,node,{"for_what"=>"table"})
-      spoor << "<tr><td>#{attr_name}</td><td>#{old_value}</td><td>#{new_value}</td></tr>" unless old_value.to_s == new_value.to_s
+      spoor << "<tr><td>#{attr_name.to_str}</td><td>#{old_value}</td><td>#{new_value}</td></tr>" unless old_value.to_s == new_value.to_s
     }
     remark = %Q|<font class='view_logs_detail'>修改痕迹</font><div class='logs_detail'><table class='table table-bordered'><thead><tr><th>参数名称</th><th>修改前</th><th>修改后</th></tr></thead><tbody>#{spoor}</tbody></table></div>|.html_safe
     return prepare_logs_content(obj,"修改数据",remark)

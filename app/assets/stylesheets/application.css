@@ -13,6 +13,7 @@
  *= require style
  *= require plugins/themes/default
  *= require plugins/ui-dialog
+ *= require plugins/dialog-select
  *= require plugins/line-icons/line-icons
  *= require plugins/font-awesome/css/font-awesome.min
  */

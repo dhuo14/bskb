@@ -27,6 +27,7 @@ class CreateDepartments < ActiveRecord::Migration
 		t.string :turnover               , :comment => "年营业额"
 		t.string :tel                    , :comment => "电话（总机）"
 		t.string :fax                    , :comment => "传真"
+		t.string :categories             , :comment => "主营产品ID"
 		t.string :lng                    , :comment => "经度"
 		t.string :lat                    , :comment => "纬度"
 		t.text :summary                  , :comment => "单位介绍"

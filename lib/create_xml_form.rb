@@ -26,7 +26,7 @@ module CreateXmlForm
     end  
     doc = Nokogiri::XML(xml)
     # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'的
-    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext']")
+    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='hidden'][@data_type!='textarea'][@data_type!='richtext']")
     tds.each_slice(grid).with_index do |node,i|
       tbody << "<tr>"
       node.each_with_index{|n,ii|
@@ -151,11 +151,22 @@ module CreateXmlForm
   #   
   # # */
   def _create_text_field(table_name, value, options={}, grid=1)
-    # 没有name和display=skip的直接跳过
-    return "" unless options.has_key?("name") && !(options.has_key?("display") && options["display"].to_s == "skip")
+    # display=skip的直接跳过
+    # binding.pry
+    return "" if options.has_key?("display") && options["display"].to_s == "skip"
     name = options["name"]  
     column = options.has_key?("column") ? options["column"] : name
-    icon = options.has_key?("icon") ? options["icon"] : "info"  
+
+    # default_icon = options.has_key?("partner") ? "chevron-down" : "info"
+    case options["class"]
+    when "tree_checkbox","tree_radio","box_checkbox","box_radio"
+      default_icon = "chevron-down"
+    when "date_select"
+      default_icon = "calendar"
+    else
+      default_icon = "info"
+    end
+    icon = options.has_key?("icon") ? options["icon"] : default_icon  
     if options.has_key?("data") && !options["data"].blank?
       eval("data = #{options["data"]}")
     else
@@ -174,6 +185,9 @@ module CreateXmlForm
     opt << "readonly='readonly'" if options.has_key?("display") && options["display"].to_s == "readonly"
     opt << "placeholder='#{options["placeholder"]}'" if options.has_key?("placeholder")
     opt << "class='#{options["class"]}'" if options.has_key?("class")
+    opt << "partner='#{table_name}_#{options["partner"]}'" if options.has_key?("partner")
+    opt << "json_url='#{options["json_url"]}'" if options.has_key?("json_url")
+    opt << "limited='#{options["limited"]}'" if options.has_key?("limited")
     # 校验规则
     if options.has_key?("rules") 
       if options["rules"].to_s.include?("required:true")
@@ -322,6 +336,18 @@ module CreateXmlForm
         <div class='note'><strong>提示:</strong> #{hint.blank? ? '按住ctrl键可以多选。' : "#{hint}；按住ctrl键可以多选。" }</div>
     </section>|
   end
+  # # 树形单选
+  # def _create_tree_raido(section,name,table_name,column,value,opt,hint,icon)
+  #   str = %Q|
+  #   #{section}
+  #       <label class='label'>#{name}</label>
+  #       <label class='#{_form_states('input',opt)}'>
+  #           <i class="icon-append fa fa-#{icon}"></i>
+  #           <input type='text' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' #{opt.join(" ")}>
+  #           #{hint.blank? ? "" : "<b class='tooltip tooltip-bottom-right'>#{hint}</b>"}
+  #       </label>
+  #   </section>|
+  # end
   # 大文本
   def _create_textarea(name,table_name,column,value,opt,hint)
   	form_state = _form_states('textarea textarea-resizable',opt)
