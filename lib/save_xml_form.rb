@@ -22,13 +22,19 @@ module SaveXmlForm
     # 对布尔型的值转换
     if result == true || result == false
       for_what = options.has_key?("for_what") ? options["for_what"] : "table"
-      if for_what == "table"
-        result = (result == true) ? "是" : "否"
-      elsif for_what == "form"
-        result = (result == true) ? 1 : 0
-      end
+      result = transform_boolean(result,for_what)
     end
     return result
+  end
+
+  #布尔型转换
+  def transform_boolean(s,for_what)
+    return s unless [true,false,1,0,'1','0','是','否'].include?(s)
+    if for_what == "table"
+      return (s == true || s.to_s == "1") ? "是" : "否"
+    elsif for_what == "form"
+      return (s == true || s.to_s == "是") ? 1 : 0
+    end
   end
 
   #创建并写日志
@@ -140,6 +146,7 @@ private
       else
         new_value = all_params[node.attributes["name"].to_str]
       end 
+      new_value = transform_boolean(new_value,"table") if attr_name.to_str.index("是否") == 0
       spoor << "<tr><td>#{attr_name.to_str}</td><td>#{new_value}</td></tr>" unless new_value.to_s.blank?
     }
     remark = %Q|<font class='view_logs_detail'>详细信息</font><div class='logs_detail'><table class='table table-bordered'><thead><tr><th>参数名称</th><th>参数值</th></tr></thead><tbody>#{spoor}</tbody></table></div>|.html_safe
@@ -159,8 +166,9 @@ private
       else
         new_value = all_params[node.attributes["name"].to_str]
       end 
+      new_value = transform_boolean(new_value,"table") if attr_name.to_str.index("是否") == 0
       old_value = get_node_value(obj,node,{"for_what"=>"table"})
-      spoor << "<tr><td>#{attr_name.to_str}</td><td>#{old_value}</td><td>#{new_value}</td></tr>" unless old_value.to_s == new_value.to_s
+      spoor << "<tr><td>#{attr_name.to_str}</td><td>#{old_value}</td><td>#{new_value}</td></tr>" unless old_value.to_s == new_value.to_s || new_value.nil?
     }
     remark = %Q|<font class='view_logs_detail'>修改痕迹</font><div class='logs_detail'><table class='table table-bordered'><thead><tr><th>参数名称</th><th>修改前</th><th>修改后</th></tr></thead><tbody>#{spoor}</tbody></table></div>|.html_safe
     return prepare_logs_content(obj,"修改数据",remark)

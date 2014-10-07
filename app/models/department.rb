@@ -25,8 +25,8 @@ class Department < ActiveRecord::Base
 	  %Q{
 	    <?xml version='1.0' encoding='UTF-8'?>
 	    <root>
-	      <node name='单位名称' column='name' hint='必须与参照营业执照中的单位名称保持一致' rules='{required:true, maxlength:30, minlength:6}' display='disabled'/>
-	      <node name='单位简称' column='short_name'/>
+	      <node name='单位名称' column='name' hint='必须与参照营业执照中的单位名称保持一致' rules='{required:true, maxlength:30, minlength:6}'/>
+	      <node name='单位简称' column='short_name' display='disabled'/>
 	      <node name='组织机构代码' column='org_code' hint='请参照组织机构代码证上的号码' rules='{required:true, maxlength:10, minlength:5}' messages='请输入5-10个字符'/>
 	      <node name='成立日期' icon='calendar' class='date_select' hint='以营业执照中的成立日期为准' rules='{required:true, dateISO:true}'/>
 	      <node name='单位性质' column='industry' data_type='checkbox' rules='{required:true}' data='["政府机关","事业单位","中央企业","地方国有企业","私营企业"]' rules='{required:true}'/>

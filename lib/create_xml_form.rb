@@ -152,19 +152,18 @@ module CreateXmlForm
   # # */
   def _create_text_field(table_name, value, options={}, grid=1)
     # display=skip的直接跳过
-    # binding.pry
     return "" if options.has_key?("display") && options["display"].to_s == "skip"
     name = options["name"]  
     column = options.has_key?("column") ? options["column"] : name
-
-    # default_icon = options.has_key?("partner") ? "chevron-down" : "info"
-    case options["class"]
-    when "tree_checkbox","tree_radio","box_checkbox","box_radio"
-      default_icon = "chevron-down"
-    when "date_select"
-      default_icon = "calendar"
-    else
+    unless options.has_key?("class")
       default_icon = "info"
+    else
+      case options["class"].to_str
+      when "tree_checkbox","tree_radio","box_checkbox","box_radio"
+        default_icon = "chevron-down"
+      when "date_select"
+        default_icon = "calendar"
+      end
     end
     icon = options.has_key?("icon") ? options["icon"] : default_icon  
     if options.has_key?("data") && !options["data"].blank?

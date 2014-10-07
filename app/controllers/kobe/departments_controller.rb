@@ -11,7 +11,13 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def create
-    render :text => params
+    if create_and_write_logs(Department)
+      tips_get("创建成功。")
+      redirect_to root_path
+    else
+      flash_get(department.errors.full_messages)
+      render 'index'
+    end
   end
 
   def update
