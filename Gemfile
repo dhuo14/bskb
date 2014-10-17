@@ -52,6 +52,9 @@ gem "ueditor-rails", "~> 1.2.5.3"
 #上传组件
 gem "paperclip", "~> 3.5.2"
 
+# 文件上传
+gem 'jquery-fileupload-rails', '~> 0.4.1'
+
 #图片处理
 gem "rmagick", "~> 2.13.2"
 

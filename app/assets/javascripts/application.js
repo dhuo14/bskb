@@ -18,16 +18,13 @@
 //= require plugins/jquery.query
 //= require plugins/dialog-min
 //= require app
+//= require jquery-fileupload
 
 
 $(function() {
 
 	// 初始化
   App.init();
-  // Masking.initMasking();
-  Datepicker.initDatepicker();
-  // Validation.initValidation();
-  // Treepicker.initTreepicker();
 
 	// 状态筛选,用于list列表页面
 	$(".status_filter").on('click',function(){
