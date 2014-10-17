@@ -40,7 +40,16 @@ Bskb::Application.routes.draw do
         get :to_do
       end
     end
-    resources :departments
+    resources :departments do 
+      collection do
+        get :ztree
+        post :move, :valid_dep_name
+      end
+      member do 
+        get :show_dep
+        post :add_user, :freeze
+      end
+    end
     resources :articles do 
       collection do
         post :batch_task

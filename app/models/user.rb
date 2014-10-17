@@ -1,10 +1,10 @@
 # -*- encoding : utf-8 -*-
 class User < ActiveRecord::Base
-  before_save {self.email = email.downcase}
+  # before_save {self.email = email.downcase}
   before_create :create_remember_token
 
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-  validates :email, presence: true, format: { with:VALID_EMAIL_REGEX }#, uniqueness: { case_sensitive: false }
+  # validates :email, presence: true, format: { with:VALID_EMAIL_REGEX }#, uniqueness: { case_sensitive: false }
   has_secure_password
   validates :password, presence: true, length: { in: 6..20 }, :on => :create
   validates :login, presence: true, length: { in: 6..20 }, uniqueness: { case_sensitive: false }
@@ -81,10 +81,10 @@ class User < ActiveRecord::Base
     arr = [] 
     # 修改
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','user .show_content')"]
+      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','.tab-content .active.in .show_content')"]
     end
     # 删除
-    if [0,3,4].include?(self.status)
+    if [0,404].include?(self.status)
       arr << ["<i class='fa fa-trash-o'></i> 删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "确定要删除吗?"}]
     end
     # 彻底删除
