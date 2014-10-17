@@ -12,24 +12,24 @@ class Kobe::UsersController < KobeController
   end
 
   def profile
-    @ha = {
-      "main" => { "icon" => "fa-bar-chart-o", "title" => "Overall" },
-      "dep" => { 
+    @arr = [
+      { 
         "icon" => "fa-group", "title" => "单位信息", 
         "status" => @user.department.org_code.blank?,
-        "url" => kobe_department_path(@user.department),
+        "url" => show_dep_kobe_department_path(@user.department),
         "opt" => @user.department.cando_list
       },
-      "photo" => { "icon" => "fa-list", "title" => "证件扫描件" },
-      "zizhi" => { "icon" => "fa-cubes", "title" => "资质证书" },
-      "user" => { 
+      { "icon" => "fa-list", "title" => "证件扫描件" },
+      { "icon" => "fa-cubes", "title" => "资质证书" },
+      { 
         "icon" => "fa-user", "title" => "用户信息", 
         "status" => @user.name.blank?, 
         "url" => kobe_user_path(@user),
         "opt" => @user.cando_list
-      }
-    }
-    @act = params[:format].blank? ? "main" : params[:format]
+      },
+      { "icon" => "fa-bar-chart-o", "title" => "Overall" }
+    ]
+    @act = params[:format].blank? ? 0 : params[:format]
   end
 
   
@@ -42,7 +42,7 @@ class Kobe::UsersController < KobeController
   def update()
     if update_and_write_logs(@user)
       tips_get("更新用户信息成功。")
-      redirect_to profile_kobe_users_path("user")
+      redirect_to profile_kobe_users_path(params[:tab_id])
     else
       flash_get(@user.errors.full_messages)
       redirect_back_or

@@ -4,9 +4,9 @@ class Kobe::MenusController < KobeController
   
   skip_before_action :verify_authenticity_token, :only => [ :move,:destroy ]
   # protect_from_forgery :except => :index
-  before_action :get_menu, :only => [ :edit, :update, :destroy ]
-  before_action :get_icon, :only => [ :new, :index, :edit ]
-  layout false, :only => [ :edit, :new ]
+  before_action :get_menu, :only => [ :edit, :update, :destroy, :show ]
+  before_action :get_icon, :only => [ :new, :index, :edit, :show ]
+  layout false, :only => [ :edit, :new, :show ]
 
 	def index
 		@menu = Menu.new
@@ -19,6 +19,9 @@ class Kobe::MenusController < KobeController
 
   def edit
 
+  end
+
+  def show
   end
 
   def create

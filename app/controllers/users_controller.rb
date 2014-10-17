@@ -120,13 +120,12 @@ class UsersController < JamesController
   end
 
   def valid_dep_name
-    render :text => Department.where(name: params[:user][:dep]).blank? ? true : false
+    render :text => valid_unique_dep_name(params[:user][:dep])
   end
 
   def valid_user_login
-    render :text => User.where(login: params[:user][:login]).blank? ? true : false
+    render :text => valid_unique_user_login(params[:user][:login])
   end
-
 
   private  
 

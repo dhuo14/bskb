@@ -1,0 +1,21 @@
+<%= confirm_dialog({ "div_id" => "add_user_div", "title" => "分配人员账号", "action" => add_user_kobe_department_path(@dep), "content" => create_user_login_password_div }) %>
+
+<%= confirm_dialog({ "div_id" => "freeze_dep_div", "title" => "冻结单位", "action" => freeze_kobe_department_path(@dep), "content" => create_op_liyou_div }) %>
+
+<%= confirm_dialog({ "div_id" => "destroy_dep_div", "title" => "删除单位", "action" => kobe_department_path(@dep), "method" => "delete", "content" => @dep.has_children? ? "下级单位也会一并删除并且不可恢复，您确认要删除么？" : "删除后不可恢复，您确认要删除么？" }) %>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	var add_user_rules = {
+    "user[login]": { required: true, maxlength: 20, minlength: 6, remote: { url: '/users/valid_user_login', type: "post" } },
+    "user[password]": { required: true, maxlength: 20, minlength: 6 },
+    "user[password_confirmation]": { required: true, maxlength: 20, minlength: 6, equalTo: '#user_password' },
+  };
+  validate_form_rules("#add_user_div_form", add_user_rules);
+
+  var freeze_dep_rules = {
+  	"opt_liyou": { required: true, minlength: 6 }
+  }
+	validate_form_rules("#freeze_dep_div_form", freeze_dep_rules);
+});
+</script>

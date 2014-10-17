@@ -1,6 +1,6 @@
-//= require application
 //= require form
 //= require plugins/jquery.ztree.all-3.5
+//= require ztree_show
 
 // 全选、取消全选的事件  
 function selectAll(){  
@@ -26,7 +26,7 @@ function setSelectAll(){
 };
 
 // Ajax加载页面
-function show_content(url,div_id) {
+function show_content(url,div) {
     $.ajax({
         type: "get",
         url: url,
@@ -34,7 +34,12 @@ function show_content(url,div_id) {
         cache: false,
         dataType: "html",
         success: function(data) {
-            $("#"+div_id).html(data);
+            $(div).html(data);
+            // 获取当前tab的id 加载页面以后返回当前tab
+            if($(div).has('form').length != 0) {
+                var tab_id = $(div).parent().attr("id").split("_")[0];
+                $(div + " form").append("<input type='hidden' name='tab_id' value='"+tab_id+"'>");
+            }
         },
         error: function (data, textStatus){
             alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());

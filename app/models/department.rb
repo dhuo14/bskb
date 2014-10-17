@@ -20,15 +20,23 @@ class Department < ActiveRecord::Base
       ["已删除",98,"red",100]
     ]
   end
+
+  # 列表中的状态筛选,current_status当前状态不可以点击
+  def self.status_filter(action='')
+  	# 列表中不允许出现的
+  	limited = [404]
+  	arr = self.status_array.delete_if{|a|limited.include?(a[1])}.map{|a|[a[0],a[1]]}
+  end
   
 	def self.xml(who='',options={})
 	  %Q{
 	    <?xml version='1.0' encoding='UTF-8'?>
 	    <root>
-	      <node name='单位名称' column='name' hint='必须与参照营业执照中的单位名称保持一致' rules='{required:true, maxlength:30, minlength:6}'/>
+	    	<node name='parent_id' data_type='hidden'/>
+	      <node name='单位名称' column='name' hint='必须与参照营业执照中的单位名称保持一致' rules='{required:true, maxlength:30, minlength:6, remote: { url:"/kobe/departments/valid_dep_name", type:"post" }}'/>
 	      <node name='单位简称' column='short_name' display='disabled'/>
 	      <node name='组织机构代码' column='org_code' hint='请参照组织机构代码证上的号码' rules='{required:true, maxlength:10, minlength:5}' messages='请输入5-10个字符'/>
-	      <node name='成立日期' icon='calendar' class='date_select' hint='以营业执照中的成立日期为准' rules='{required:true, dateISO:true}'/>
+	      <node name='成立日期' class='date_select' hint='以营业执照中的成立日期为准' rules='{required:true, dateISO:true}'/>
 	      <node name='单位性质' column='industry' data_type='checkbox' rules='{required:true}' data='["政府机关","事业单位","中央企业","地方国有企业","私营企业"]' rules='{required:true}'/>
 		  	<node name='单位人数' data_type='radio' rules='{required:true}' data='["20人以下","21-100人","101-500人","501-1001人","1001-10000人","1000人以上"]'/>
 	      <node name='注册资金' column='capital' icon='jpy' rules='{required:true}'/>
@@ -52,10 +60,23 @@ class Department < ActiveRecord::Base
 	end
 
 	def cando_list(action='')
+		show_div = '.tab-content .active.in .show_content'
     arr = [] 
-    # 修改
-    if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/edit','dep .show_content')"]
+    # 增加下属单位
+    if [0,1,404].include?(self.status)
+      arr << ["<i class='fa fa-pencil'></i> 增加下属单位", "javascript:void(0)", onClick: "show_content('/kobe/departments/new?pid=#{self.id}','#{show_div}')"]
+    end
+    # 修改单位信息
+    if [0,1,404].include?(self.status)
+      arr << ["<i class='fa fa-pencil'></i> 修改单位信息", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/edit','#{show_div}')"]
+    end
+    # 分配人员账号
+    if [0,1,404].include?(self.status)
+      arr << ["<i class='fa fa-pencil'></i> 分配人员账号", "#add_user_div", "data-toggle" => "modal"]
+    end
+    # 冻结单位
+    if [1,404].include?(self.status)
+      arr << ["<i class='fa fa-pencil'></i> 冻结单位", "#freeze_dep_div", "data-toggle" => "modal"]
     end
     return arr
   end

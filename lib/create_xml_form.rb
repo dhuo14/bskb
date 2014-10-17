@@ -87,7 +87,7 @@ module CreateXmlForm
     tds.each_slice(grid).with_index do |node,i|
       str << "<fieldset><div class='row'>"
       node.each{|n|
-        result = _create_text_field(table_name,get_node_value(obj,n,{"for_what"=>"form"}),n.attributes,grid)
+        result = _create_text_field(table_name,obj,n,grid)
         str << result[0]
         rules << result[1] unless result[1].blank?
         messages << result[2] unless result[2].blank?
@@ -97,7 +97,7 @@ module CreateXmlForm
     # 再生成文本框和富文本框--针对大文本、富文本或者隐藏域
     doc.xpath("/root/node[@data_type='textarea'] | /root/node[@data_type='richtext'] | /root/node[@data_type='hidden']").each{|n|
       str << "<fieldset><div class='row'>" unless n.attributes["data_type"].to_s == "hidden"
-      result = _create_text_field(table_name,get_node_value(obj,n,{"for_what"=>"form"}),n.attributes,grid)
+      result = _create_text_field(table_name,obj,n,grid)
       str << result[0]
       rules << result[1] unless result[1].blank?
       messages << result[2] unless result[2].blank?
@@ -117,29 +117,10 @@ module CreateXmlForm
     str << "</form>"  
     str << %Q|
     <script type="text/javascript">
-      var Validation_#{form_id} = function () {
-          return {       
-              initValidation: function () {
-                $('##{form_id}').validate({                   
-                  rules:
-                  {
-                    #{rules.join(",")}
-                  },
-                  messages:
-                  {
-                    #{messages.join(",")}
-                  },                  
-                  errorPlacement: function(error, element)
-                  {
-                      error.insertAfter(element.parent());
-                  }
-                });
-              }
-
-          };
-      }();
       jQuery(document).ready(function() {
-          Validation_#{form_id}.initValidation();
+          var #{form_id}_rules = {#{rules.join(",")}};
+          var #{form_id}_messages = {#{messages.join(",")}};
+          validate_form_rules('##{form_id}', #{form_id}_rules, #{form_id}_messages);
       });
     </script>|
     return raw str.html_safe
@@ -155,9 +136,11 @@ module CreateXmlForm
   #   display 显示方式 disabled 不可操作 readonly 是否只读 skip 跳过不出现
   #   
   # # */
-  def _create_text_field(table_name, value, options={}, grid=1)
+  def _create_text_field(table_name, obj, node, grid=1)
+    options = node.attributes
     # display=skip的直接跳过
     return "" if options.has_key?("display") && options["display"].to_s == "skip"
+    value = get_node_value(obj,node,{"for_what"=>"form"})
     name = options["name"]  
     column = options.has_key?("column") ? options["column"] : name
     unless options.has_key?("class")
@@ -197,7 +180,19 @@ module CreateXmlForm
       if options["rules"].to_s.include?("required:true")
         name = name.to_s << _red_text("*") 
       end
+      # 判断有ajax校验的情况，增加当前节点的ID作为判断参数
+      if options["rules"].to_s.include?("remote")
+        hash_rules = eval(options["rules"].to_s)
+        hash_remote = hash_rules[:remote]
+        if hash_remote.has_key?(:data) 
+          hash_remote[:data][:obj_id] = obj.id unless obj.id.nil?
+        else
+          hash_remote[:data] = {obj_id: obj.id} unless obj.id.nil?
+        end
+        options["rules"] = hash_to_string(hash_rules)
+      end
       rules = "'#{table_name}[#{column}]':#{options["rules"]}"
+      
     end
     # 校验提示消息
     if options.has_key?("messages") 
