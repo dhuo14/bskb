@@ -44,7 +44,7 @@ function zTreeOnAsyncSuccess(event, treeId, treeNode, msg) {
 	var current_node_id = get_ztree_params('current_node_id');
 	if (current_node_id != 0){
 		var node = zTree.getNodeByParam("id", current_node_id, null);
-		zTree.expandNode(node.getParentNode(), true, true, true);
+		zTree.expandNode(node.getParentNode(), true, false, true);
 		var url = get_ztree_params('show') + node.id;
 		show_content(url,show_div);
 	}
