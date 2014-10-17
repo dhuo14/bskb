@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140915080843) do
+ActiveRecord::Schema.define(version: 20141012142418) do
 
   create_table "areas", force: true do |t|
     t.string   "name",           comment: "单位名称"
@@ -123,7 +123,7 @@ ActiveRecord::Schema.define(version: 20140915080843) do
 
   add_index "departments", ["ancestry"], name: "index_departments_on_ancestry", using: :btree
   add_index "departments", ["name"], name: "index_departments_on_name", unique: true, using: :btree
-  add_index "departments", ["org_code"], name: "index_departments_on_org_code", unique: true, using: :btree
+  add_index "departments", ["org_code"], name: "index_departments_on_org_code", using: :btree
 
   create_table "icons", force: true do |t|
     t.string  "name",                                 null: false, comment: "名称"
@@ -144,7 +144,8 @@ ActiveRecord::Schema.define(version: 20140915080843) do
     t.string   "route_path",                                        comment: "url"
     t.integer  "status",         limit: 2, default: 0, null: false, comment: "状态"
     t.integer  "sort",                                              comment: "排序"
-    t.text     "logs",                                              comment: "日志"
+    t.text     "details"
+    t.text     "logs"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -224,45 +225,46 @@ ActiveRecord::Schema.define(version: 20140915080843) do
     t.datetime "updated_at"
   end
 
-  create_table "uploads", force: true do |t|
-    t.integer  "article_id",        comment: "文章ID"
-    t.string   "data_file_name",    comment: "文件名"
-    t.string   "data_content_type", comment: "文件类型"
-    t.string   "data_file_size",    comment: "文件大小"
-    t.datetime "data_updated_at"
+  create_table "suggestions_uploads", force: true do |t|
+    t.integer  "suggestion_id",       null: false
+    t.string   "upload_file_name",                 comment: "文件名称"
+    t.string   "upload_content_type",              comment: "文件类型"
+    t.integer  "upload_file_size",                 comment: "文件大小"
+    t.datetime "upload_updated_at",                comment: "时间戳"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "uploads", ["article_id"], name: "index_uploads_on_article_id", using: :btree
+  add_index "suggestions_uploads", ["suggestion_id"], name: "index_suggestions_uploads_on_suggestion_id", using: :btree
 
   create_table "users", force: true do |t|
-    t.integer  "department_id",                default: 0,                  comment: "单位id"
-    t.string   "login",                                                     comment: "登录名"
-    t.string   "password_digest",                              null: false, comment: "密码"
-    t.string   "remember_token",                                            comment: "自动登录"
-    t.string   "name",                                                      comment: "姓名"
-    t.date     "birthday",                                                  comment: "出生日期"
-    t.string   "portrait",                                                  comment: "头像"
-    t.string   "gender",             limit: 2,                              comment: "性别"
-    t.string   "identity_num",                                              comment: "身份证"
-    t.string   "identity_pic",                                              comment: "身份证图片"
-    t.string   "email",                                        null: false, comment: "电子邮箱"
-    t.string   "mobile",                                                    comment: "手机"
-    t.boolean  "is_visible",                   default: true,  null: false, comment: "是否公开,目前仅指身份证和手机号"
-    t.string   "tel",                                                       comment: "电话"
-    t.string   "fax",                                                       comment: "传真"
-    t.boolean  "is_admin",                     default: false, null: false, comment: "是否管理员"
-    t.integer  "status",                       default: 0,     null: false, comment: "状态"
-    t.string   "duty",                                                      comment: "职务"
-    t.string   "professional_title",                                        comment: "职称"
-    t.text     "bio",                                                       comment: "个人简历"
-    t.text     "details",                                                   comment: "明细"
-    t.text     "logs",                                                      comment: "日志"
+    t.integer  "department_id",                 default: 0,                  comment: "单位id"
+    t.string   "login",                                                      comment: "登录名"
+    t.string   "password_digest",                               null: false, comment: "密码"
+    t.string   "remember_token",                                             comment: "自动登录"
+    t.string   "name",                                                       comment: "姓名"
+    t.string   "birthday",           limit: 10,                              comment: "出生日期"
+    t.string   "portrait",                                                   comment: "头像"
+    t.string   "gender",             limit: 2,                               comment: "性别"
+    t.string   "identity_num",                                               comment: "身份证"
+    t.string   "identity_pic",                                               comment: "身份证图片"
+    t.string   "email",                                         null: false, comment: "电子邮箱"
+    t.string   "mobile",                                                     comment: "手机"
+    t.boolean  "is_visible",                    default: true,  null: false, comment: "是否公开,目前仅指身份证和手机号"
+    t.string   "tel",                                                        comment: "电话"
+    t.string   "fax",                                                        comment: "传真"
+    t.boolean  "is_admin",                      default: false, null: false, comment: "是否管理员"
+    t.integer  "status",                        default: 0,     null: false, comment: "状态"
+    t.string   "duty",                                                       comment: "职务"
+    t.string   "professional_title",                                         comment: "职称"
+    t.text     "bio",                                                        comment: "个人简历"
+    t.text     "details",                                                    comment: "明细"
+    t.text     "logs",                                                       comment: "日志"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["login"], name: "index_users_on_login", unique: true, using: :btree
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
 

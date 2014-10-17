@@ -24,6 +24,8 @@ Bskb::Application.routes.draw do
     end
   end
 
+  resources :uploads
+
   resources :users  do
     collection do
       get :sign_in, :sign_up, :sign_out, :forgot_password, :edit_dep, :edit_user
@@ -82,7 +84,8 @@ Bskb::Application.routes.draw do
       post :mark_as_read, :mark_as_unread, on: :member
       collection do
         get :list
-        post :batch_opt
+        post :batch_opt, :create_upload
+        delete :destroy_upload
       end
     end
   end

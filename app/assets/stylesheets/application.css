@@ -16,6 +16,7 @@
  *= require plugins/dialog-select
  *= require plugins/line-icons/line-icons
  *= require plugins/font-awesome/css/font-awesome.min
+ *= require jquery.fileupload-ui
  */
 
 .text-red{color:#ff0000;}

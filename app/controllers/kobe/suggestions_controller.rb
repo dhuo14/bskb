@@ -62,10 +62,44 @@ class Kobe::SuggestionsController < KobeController
     redirect_back_or list_kobe_suggestions_path
   end
 
+  # 创建附件
+  def create_upload
+    @upload = SuggestionsUpload.new(upload_params)
+    respond_to do |format|
+      if @upload.save
+        format.html {
+          render :json => [@upload.to_jq_upload].to_json,
+          :content_type => 'text/html',
+          :layout => false
+        }
+        format.json { render json: {files: [@upload.to_jq_upload]}, status: :created, location: @upload }
+      else
+        format.html { render action: "new" }
+        format.json { render json: @upload.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # 删除附件
+  def destroy_upload
+    @upload = SuggestionsUpload.find(params[:id])
+    @upload.destroy
+
+    respond_to do |format|
+      format.html { redirect_to uploads_url }
+      format.json { head :no_content }
+    end
+  end
+
   private  
 
     def get_suggestion
       @suggestion = Suggestion.find(params[:id]) unless params[:id].blank? 
+    end
+
+
+    def upload_params
+      params.require(:upload).permit!
     end
 
 end

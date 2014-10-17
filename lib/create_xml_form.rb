@@ -77,7 +77,7 @@ module CreateXmlForm
     str = ""
     rules = []
     messages = []
-    str = form_tag(action, method: method, class: 'sky-form', id: form_id).to_str
+    str = form_tag(action, method: method, :multipart => true, class: 'sky-form', id: form_id).to_str
     unless title.blank?
       str << "<header>#{title}</header>"
     end
@@ -104,6 +104,11 @@ module CreateXmlForm
       str << "</div></fieldset>" unless n.attributes["data_type"].to_s == "hidden"
     }
 
+    # 上传文件
+    str << "<fieldset><div class='row'>"
+    str << new_upload_files(obj)
+    str << "</div></fieldset>"
+    # 按钮
     str << %Q|
       <footer>
           <button class="btn-u" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
@@ -330,18 +335,6 @@ module CreateXmlForm
         <div class='note'><strong>提示:</strong> #{hint.blank? ? '按住ctrl键可以多选。' : "#{hint}；按住ctrl键可以多选。" }</div>
     </section>|
   end
-  # # 树形单选
-  # def _create_tree_raido(section,name,table_name,column,value,opt,hint,icon)
-  #   str = %Q|
-  #   #{section}
-  #       <label class='label'>#{name}</label>
-  #       <label class='#{_form_states('input',opt)}'>
-  #           <i class="icon-append fa fa-#{icon}"></i>
-  #           <input type='text' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' #{opt.join(" ")}>
-  #           #{hint.blank? ? "" : "<b class='tooltip tooltip-bottom-right'>#{hint}</b>"}
-  #       </label>
-  #   </section>|
-  # end
   # 大文本
   def _create_textarea(name,table_name,column,value,opt,hint)
   	form_state = _form_states('textarea textarea-resizable',opt)
@@ -398,6 +391,47 @@ module CreateXmlForm
       </li>|
     end
     return "<ul class='timeline-v2'>#{str.reverse.join}</ul>"
+  end
+
+  # 上传附件
+  def new_upload_files(upload_obj=nil)
+    %Q|
+    <div class="fileupload" action="/kobe/suggestions/created_upload">
+      <h2>上传文件</h2>
+        <div class="row fileupload-buttonbar">
+          <div class="span7">
+            <span class="btn btn-sm btn-success fileinput-button">
+              <i class="fa fa-plus-circle"></i>
+              <span>添加新文件</span>
+              <input type="file" name="upload[upload]" id="upload_upload">
+            </span>
+            <button type="submit" class="btn btn-sm btn-primary start">
+              <i class="fa fa-upload"></i>
+              <span>开始上传</span>
+            </button>
+            <button type="reset" class="btn btn-sm btn-warning cancel">
+              <i class="fa fa-ban"></i>
+              <span>取消上传</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-danger delete">
+              <i class="fa fa-trash-o"></i>
+              <span>删除选中文件</span>
+            </button>
+            <input type="checkbox" class="toggle">
+          </div>
+          <div class="span5">
+            <!-- The global progress bar -->
+            <div class="progress progress-striped active fade">
+              <div class="bar progress-bar progress-bar-success" style="width:0%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="fileupload-loading"></div>
+        <br>
+        <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
+        </table>
+        <input id="uploaded_file_ids" name="uploaded_file_ids" type="hidden" />
+    </div>|
   end
 
 end
