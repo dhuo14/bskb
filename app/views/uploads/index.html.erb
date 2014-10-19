@@ -1,6 +1,6 @@
 <div class="container">
   <h2>上传文件</h2>
-  <%= form_for Upload.new, :html => { :multipart => true, :id => "fileupload"  } do |f| %>
+  <%= form_tag('/uploads', multipart: true, :id => "fileupload" ) %>
     <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
     <div class="row fileupload-buttonbar">
       <div class="span7">
@@ -8,7 +8,7 @@
         <span class="btn btn-sm btn-success fileinput-button">
           <i class="fa fa-plus-circle"></i>
           <span>添加新文件</span>
-          <%= f.file_field :upload %>
+          <%= file_field_tag "upload_file[upload]" %>
         </span>
         <button type="submit" class="btn btn-sm btn-primary start">
           <i class="fa fa-upload"></i>
@@ -37,7 +37,7 @@
     <!-- The table listing the files available for upload/download -->
     <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
     </table>
-  <% end %>
+  </form>
 
 </div>
 <script>

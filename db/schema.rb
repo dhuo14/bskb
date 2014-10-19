@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141012142418) do
+ActiveRecord::Schema.define(version: 20141017142531) do
 
   create_table "areas", force: true do |t|
     t.string   "name",           comment: "单位名称"
@@ -125,6 +125,18 @@ ActiveRecord::Schema.define(version: 20141012142418) do
   add_index "departments", ["name"], name: "index_departments_on_name", unique: true, using: :btree
   add_index "departments", ["org_code"], name: "index_departments_on_org_code", using: :btree
 
+  create_table "departments_uploads", force: true do |t|
+    t.integer  "department_id",       null: false
+    t.string   "upload_file_name",                 comment: "文件名称"
+    t.string   "upload_content_type",              comment: "文件类型"
+    t.integer  "upload_file_size",                 comment: "文件大小"
+    t.datetime "upload_updated_at",                comment: "时间戳"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "departments_uploads", ["department_id"], name: "index_departments_uploads_on_department_id", using: :btree
+
   create_table "icons", force: true do |t|
     t.string  "name",                                 null: false, comment: "名称"
     t.string  "ancestry",                                          comment: "祖先节点"
@@ -226,11 +238,11 @@ ActiveRecord::Schema.define(version: 20141012142418) do
   end
 
   create_table "suggestions_uploads", force: true do |t|
-    t.integer  "suggestion_id",       null: false
-    t.string   "upload_file_name",                 comment: "文件名称"
-    t.string   "upload_content_type",              comment: "文件类型"
-    t.integer  "upload_file_size",                 comment: "文件大小"
-    t.datetime "upload_updated_at",                comment: "时间戳"
+    t.integer  "suggestion_id"
+    t.string   "upload_file_name",    comment: "文件名称"
+    t.string   "upload_content_type", comment: "文件类型"
+    t.integer  "upload_file_size",    comment: "文件大小"
+    t.datetime "upload_updated_at",   comment: "时间戳"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -24,7 +24,7 @@ Bskb::Application.routes.draw do
     end
   end
 
-  resources :uploads
+  resources :uploads, :only => [:index, :create, :destroy]
 
   resources :users  do
     collection do

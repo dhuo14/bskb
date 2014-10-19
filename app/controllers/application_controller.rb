@@ -50,6 +50,11 @@ class ApplicationController < ActionController::Base
       end
     end
 
+    # 验证身份
+    def verify_authority(boolean)
+      return current_user.admin? ? true : boolean
+    end
+
     #着重提示，等用户手动关闭
     def flash_get(message,status="error")
       unless message.class == Array

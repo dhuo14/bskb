@@ -5,11 +5,13 @@
 <p>&nbsp;</p>
 
 <div class='col-md-12'>
-    <%= _create_xml_form(@obj2.class.xml,@obj2,{"title"=>"修改单位信息","grid"=>2,"method"=>"patch","action"=>kobe_department_path(@obj2)}) %>
+    <%= _create_xml_form(@obj2.class.xml,@obj2,{"upload_model" => "DepartmentsUpload", "title"=>"修改单位信息","grid"=>2,"method"=>"patch","action"=>kobe_department_path(@obj2)}) %>
+
+    <%= render :partial => '/kobe/create_xml_form' %>
 </div>
 
 <p>&nbsp;</p>
 
 <div class='col-md-12'>
-    <%= _show_xml_table(@obj2.class.xml,@obj2,{"title"=>"单位信息","grid"=>2}) %>
+    <%#= _show_xml_table(@obj2.class.xml,@obj2,{"title"=>"单位信息","grid"=>2}) %>
 </div>
