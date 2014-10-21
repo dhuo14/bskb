@@ -43,6 +43,10 @@ module SaveXmlForm
     attribute["logs"] = get_origin_data(model)
     obj = model.new(attribute)
     if obj.save
+      unless params["uploaded_file_ids"].blank?
+        uploads = model.upload_model.where(master_id: 0, id: params["uploaded_file_ids"].split(","))
+        obj.uploads << uploads
+      end
       return obj
     else
       return false

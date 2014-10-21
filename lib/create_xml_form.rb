@@ -104,28 +104,26 @@ module CreateXmlForm
       str << "</div></fieldset>" unless n.attributes["data_type"].to_s == "hidden"
     }
     # 如果需要上传附件
-    if options.has_key?("upload_model")
+    if options.has_key?("upload_files") && options["upload_files"] == true
       str << hidden_field_tag('uploaded_file_ids')
       str << "</form>" 
       # 插入上传组件HTML
-      str << upload_files_html(options["upload_model"], obj.id)
-    end
-    str << %Q|
-      <footer>
-          <span class="btn-u" id="#{form_id}_submit"><i class="fa fa-floppy-o"></i> 保 存 </span>
-          <span class="btn-u btn-u-default" id="#{form_id}_reset"><i class="fa fa-repeat"></i> 重 置 </span>
-      </footer>| 
-    str << "</form>" 
-    str << %Q|
-    <script type="text/javascript">
-      jQuery(document).ready(function() {
-          $('##{form_id}_submit').on('click',function(){$('##{form_id}').submit();});
-          $('##{form_id}_reset').on("click",function(){$('##{form_id}')[0].reset();});
+      str << render(:partial => '/shared/myform/fileupload',:locals => {form_id: form_id,upload_model: obj.class.upload_model, master_id: obj.id, rules: rules, messages: messages})
+    else
+      str << %Q|
+        <footer>
+            <button class="btn-u" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
+            <button class="btn-u btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
+        </footer>
+      </form>
+      <script type="text/javascript">
+        jQuery(document).ready(function() {
           var #{form_id}_rules = {#{rules.join(",")}};
           var #{form_id}_messages = {#{messages.join(",")}};
           validate_form_rules('##{form_id}', #{form_id}_rules, #{form_id}_messages);
-      });
-    </script>|
+        });
+      </script>|
+    end
     return raw str.html_safe
   end
   
@@ -396,43 +394,4 @@ module CreateXmlForm
     return "<ul class='timeline-v2'>#{str.reverse.join}</ul>"
   end
 
-  # 上传组件的HTML
-  def upload_files_html(upload_model,master_id)
-    str = form_tag(uploads_path(master_id: master_id, upload_model: upload_model), multipart: true, id: "fileupload", class: "sky-form" ).to_str
-    str << %Q|
-    <fieldset>
-      <div class="row fileupload-buttonbar">
-        <div class="span7">
-          <span class="pull-left btn btn-sm btn-success fileinput-button">
-            <i class="fa fa-plus-circle"></i>
-            <span>添加新文件</span>
-            #{file_field_tag "upload_file[upload]"}
-          </span>
-          <button type="submit" class="btn btn-sm btn-primary start">
-            <i class="fa fa-upload"></i>
-            <span>开始上传</span>
-          </button>
-          <button type="reset" class="btn btn-sm btn-warning cancel">
-            <i class="fa fa-ban"></i>
-            <span>取消上传</span>
-          </button>
-          <button type="button" class="btn btn-sm btn-danger delete">
-            <i class="fa fa-trash-o"></i>
-            <span>删除选中文件</span>
-          </button>
-          <label class="checkbox pull-right"><input type="checkbox" class="toggle"><i></i>选中全部文件</label>
-        </div>
-        <div class="span5">
-          <div class="progress progress-striped active fade">
-            <div class="bar progress-bar progress-bar-success" style="width:0%;"></div>
-          </div>
-        </div>
-      </div>
-      <div class="fileupload-loading"></div>
-      <br>
-      <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
-      </table>
-    </fieldset>|
-    return raw str.html_safe
-  end
 end

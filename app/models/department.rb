@@ -5,7 +5,7 @@ class Department < ActiveRecord::Base
   # 树形结构
   has_ancestry :cache_depth => true
   default_scope -> {order(:ancestry, :sort, :id)}
-
+  has_many :uploads, class_name: :DepartmentsUpload, foreign_key: :master_id
   validates :name, presence: true, length: { in: 6..30 }, uniqueness: { case_sensitive: false }
 
   include AboutAncestry
@@ -19,6 +19,11 @@ class Department < ActiveRecord::Base
       ["未审核",3,"orange",20],
       ["已删除",98,"red",100]
     ]
+  end
+
+  # 附件的类
+  def self.upload_model
+    DepartmentsUpload
   end
 
   # 列表中的状态筛选,current_status当前状态不可以点击

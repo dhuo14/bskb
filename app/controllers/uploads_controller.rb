@@ -4,7 +4,11 @@ class UploadsController < KobeController
   layout false
 
   def index
-    @uploads = get_model.where(["master_id = ?", params[:master_id]])
+    unless params[:master_id].blank?
+      @uploads = get_model.where(["master_id = ?", params[:master_id]])
+    else
+      @uploads = []
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @uploads.map{|upload| upload.to_jq_upload } }
@@ -13,7 +17,8 @@ class UploadsController < KobeController
 
   def create
     @upload = get_model.new(form_params)
-    @upload.master_id = params[:master_id]
+    # master_id 默认值为 0
+    @upload.master_id = params[:master_id] || 0
     respond_to do |format|
       if @upload.save
         format.html {
@@ -31,7 +36,7 @@ class UploadsController < KobeController
 
   def destroy
     @upload = get_model.find(params[:id])
-    # 稍微加一个判断
+    # 加一个权限判断
     if verify_authority(@upload.master_id == params[:master_id].to_i)
       @upload.destroy 
     end

@@ -18,7 +18,6 @@
 //= require plugins/jquery.query
 //= require plugins/dialog-min
 //= require app
-//= require jquery-fileupload
 
 
 $(function() {

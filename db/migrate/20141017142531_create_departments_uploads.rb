@@ -2,7 +2,7 @@
 class CreateDepartmentsUploads < ActiveRecord::Migration
   def change
     create_table :departments_uploads do |t|
-    	t.belongs_to :master, :null => false
+    	t.belongs_to :master, :default => 0
       t.string   "upload_file_name"   , :comment => "文件名称"
       t.string   "upload_content_type", :comment => "文件类型"
       t.integer  "upload_file_size"   , :comment => "文件大小"

@@ -1,0 +1,132 @@
+<%= form_tag(uploads_path(master_id: master_id, upload_model: upload_model), multipart: true, id: "fileupload", class: "sky-form" ) %>
+    <fieldset>
+      <div class="row fileupload-buttonbar">
+        <div class="alert alert-warning  fade in">
+          <h4>上传附件</h4>
+          <%= raw upload_model.tips.html_safe %>
+        </div>
+        <div class="span7">
+          <span class="pull-left btn btn-sm btn-success fileinput-button">
+            <i class="fa fa-plus-circle"></i>
+            <span>添加新文件</span>
+            <%= file_field_tag "upload_file[upload]"%>
+          </span>
+          <button type="submit" class="btn btn-sm btn-primary start">
+            <i class="fa fa-upload"></i>
+            <span>开始上传</span>
+          </button>
+          <button type="reset" class="btn btn-sm btn-warning cancel">
+            <i class="fa fa-ban"></i>
+            <span>取消上传</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-danger delete">
+            <i class="fa fa-trash-o"></i>
+            <span>删除选中文件</span>
+          </button>
+          <label class="checkbox pull-right"><input type="checkbox" class="toggle"><i></i>选中全部文件</label>
+        </div>
+        <div class="span5">
+          <div class="progress progress-striped active fade">
+            <div class="bar progress-bar progress-bar-success" style="width:0%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fileupload-loading"></div>
+      <br>
+      <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
+      </table>
+    </fieldset>
+    <footer>
+      <span class="btn-u" id="<%= form_id%>_submit"><i class="fa fa-floppy-o"></i> 保 存 </span>
+      <span class="btn-u btn-u-default" id="<%= form_id %>_reset"><i class="fa fa-repeat"></i> 重 置 </span>
+    </footer>
+</form>
+<!-- 显示准备上传的内容 -->
+<script id="template-upload" type="text/x-tmpl">
+  {% for (var i=0, file; file=o.files[i]; i++) { %}
+  <tr class="template-upload fade">
+    <td class="preview"><span class="fade"></span></td>
+    <td class="name"><span>{%=file.name%}</span></td>
+    <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+    {% if (file.error) { %}
+    <td class="error" colspan="2"><span class="badge badge-red">{%=locale.fileupload.error%}！{%=locale.fileupload.errors[file.error] || file.error%}</span></td>
+    {% } else if (o.files.valid && !i) { %}
+    <td>
+      <div class="progress progress-success progress-striped active"><div class="bar progress-bar progress-bar-success" style="width:0%;"></div></div>
+    </td>
+    <td class="start">{% if (!o.options.autoUpload) { %}
+      <button class="btn btn-primary btn-sm">
+        <i class="fa fa-upload"></i>
+        <span>上传</span>
+      </button>
+      {% } %}</td>
+    {% } else { %}
+    <td colspan="2"></td>
+    {% } %}
+    <td class="cancel">{% if (!i) { %}
+      <button class="btn btn-warning btn-sm">
+        <i class="fa fa-ban"></i>
+        <span>取消</span>
+      </button>
+      {% } %}</td>
+  </tr>
+  {% } %}
+</script>
+<!-- 显示上传成功的内容 -->
+<script id="template-download" type="text/x-tmpl">
+  {% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+      {% if (file.error) { %}
+        <td></td>
+        <td class="name"><span>{%=file.name%}</span></td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        <td class="error" colspan="2"><span class="badge badge-red">{%=locale.fileupload.error%}！{%=locale.fileupload.errors[file.error] || file.error%}</span></td>
+        {% } else { %}
+        <td class="preview" file_id="{%=file.id%}">{% if (file.thumbnail_url) { %}
+          <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
+          {% } %}</td>
+        <td class="name">
+          <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+        </td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        <td colspan="2"></td>
+        {% } %}
+      <td class="delete">
+        <button class="btn btn-xs btn-danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
+          <i class="fa fa-trash-o"></i>
+          <span>删除</span>
+        </button>
+        <input type="checkbox" name="delete" value="1">
+      </td>
+    </tr>
+    {% } %}
+</script>
+
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    $('#fileupload').fileupload(<%= upload_model.jquery_setting %>);
+    var url = $('#fileupload').prop('action');
+    if (url.lastIndexOf("master_id") > 0){
+      $.getJSON(url, function (files) {
+        var fu = $('#fileupload').data('blueimpFileupload'), template;
+        fu._adjustMaxNumberOfFiles(-files.length);
+        console.log(files);
+        template = fu._renderDownload(files).appendTo($('#fileupload .files'));
+        fu._reflow = fu._transition && template.length && template[0].offsetWidth;
+        template.addClass('in');
+        $('#loading').remove();
+      });
+    }
+
+    $('#<%= form_id %>_submit').on('click',function(){
+      var ids = $('tr.template-download .preview[file_id]').map(function() {
+        return $(this).attr('file_id');
+      }).get().join(',');
+      $("#uploaded_file_ids").val(ids);
+      $('#<%= form_id %>').submit();});
+    $('#<%= form_id %>_reset').on("click",function(){$('#<%= form_id %>')[0].reset();});
+    var <%= form_id %>_rules = {<%= raw rules.join(",").html_safe %>};
+    var <%= form_id %>_messages = {<%= raw messages.join(",").html_safe %>};
+    validate_form_rules('#<%= form_id %>', <%= form_id %>_rules, <%= form_id %>_messages);
+  });
+</script>

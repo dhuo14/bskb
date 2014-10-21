@@ -5,6 +5,7 @@
 //= require plugins/masking
 //= require plugins/datepicker
 //= require plugins/dialog-select
+//= require jquery-fileupload
 
 $(function() {
   // Masking.initMasking();
