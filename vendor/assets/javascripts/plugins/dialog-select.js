@@ -75,20 +75,20 @@
 	// 页面开始加载
 	$(function(){
 		// 树形复选框
-	  $('.tree_checkbox').on("click",function(){
+	  $('body').on("click",".tree_checkbox",function(){
 	  	showDialog(this,$(this).attr("id"),$(this).attr("json_url"),"tree","checkbox");
 		});
 		// 树形单选框
-	  $('.tree_radio').on("click",function(){
+	  $('body').on("click",'.tree_radio',function(){
 	  	showDialog(this,$(this).attr("id"),$(this).attr("json_url"),"tree","radio");
 		});
 
 		// 弹框复选框
-	  $('.box_checkbox').on("click",function(){
+	  $('body').on("click",'.box_checkbox',function(){
 	  	showDialog(this,$(this).attr("id"),$(this).attr("json_url"),"box","checkbox");
 		});
 		// 弹框单选框
-	  $('.box_radio').on("click",function(){
+	  $('body').on("click",'.box_radio',function(){
 	  	showDialog(this,$(this).attr("id"),$(this).attr("json_url"),"box","radio");
 		});
 

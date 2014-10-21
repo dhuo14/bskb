@@ -74,7 +74,7 @@ class Kobe::DepartmentsController < KobeController
     if user.save
       user.update(department_id: params[:id])
       write_logs(user,"分配人员账号",'账号创建成功')
-      redirect_to kobe_departments_path(id: params[:id])
+      redirect_to kobe_departments_path(id: params[:id],u_id: user.id)
     else
       redirect_back_or
     end

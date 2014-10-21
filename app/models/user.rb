@@ -62,7 +62,7 @@ class User < ActiveRecord::Base
         <node name='登录名' column='login' rules='{required:true, maxlength:20, minlength:6}' display='disabled'/>
         <node name='电子邮箱' column='email' rules='{required:true, email: true}' display='disabled'/>
         <node name='姓名' column='name' rules='{required:true}'/>
-        <node name='出生日期' column='birthday' icon='calendar' rules='{required:true, dateISO:true}'/>
+        <node name='出生日期' column='birthday' class='date_select' rules='{required:true, dateISO:true}'/>
         <node name='性别' column='gender' data_type='radio' rules='{required:true}' data='["男","女"]'/>
         <node name='身份证' column='identity_num'/>
         <node name='手机' column='mobile' rules='{required:true}'/>
@@ -78,10 +78,19 @@ class User < ActiveRecord::Base
   end
 
   def cando_list(action='')
+    show_div = '.tab-content .active.in .show_content'
     arr = [] 
     # 修改
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','.tab-content .active.in .show_content')"]
+      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','#{show_div}')"]
+    end
+    # 重置密码
+    if [0,404].include?(self.status)
+      arr << ["<i class='fa fa-lock'></i> 重置密码", "#reset_password_div", "data-toggle" => "modal", onClick: "show_content('/kobe/departments/#{self.id}/edit','#reset_password_div #dialog-content')"]
+    end
+    # 冻结
+    if [0,404].include?(self.status)
+      arr << ["<i class='fa fa-lock'></i> 冻结", "#freeze_user_div", "data-toggle" => "modal"]
     end
     # 删除
     if [0,404].include?(self.status)

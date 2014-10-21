@@ -70,7 +70,7 @@ Bskb::Application.routes.draw do
     end
     resources :users, :except => :index do 
       collection do
-        get :profile, :change_password, :setting
+        get :profile, :reset_password, :setting
       end
     end
     resources :categories, :except => :show do

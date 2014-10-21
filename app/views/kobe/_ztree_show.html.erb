@@ -36,6 +36,8 @@
 			case 'init': path = "<%= get_path %>"; break;
 			case 'move': path = "<%= post_path %>"; break;
 			case 'current_node_id': path = "<%= current_node_id.blank? ? 0 : current_node_id %>"; break;
+			// ajax加载显示当前节点 true为默认显示 false不显示
+			case 'ajax_show_node': path = <%= ajax_show_node.blank? ? true : false %>; break;
 			// 右键菜单增加:new、修改:edit、删除:destroy、点击展示页面:show
 			default: path = '<%= "/#{params[:controller]}/" %>';
 		}
