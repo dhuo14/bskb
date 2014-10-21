@@ -2,8 +2,8 @@
 class Kobe::DepartmentsController < KobeController
 
   skip_before_action :verify_authenticity_token, :only => [ :move, :valid_dep_name, :destroy ]
-  before_action :get_dep, :only => [:index, :show, :edit, :update, :show_dep, :destroy, :freeze ]
-  layout :false, :only => [ :show, :edit, :show_dep, :new ]
+  before_action :get_dep, :only => [:index, :show, :edit, :update, :destroy, :freeze ]
+  layout :false, :only => [ :show, :edit, :new ]
 
   def index
     
@@ -48,10 +48,6 @@ class Kobe::DepartmentsController < KobeController
   def show
   end
 
-  # 只展示单位信息 用于个人信息维护
-  def show_dep
-  end
-
   # 删除单位
   def destroy
     if @dep.destroy
@@ -63,7 +59,7 @@ class Kobe::DepartmentsController < KobeController
 
   # 冻结单位
   def freeze
-    logs = prepare_logs_content(@dep,"冻结单位")
+    logs = prepare_logs_content(@dep,"冻结单位",params[:opt_liyou])
     @dep.change_status_and_write_logs("冻结",logs)
     redirect_to kobe_departments_path(id: @dep)
   end
@@ -82,6 +78,7 @@ class Kobe::DepartmentsController < KobeController
 
   # 验证单位名称
   def valid_dep_name
+    params[:obj_id] ||= 0
     render :text => valid_unique_dep_name(params[:departments][:name],params[:obj_id])
   end
 

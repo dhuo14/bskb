@@ -9,14 +9,28 @@
 
 <%
 content = show_xml_info(@dep.class.xml,@dep)
-content << render_html('user_table')
+content << render(:partial => 'user_table')
 arr = [
 	{"div_id" => "info-#{@dep.id.to_s}", "icon" => "fa-info-circle", "title" => "详细信息", "content" => content}, 
 	{"div_id" => "photos-#{@dep.id.to_s}", "icon" => " fa-bar-chart-o ", "title" => "资质证书"}, 
 	{"div_id" => "logs-#{@dep.id.to_s}", "icon" => "fa-clock-o", "title" => "历史记录", "content" => show_logs(@dep)}
 ]
 %>
-
 <%= show_tab(@dep,arr) %>
-<%= render :partial => "dep_opt" %>
-<%= render :partial => "user_opt" %>
+
+<!-- 单位操作 begin -->
+
+<%= alert_dialog("add_user",render_html('add_user'), "分配人员账号") %>
+
+<%= alert_dialog("freeze_dep", render_html('/shared/dialog/opt_liyou', form_id: 'freeze_dep_form', action: freeze_kobe_department_path(@dep)), "冻结单位") %>
+
+<!-- 单位操作 end -->
+
+<!-- 用户操作 begin -->
+<%= alert_dialog("reset_password",'',"重置密码") %>
+
+<%= alert_dialog("show_logs",'',"查看日志") %>
+
+<%= alert_dialog("freeze_user", '', "冻结用户") %>
+
+<!-- 用户操作 begin -->

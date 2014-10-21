@@ -21,7 +21,7 @@
         <label class="label">登录名 <span class="color-red">*</span></label>
         <label class="input">
           <i class="icon-append fa fa-user"></i>
-          <input type="text" name="user[login]" id="user_login" placeholder="登录名" />
+          <%= u.text_field :login, placeholder: "登录名" %>
           <b class="tooltip tooltip-bottom-right">长度为6-20个字符，不能是中文</b>
         </label>
       </section>
@@ -39,7 +39,7 @@
           <label class="label">密码 <span class="color-red">*</span></label>
           <label class="input">
             <i class="icon-append fa fa-lock"></i>
-            <input type="password" name="user[password]" id="user_password" placeholder="密码" />
+            <%= u.password_field :password, placeholder: "密码" %>
             <b class="tooltip tooltip-bottom-right">长度为6-20个字符</b>
           </label>
         </section>
@@ -48,7 +48,7 @@
           <label class="label">确认密码 <span class="color-red">*</span></label>
           <label class="input">
             <i class="icon-append fa fa-lock"></i>
-            <input type="password" name="user[password_confirmation]" id="user_password_confirmation" placeholder="确认密码" />
+            <%= u.password_field :password_confirmation, placeholder: "确认密码" %>
           </label>
         </section>
       </div>

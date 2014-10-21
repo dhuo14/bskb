@@ -77,11 +77,11 @@ class Department < ActiveRecord::Base
     end
     # 分配人员账号
     if [0,1,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 分配人员账号", "#add_user_div", "data-toggle" => "modal"]
+      arr << ["<i class='fa fa-pencil'></i> 分配人员账号", "#add_user", "data-toggle" => "modal"]
     end
     # 冻结单位
     if [1,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 冻结单位", "#freeze_dep_div", "data-toggle" => "modal"]
+      arr << ["<i class='fa fa-pencil'></i> 冻结单位", "#freeze_dep", "data-toggle" => "modal"]
     end
     return arr
   end
