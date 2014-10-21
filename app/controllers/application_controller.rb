@@ -34,7 +34,7 @@ class ApplicationController < ActionController::Base
 
     # 生产ztree的json
     def ztree_json(obj_class)
-      return render :json => obj_class.get_json(params[:name])
+      render :json => obj_class.get_json(params[:name])
     end
 
     # 设置后退页面

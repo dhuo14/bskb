@@ -18,5 +18,6 @@
 /config/database.yml
 /public/assets
 /public/test
+/public/system
 /Gemfile.lock
 /ruby
