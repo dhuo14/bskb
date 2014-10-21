@@ -105,7 +105,7 @@ module CreateXmlForm
     }
     # 如果需要上传附件
     if options.has_key?("upload_files") && options["upload_files"] == true
-      str << hidden_field_tag('uploaded_file_ids')
+      str << "<input id='#{form_id}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />"
       str << "</form>" 
       # 插入上传组件HTML
       str << render(:partial => '/shared/myform/fileupload',:locals => {form_id: form_id,upload_model: obj.class.upload_model, master_id: obj.id, rules: rules, messages: messages})

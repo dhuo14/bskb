@@ -1,8 +1,13 @@
 # -*- encoding : utf-8 -*-
 class Suggestion < ActiveRecord::Base
-
+  has_many :uploads, class_name: :SuggestionsUpload, foreign_key: :master_id
 	include AboutStatus
 
+  # 附件的类
+  def self.upload_model
+    SuggestionsUpload
+  end
+  
 	def self.xml(who='',options={})
 	  %Q{
 	    <?xml version='1.0' encoding='UTF-8'?>
