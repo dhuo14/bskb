@@ -48,7 +48,6 @@ Bskb::Application.routes.draw do
         post :move, :valid_dep_name
       end
       member do 
-        get :show_dep
         post :add_user, :freeze
       end
     end
@@ -69,8 +68,9 @@ Bskb::Application.routes.draw do
       end
     end
     resources :users, :except => :index do 
-      collection do
-        get :profile, :reset_password, :setting
+      member do
+        get :reset_password, :show_logs, :freeze
+        post :update_password, :save_freeze
       end
     end
     resources :categories, :except => :show do

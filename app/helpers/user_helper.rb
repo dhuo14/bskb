@@ -2,39 +2,14 @@
 module UserHelper
 
 	def render_html(partial_path, locals = {})
-	  render partial: partial_path, locals: locals
+	  raw render(partial: partial_path, locals: locals).html_safe
 	end
 
 	# 弹框 
 	# 按钮要有href="#div_id" data-toggle="modal"
 	# 例如<a class="btn btn-sm btn-default" href="#div_id" data-toggle="modal">
 	def alert_dialog(div_id,content,title='提示')
-		return render_html('/share/modal_dialog', div_id: div_id, content: content, title: title)
-	end
-
-	# 确认弹框
-	# ha = {"action" => "", "method" => "", "div_id" => "", "title" => "", "content" => ""}
-	def confirm_dialog(ha)
-  	action = ha.has_key?("action") ? ha["action"] : "" 
-  	method = ha.has_key?("method") ? ha["method"] : "post"
-  	div_id = ha.has_key?("div_id") ? ha["div_id"] : ""
-  	str = form_tag(action, method: method, class: 'sky-form', id: "#{div_id}_form").to_str
-    str << %Q{
-      <div class="modal-body">
-			#{ha["content"]}
-      </div>
-	    <div class="modal-footer">
-	      <button type="button" class="btn-u btn-u-default" data-dismiss="modal">取消</button>
-	      <button type="submit" class="btn-u">确定</button>
-	    </div>
-	    </form>
-	    }
-		return alert_dialog(div_id,str,ha["title"])
-	end
-
-	# 生成含有操作理由的div 用于冻结单位时填写操作理由
-	def create_op_liyou_div(input_name='opt_liyou')
-		return render_html('/share/opt_liyou', input_name: input_name)
+		raw render_html('/shared/dialog/modal_dialog', div_id: div_id, content: content, title: title).html_safe
 	end
 
 	# 多个标签的展示页面

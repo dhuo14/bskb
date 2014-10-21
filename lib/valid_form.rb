@@ -1,8 +1,7 @@
 # -*- encoding : utf-8 -*-
 module ValidForm
 
-	def valid_unique_dep_name(name,id)
-		id ||= 0
+	def valid_unique_dep_name(name,id=0)
 		return Department.where(["name = ? and id != ?", name, id]).blank? ? true : false
 	end
 

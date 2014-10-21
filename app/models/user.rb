@@ -78,27 +78,20 @@ class User < ActiveRecord::Base
   end
 
   def cando_list(action='')
-    show_div = '.tab-content .active.in .show_content'
     arr = [] 
     # 修改
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','#{show_div}')"]
+      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','.tab-content .active.in .show_content')"]
     end
+    # 查看日志
+    arr << ["<i class='fa fa-clock-o'></i> 查看日志", "#show_logs", "data-toggle" => "modal", onClick: "show_content('/kobe/users/#{self.id}/show_logs','#show_logs .modal-body')"]
     # 重置密码
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-lock'></i> 重置密码", "#reset_password_div", "data-toggle" => "modal", onClick: "show_content('/kobe/departments/#{self.id}/edit','#reset_password_div #dialog-content')"]
+      arr << ["<i class='fa fa-lock'></i> 重置密码", "#reset_password", "data-toggle" => "modal", onClick: "show_content('/kobe/users/#{self.id}/reset_password','#reset_password .modal-body')"]
     end
     # 冻结
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-lock'></i> 冻结", "#freeze_user_div", "data-toggle" => "modal"]
-    end
-    # 删除
-    if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-trash-o'></i> 删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "确定要删除吗?"}]
-    end
-    # 彻底删除
-    if self.status == 404
-      arr << ["<i class='fa fa-times'></i> 彻底删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "删除后不可恢复，确定要删除吗?"}]
+      arr << ["<i class='fa fa-minus-circle'></i> 冻结", "#freeze_user", "data-toggle" => "modal", onClick: "show_content('/kobe/users/#{self.id}/freeze','#freeze_user .modal-body')"]
     end
     return arr
   end

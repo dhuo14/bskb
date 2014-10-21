@@ -1,15 +1,15 @@
 <div class='col-md-12'>
     <%#= _create_xml_form(@obj.class.xml,@obj,{"title"=>"创建新单位","grid"=>2,"method"=>"post","action"=>kobe_departments_path }) %>
 
-    <%= _create_xml_form(@obj.class.xml,@obj,{"upload_files" => true, "title"=>"创建新单位","grid"=>2,"method"=>"post","action"=>kobe_departments_path }) %>
+    <%#= _create_xml_form(@obj.class.xml,@obj,{"upload_files" => true, "title"=>"创建新单位","grid"=>2,"method"=>"post","action"=>kobe_departments_path }) %>
 </div>
 
 <p>&nbsp;</p>
 
 <div class='col-md-12'>
-    <%#= _create_xml_form(@obj2.class.xml,@obj2,{"upload_files" => true, "title"=>"修改单位信息","grid"=>2,"method"=>"patch","action"=>kobe_department_path(@obj2)}) %>
+    <%= _create_xml_form(@obj2.class.xml,@obj2,{"upload_files" => true, "title"=>"修改单位信息","grid"=>2,"method"=>"patch","action"=>kobe_department_path(@obj2)}) %>
 
-    <%#= render :partial => '/kobe/create_xml_form',:upload_model => @obj.class.upload_model %>
+
 </div>
 
 <p>&nbsp;</p>
