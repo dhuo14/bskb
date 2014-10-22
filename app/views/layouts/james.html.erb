@@ -15,7 +15,7 @@
 
     <!-- CSS Global Compulsory -->
     <%= stylesheet_link_tag "james" %>
-    <%= javascript_include_tag "james" %>
+    <%= javascript_include_tag "application" %>
 
 </head> 
 
@@ -280,5 +280,7 @@
 <!--[if lt IE 9]>
     <%= javascript_include_tag "ie_9" %>
 <![endif]-->
+<%= javascript_include_tag "james" %>
+<%= render :partial => '/shared/myform/fileupload_layout' %>
 </body>
 </html>

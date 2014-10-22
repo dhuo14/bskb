@@ -1,5 +1,3 @@
-//= require form
-//= require plugins/jquery.ztree.all-3.5
 //= require ztree_show
 
 // 全选、取消全选的事件  

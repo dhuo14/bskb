@@ -1,7 +1,8 @@
 <div class="container content">   
   <div class="row">
-    <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
-      <%= form_for(User.new, url: login_users_path, method: :post, html: { class: "sky-form reg-page", id: "sign_in_form" }) do |u| %>
+    <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 shadow-wrapper">
+      <div class="box-shadow shadow-effect-2">
+        <%= form_for(User.new, url: login_users_path, method: :post, html: { class: "sky-form reg-page", id: "sign_in_form" }) do |u| %>
         <div class="reg-header">            
           <h2>用户登录</h2>
         </div>
@@ -19,7 +20,7 @@
             <%= u.password_field :password, placeholder: "密码" %>
           </label>
         </div>
-  
+        
         <div class="row">
           <div class="col-md-6">
             <label class="checkbox">
@@ -42,7 +43,8 @@
             <%= link_to "免费注册", sign_up_users_path %>
           </div>
         </div>
-      <% end %>         
+        <% end %>
+      </div>    
     </div>
   </div>
 </div>

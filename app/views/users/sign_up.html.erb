@@ -1,7 +1,8 @@
 <%= step(@arr,1) %>
 <div class="container content">
   <div class="row">
-    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 shadow-wrapper">
+      <div class="box-shadow shadow-effect-2">
       <%= form_for(User.new, url: create_user_dep_users_path, method: :post, html: { class: "sky-form reg-page", id: "sign_up_form" }) do |u| %>
       <div class="reg-header">
         <h2>新用户注册</h2>
@@ -66,6 +67,7 @@
         </div>
       </div>
       <% end %>
+      </div>
     </div>
   </div>
 </div> 

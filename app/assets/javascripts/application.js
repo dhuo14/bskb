@@ -18,6 +18,8 @@
 //= require plugins/jquery.query
 //= require plugins/dialog-min
 //= require app
+//= require form
+//= require plugins/jquery.ztree.all-3.5
 
 
 $(function() {

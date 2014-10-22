@@ -1,8 +1,4 @@
-//= require application
-//= require form
-//= require plugins/jquery.ztree.all-3.5
-
-jQuery(document).ready(function() {
+$(document).ready(function() {
 	var sign_in_rules = {
 		"user[login]": { required: true, maxlength: 20, minlength: 6 },
 		"user[password]": { required: true, maxlength: 20, minlength: 6 }

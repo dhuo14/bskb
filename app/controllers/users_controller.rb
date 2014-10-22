@@ -2,7 +2,7 @@
 class UsersController < JamesController
 
   skip_before_action :verify_authenticity_token, :only => [ :valid_dep_name, :valid_user_login ]
-  before_action :get_step_array, :only => [:sign_up, :edit_dep, :edit_user, :show]
+  before_action :get_step_array, :only => [:sign_up, :edit_dep, :sign_up_upload, :edit_user, :show]
 
   def sign_in
   end
@@ -54,11 +54,19 @@ class UsersController < JamesController
   def edit_user
   end
 
+  def sign_up_upload
+
+  end
+
+  def upload
+    redirect_to edit_user_users_path
+  end
+
   def update_dep
     dep = current_user.department
     if update_and_write_logs(dep)
       tips_get("更新单位信息成功。")
-      redirect_to edit_user_users_path
+      redirect_to sign_up_upload_users_path
     else
       flash_get(dep.errors.full_messages)
       redirect_back_or
@@ -104,6 +112,6 @@ class UsersController < JamesController
   end
 
   def get_step_array
-    @arr = ["设置登录名", "填写单位信息", "填写用户信息", "注册成功"]
+    @arr = ["设置登录名", "填写单位信息", "上传资质证书", "填写用户信息", "注册成功"]
   end
 end
