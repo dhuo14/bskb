@@ -108,7 +108,7 @@ module CreateXmlForm
       str << "<input id='#{form_id}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />"
       str << "</form>" 
       # 插入上传组件HTML
-      str << render(:partial => '/shared/myform/fileupload',:locals => {form_id: form_id,upload_model: obj.class.upload_model, master_id: obj.id, rules: rules, messages: messages})
+      str << render(:partial => '/shared/myform/fileupload',:locals => {form_id: form_id,upload_model: obj.class.upload_model, master_id: obj.id, min_number_of_files: options["min_number_of_files"], rules: rules, messages: messages})
     else
       str << %Q|
         <footer>

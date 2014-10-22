@@ -2,7 +2,7 @@
     <fieldset>
       <div class="row fileupload-buttonbar">
         <div class="alert alert-warning  fade in">
-          <h4>上传附件</h4>
+          <h4><strong>上传附件</strong></h4>
           <%= raw upload_model.tips.html_safe %>
         </div>
         <div class="span7">
@@ -49,8 +49,18 @@
       var ids = $('form#<%= form_id %>_fileupload tr.template-download .preview[file_id]').map(function() {
         return $(this).attr('file_id');
       }).get().join(',');
-      $("#<%= form_id %>_uploaded_file_ids").val(ids);
-      $('#<%= form_id %>').submit();});
+      var minNumberOfFiles = <%= min_number_of_files.to_i %>;
+      var alertContent = "<div class='alert alert-danger fade in'><button aria-hidden='true' data-dismiss='alert' class='close' type='button'>×</button><h4>出错了!</h4><p>上传附件没有达到数量要求（不少于"+ minNumberOfFiles +"个），请按要求上传附件。</p></div>";
+      if (ids.split(",").length < minNumberOfFiles){
+        if ($(this).prevAll("div.alert").length == 0){
+          $(this).parent().prepend(alertContent);
+        }
+        return false;
+      }else{
+        $("#<%= form_id %>_uploaded_file_ids").val(ids);
+        $('#<%= form_id %>').submit();
+      }
+    });
     $('#<%= form_id %>_reset').on("click",function(){$('#<%= form_id %>')[0].reset();});
     var <%= form_id %>_rules = {<%= raw rules.join(",").html_safe %>};
     var <%= form_id %>_messages = {<%= raw messages.join(",").html_safe %>};

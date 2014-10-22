@@ -12,9 +12,9 @@ class SuggestionsUpload < ActiveRecord::Base
   # 上传附件的提示 -- 需要跟下面的JS设置匹配
   def self.tips
     '<ol>
-      <li>仅支持jpg、jpeg、png、gif、doc、rar、zip、pdf等格式的图片文件；</li>
+      <li>仅支持jpg、jpeg、png、gif、doc、wps、rar、zip、pdf等格式的文件；</li>
       <li>单个文件大小不能超过1M；</li>
-      <li>上传文件个数不超过10个。</li>
+      <li>上传文件的数量不超过10个。</li>
     </ol>'
   end
 
@@ -22,7 +22,7 @@ class SuggestionsUpload < ActiveRecord::Base
   def self.jquery_setting
     '{
       autoUpload: true,
-      acceptFileTypes: /(\.|\/)(gif|jpe?g|png|rar|doc?x|zip|pdf)$/i,
+      acceptFileTypes: /(\.|\/)(gif|jpe?g|png|rar|docx?|zip|pdf|wps)$/i,
       maxNumberOfFiles: 10,
       maxFileSize: 1048576
     }'
