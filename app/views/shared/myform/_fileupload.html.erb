@@ -1,46 +1,43 @@
-<%= form_tag(uploads_path(master_id: master_id, upload_model: upload_model), multipart: true, id: "#{form_id}_fileupload", class: "sky-form fileupload_form" ) %>
-    <fieldset>
-      <div class="row fileupload-buttonbar">
-        <div class="alert alert-warning  fade in">
-          <h4><strong>上传附件</strong></h4>
-          <%= raw upload_model.tips.html_safe %>
-        </div>
-        <div class="span7">
-          <span class="pull-left btn btn-sm btn-success fileinput-button">
-            <i class="fa fa-plus-circle"></i>
-            <span>添加新文件</span>
-            <%#= file_field_tag "upload_file[upload]"%>
-            <input id="<%= "#{form_id}_upload_file_upload" %>" name="upload_file[upload]" type="file" />
-          </span>
-          <button type="submit" class="btn btn-sm btn-primary start">
-            <i class="fa fa-upload"></i>
-            <span>开始上传</span>
-          </button>
-          <button type="reset" class="btn btn-sm btn-warning cancel">
-            <i class="fa fa-ban"></i>
-            <span>取消上传</span>
-          </button>
-          <button type="button" class="btn btn-sm btn-danger delete">
-            <i class="fa fa-trash-o"></i>
-            <span>删除选中文件</span>
-          </button>
-          <label class="checkbox pull-right"><input type="checkbox" class="toggle"><i></i>选中全部文件</label>
-        </div>
-        <div class="span5">
-          <div class="progress progress-striped active fade">
-            <div class="bar progress-bar progress-bar-success" style="width:0%;"></div>
-          </div>
+<%= form_tag(uploads_path(master_id: master_id, upload_model: upload_model), multipart: true, id: "#{form_id}_fileupload", class: "sky-form fileupload_form no-border" ) %>
+    <div class="row fileupload-buttonbar">
+      <div class="alert alert-warning  fade in">
+        <h4><strong>上传附件</strong></h4>
+        <%= raw upload_model.tips.html_safe %>
+      </div>
+      <div class="span7">
+        <span class="pull-left btn btn-sm btn-success fileinput-button">
+          <i class="fa fa-plus-circle"></i>
+          <span>添加新文件</span>
+          <%#= file_field_tag "upload_file[upload]"%>
+          <input id="<%= "#{form_id}_upload_file_upload" %>" name="upload_file[upload]" type="file" />
+        </span>
+        <button type="submit" class="btn btn-sm btn-primary start">
+          <i class="fa fa-upload"></i>
+          <span>开始上传</span>
+        </button>
+        <button type="reset" class="btn btn-sm btn-warning cancel">
+          <i class="fa fa-ban"></i>
+          <span>取消上传</span>
+        </button>
+        <button type="button" class="btn btn-sm btn-danger delete">
+          <i class="fa fa-trash-o"></i>
+          <span>删除选中文件</span>
+        </button>
+        <label class="checkbox pull-right"><input type="checkbox" class="toggle"><i></i>选中全部文件</label>
+      </div>
+      <div class="span5">
+        <div class="progress progress-striped active fade">
+          <div class="bar progress-bar progress-bar-success" style="width:0%;"></div>
         </div>
       </div>
-      <div class="fileupload-loading"></div>
-      <br>
-      <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
-      </table>
-    </fieldset>
-    <footer>
-      <span class="btn-u" id="<%= form_id%>_submit"><i class="fa fa-floppy-o"></i> 保 存 </span>
-      <span class="btn-u btn-u-default" id="<%= form_id %>_reset"><i class="fa fa-repeat"></i> 重 置 </span>
-    </footer>
+    </div>
+    <div class="fileupload-loading"></div>
+    <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
+    </table>
+  <footer>
+    <span class="btn-u" id="<%= form_id%>_submit"><i class="fa fa-floppy-o"></i> 保 存 </span>
+    <span class="btn-u btn-u-default" id="<%= form_id %>_reset"><i class="fa fa-repeat"></i> 重 置 </span>
+  </footer>
 </form>
 <script type="text/javascript">
   jQuery(document).ready(function() {

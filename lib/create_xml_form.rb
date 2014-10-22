@@ -77,7 +77,8 @@ module CreateXmlForm
     str = ""
     rules = []
     messages = []
-    str = form_tag(action, method: method, class: 'sky-form', id: form_id).to_str
+    str = form_tag(action, method: method, class: 'sky-form no-border', id: form_id).to_str
+    str << "<div class='tag-box tag-box-v6'>"
     unless title.blank?
       str << "<header>#{title}</header>"
     end
@@ -85,28 +86,30 @@ module CreateXmlForm
     # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'、'隐藏'的
     tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext'][@data_type!='hidden']")
     tds.each_slice(grid).with_index do |node,i|
-      str << "<fieldset><div class='row'>"
+      str << "<div class='row'>"
       node.each{|n|
         result = _create_text_field(table_name,obj,n,grid)
         str << result[0]
         rules << result[1] unless result[1].blank?
         messages << result[2] unless result[2].blank?
       }
-      str << "</div></fieldset>"
+      str << "</div>"
     end
     # 再生成文本框和富文本框--针对大文本、富文本或者隐藏域
     doc.xpath("/root/node[@data_type='textarea'] | /root/node[@data_type='richtext'] | /root/node[@data_type='hidden']").each{|n|
-      str << "<fieldset><div class='row'>" unless n.attributes["data_type"].to_s == "hidden"
+      str << "<div class='row'>" unless n.attributes["data_type"].to_s == "hidden"
       result = _create_text_field(table_name,obj,n,grid)
       str << result[0]
       rules << result[1] unless result[1].blank?
       messages << result[2] unless result[2].blank?
-      str << "</div></fieldset>" unless n.attributes["data_type"].to_s == "hidden"
+      str << "</div>" unless n.attributes["data_type"].to_s == "hidden"
     }
     # 如果需要上传附件
     if options.has_key?("upload_files") && options["upload_files"] == true
-      str << "<input id='#{form_id}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />"
-      str << "</form>" 
+      str << %Q|
+        <input id='#{form_id}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />"
+        </form>
+      </div>|
       # 插入上传组件HTML
       str << render(:partial => '/shared/myform/fileupload',:locals => {form_id: form_id,upload_model: obj.class.upload_model, master_id: obj.id, min_number_of_files: options["min_number_of_files"], rules: rules, messages: messages})
     else
@@ -116,6 +119,7 @@ module CreateXmlForm
             <button class="btn-u btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
         </footer>
       </form>
+      </div>
       <script type="text/javascript">
         jQuery(document).ready(function() {
           var #{form_id}_rules = {#{rules.join(",")}};
@@ -340,7 +344,7 @@ module CreateXmlForm
   def _create_textarea(name,table_name,column,value,opt,hint)
   	form_state = _form_states('textarea textarea-resizable',opt)
     str = %Q|
-    <section>
+    <section class="col col-12">
         <label class='label'>#{name}</label>
         <label class='#{form_state}'>
             <textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>
@@ -352,7 +356,7 @@ module CreateXmlForm
   def _create_richtext(name,table_name,column,value,opt,hint)
   	form_state = _form_states('textarea textarea-resizable',opt)
     str = %Q|
-    <section>
+    <section class="col col-12">
         <label class='label'>#{name}</label>
         <label class='#{form_state}'>
             <textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>

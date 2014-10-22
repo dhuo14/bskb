@@ -526,6 +526,9 @@
 .sky-form .col-11 {
 	width: 91.66%;
 }
+.sky-form .col-12 {
+	width: 100%;
+}
 @media screen and (max-width: 600px) {
 	.sky-form .col {
 		float: none;
