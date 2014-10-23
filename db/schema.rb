@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141017142531) do
+ActiveRecord::Schema.define(version: 20141023062527) do
 
   create_table "areas", force: true do |t|
     t.string   "name",           comment: "单位名称"
@@ -123,13 +123,14 @@ ActiveRecord::Schema.define(version: 20141017142531) do
 
   add_index "departments", ["ancestry"], name: "index_departments_on_ancestry", using: :btree
   add_index "departments", ["name"], name: "index_departments_on_name", unique: true, using: :btree
+  add_index "departments", ["org_code"], name: "index_departments_on_org_code", unique: true, using: :btree
 
   create_table "departments_uploads", force: true do |t|
-    t.integer  "master_id",           null: false
-    t.string   "upload_file_name",                 comment: "文件名称"
-    t.string   "upload_content_type",              comment: "文件类型"
-    t.integer  "upload_file_size",                 comment: "文件大小"
-    t.datetime "upload_updated_at",                comment: "时间戳"
+    t.integer  "master_id",           default: 0
+    t.string   "upload_file_name",                comment: "文件名称"
+    t.string   "upload_content_type",             comment: "文件类型"
+    t.integer  "upload_file_size",                comment: "文件大小"
+    t.datetime "upload_updated_at",               comment: "时间戳"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -183,6 +184,51 @@ ActiveRecord::Schema.define(version: 20141017142531) do
   add_index "notifications", ["receiver_id"], name: "index_notifications_on_receiver_id", using: :btree
   add_index "notifications", ["sender_id"], name: "index_notifications_on_sender_id", using: :btree
 
+  create_table "orders", force: true do |t|
+    t.string   "name",                                                            null: false, comment: "名称"
+    t.string   "sn",                                                                           comment: "凭证编号（验收单号）"
+    t.string   "contract_sn",                                                                  comment: "合同编号"
+    t.string   "buyer",                                                                        comment: "采购单位名称"
+    t.string   "payer",                                                                        comment: "发票抬头"
+    t.string   "buyer_code",                                                                   comment: "采购单位编号"
+    t.string   "seller",                                                                       comment: "供应商单位名称"
+    t.string   "seller_code",                                                                  comment: "供应商单位编号"
+    t.decimal  "bugget",                   precision: 13, scale: 2, default: 0.0, null: false, comment: "总预算"
+    t.decimal  "total",                    precision: 13, scale: 2, default: 0.0, null: false, comment: "总金额"
+    t.datetime "deliver_at",                                                                   comment: "交付时间"
+    t.string   "invoice_number",                                                               comment: "发票编号"
+    t.text     "summary",                                                                      comment: "基本情况（备注）"
+    t.integer  "user_id",                                           default: 0,   null: false, comment: "用户ID"
+    t.integer  "status",         limit: 2,                          default: 0,   null: false, comment: "状态"
+    t.datetime "effective_time",                                                               comment: "生效时间（统计）"
+    t.text     "details",                                                                      comment: "明细"
+    t.text     "logs",                                                                         comment: "日志"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "orders", ["sn"], name: "index_orders_on_sn", unique: true, using: :btree
+
+  create_table "orders_products", force: true do |t|
+    t.integer  "order_id",                               default: 0,   null: false, comment: "订单ID"
+    t.string   "category_code",                                        null: false, comment: "品目编号"
+    t.integer  "product_id",                             default: 0,   null: false, comment: "产品ID"
+    t.string   "brand",                                                             comment: "品牌"
+    t.string   "model",                                                             comment: "型号"
+    t.string   "version",                                                           comment: "版本号"
+    t.string   "unit",                                                              comment: "计量单位"
+    t.decimal  "market_price",  precision: 13, scale: 2,                            comment: "市场价格"
+    t.decimal  "bid_price",     precision: 13, scale: 2,                            comment: "中标价格"
+    t.decimal  "price",         precision: 13, scale: 2, default: 0.0, null: false, comment: "成交价格"
+    t.integer  "quantity",                               default: 0,   null: false, comment: "数量"
+    t.decimal  "total",         precision: 13, scale: 2, default: 0.0, null: false, comment: "总金额"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "orders_products", ["category_code"], name: "index_orders_products_on_category_code", using: :btree
+  add_index "orders_products", ["order_id"], name: "index_orders_products_on_order_id", using: :btree
+
   create_table "permissions", force: true do |t|
     t.string   "name",                       null: false, comment: "名称"
     t.string   "action",                     null: false, comment: "权限"
@@ -203,6 +249,25 @@ ActiveRecord::Schema.define(version: 20141017142531) do
   end
 
   add_index "permissions_roles", ["role_id", "permission_id"], name: "index_permissions_roles_on_role_id_and_permission_id", using: :btree
+
+  create_table "products", force: true do |t|
+    t.integer  "item_id",                                          default: 0, null: false, comment: "项目ID"
+    t.integer  "category_id",                                      default: 0, null: false, comment: "品目ID"
+    t.string   "category_code",                                                null: false, comment: "品目编号"
+    t.integer  "product_id",                                       default: 0, null: false, comment: "产品ID"
+    t.string   "brand",                                                                     comment: "品牌"
+    t.string   "model",                                                                     comment: "型号"
+    t.string   "version",                                                                   comment: "版本号"
+    t.string   "unit",                                                                      comment: "计量单位"
+    t.decimal  "market_price",            precision: 13, scale: 2,                          comment: "市场价格"
+    t.decimal  "bid_price",               precision: 13, scale: 2,                          comment: "中标价格"
+    t.text     "summary",                                                                   comment: "基本描述"
+    t.integer  "status",        limit: 2,                          default: 0, null: false, comment: "状态"
+    t.text     "details",                                                                   comment: "明细"
+    t.text     "logs",                                                                      comment: "日志"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "roles", force: true do |t|
     t.string   "name",                                 null: false, comment: "名称"
@@ -236,28 +301,16 @@ ActiveRecord::Schema.define(version: 20141017142531) do
   end
 
   create_table "suggestions_uploads", force: true do |t|
-    t.integer  "suggestion_id",       null: false
-    t.string   "upload_file_name",                 comment: "文件名称"
-    t.string   "upload_content_type",              comment: "文件类型"
-    t.integer  "upload_file_size",                 comment: "文件大小"
-    t.datetime "upload_updated_at",                comment: "时间戳"
+    t.integer  "master_id",           default: 0
+    t.string   "upload_file_name",                comment: "文件名称"
+    t.string   "upload_content_type",             comment: "文件类型"
+    t.integer  "upload_file_size",                comment: "文件大小"
+    t.datetime "upload_updated_at",               comment: "时间戳"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "suggestions_uploads", ["suggestion_id"], name: "index_suggestions_uploads_on_suggestion_id", using: :btree
-
-  create_table "uploads", force: true do |t|
-    t.integer  "article_id",        comment: "文章ID"
-    t.string   "data_file_name",    comment: "文件名"
-    t.string   "data_content_type", comment: "文件类型"
-    t.string   "data_file_size",    comment: "文件大小"
-    t.datetime "data_updated_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "uploads", ["article_id"], name: "index_uploads_on_article_id", using: :btree
+  add_index "suggestions_uploads", ["master_id"], name: "index_suggestions_uploads_on_master_id", using: :btree
 
   create_table "users", force: true do |t|
     t.integer  "department_id",                default: 0,                  comment: "单位id"
@@ -270,7 +323,7 @@ ActiveRecord::Schema.define(version: 20141017142531) do
     t.string   "gender",             limit: 2,                              comment: "性别"
     t.string   "identity_num",                                              comment: "身份证"
     t.string   "identity_pic",                                              comment: "身份证图片"
-    t.string   "email",                                                     comment: "电子邮箱"
+    t.string   "email",                                        null: false, comment: "电子邮箱"
     t.string   "mobile",                                                    comment: "手机"
     t.boolean  "is_visible",                   default: true,  null: false, comment: "是否公开,目前仅指身份证和手机号"
     t.string   "tel",                                                       comment: "电话"
@@ -287,5 +340,6 @@ ActiveRecord::Schema.define(version: 20141017142531) do
   end
 
   add_index "users", ["login"], name: "index_users_on_login", unique: true, using: :btree
+  add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
 
 end
