@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   # 开发给view层用的方法
   helper_method :current_user, :signed_in?, :redirect_back_or, :cando_list, :get_node_value, :hash_to_string
 
+  before_action :store_location
   # cancan 权限校验
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to errors_path, :alert => exception.message
@@ -25,8 +26,8 @@ class ApplicationController < ActionController::Base
   end
   
   # 后退页面
-  def redirect_back_or(default=root_path)
-    redirect_to(session[:return_to] || default)
+  def redirect_back_or(default=nil)
+    redirect_to(default || session[:return_to] || root_path)
     session.delete(:return_to)
   end
 

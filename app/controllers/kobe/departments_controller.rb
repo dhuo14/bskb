@@ -78,7 +78,6 @@ class Kobe::DepartmentsController < KobeController
 
   # 验证单位名称
   def valid_dep_name
-    params[:obj_id] ||= 0
     render :text => valid_unique_dep_name(params[:departments][:name],params[:obj_id])
   end
 

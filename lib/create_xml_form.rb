@@ -244,7 +244,7 @@ module CreateXmlForm
 # 生成表单框begin
   
   # 生成提交按钮
-  def _create_form_button(id)
+  def _create_form_button(id=nil)
     id = id.nil? ? "" : " id='#{id}'"
     %Q|
     <hr />

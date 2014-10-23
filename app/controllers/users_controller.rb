@@ -112,6 +112,6 @@ class UsersController < JamesController
   end
 
   def get_step_array
-    @arr = ["设置登录名", "填写单位信息", "上传资质证书", "填写用户信息", "注册成功"]
+    @arr = ["设置登录名", "填写单位信息", "上传资质证书", "填写用户信息", "提交审核", "注册成功"]
   end
 end

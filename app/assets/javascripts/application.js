@@ -25,7 +25,7 @@
 $(function() {
 
 	// 初始化
-  App.init();
+	App.init();
 
 	// 状态筛选,用于list列表页面
 	$(".status_filter").on('click',function(){
@@ -44,13 +44,13 @@ $(function() {
 
 // 验证表单字段规则
 function validate_form_rules (form_id,rules,messages) {
-	messages = messages || {}
-    $(form_id).validate({
-        rules: rules,
-        messages: messages,
-        errorPlacement: function(error, element)
-        {
-            error.insertAfter(element.parent());
-        }
-    });
+	messages = messages || {};
+	$(form_id).validate({
+		rules: rules,
+		messages: messages,
+		errorPlacement: function(error, element)
+		{
+			error.insertAfter(element.parent());
+		}
+	});
 }
