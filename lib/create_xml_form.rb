@@ -77,10 +77,10 @@ module CreateXmlForm
     str = ""
     rules = []
     messages = []
-    str = form_tag(action, method: method, class: 'sky-form no-border', id: form_id).to_str
-    str << "<div class='tag-box tag-box-v6'>"
+    str = "<div class='tag-box tag-box-v6'>"
+    str << form_tag(action, method: method, class: 'sky-form no-border', id: form_id).to_str
     unless title.blank?
-      str << "<header>#{title}</header>"
+      str << "<h2><strong>#{title}</strong></h2><hr />"
     end
     doc = Nokogiri::XML(xml)
     # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'、'隐藏'的
@@ -107,19 +107,14 @@ module CreateXmlForm
     # 如果需要上传附件
     if options.has_key?("upload_files") && options["upload_files"] == true
       str << %Q|
-        <input id='#{form_id}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />"
-        </form>
-      </div>|
+        <input id='#{form_id}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />
+        </form>|
       # 插入上传组件HTML
       str << render(:partial => '/shared/myform/fileupload',:locals => {form_id: form_id,upload_model: obj.class.upload_model, master_id: obj.id, min_number_of_files: options["min_number_of_files"], rules: rules, messages: messages})
     else
+      str << _create_form_button
       str << %Q|
-        <footer>
-            <button class="btn-u" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
-            <button class="btn-u btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
-        </footer>
       </form>
-      </div>
       <script type="text/javascript">
         jQuery(document).ready(function() {
           var #{form_id}_rules = {#{rules.join(",")}};
@@ -128,6 +123,7 @@ module CreateXmlForm
         });
       </script>|
     end
+    str << "</div>"
     return raw str.html_safe
   end
   
@@ -203,167 +199,14 @@ module CreateXmlForm
     if options.has_key?("messages") 
       messages = "'#{table_name}[#{column}]':'#{options["messages"]}'"
     end
-
-    section = grid == 1 ? "<section>" : "<section class='col col-#{12/grid}'>"
-
-    case data_type
-    when "hidden"
-      input_str = _create_hidden(table_name,column,value)
-    when "radio"
-      input_str = _create_radio(section,name,table_name,column,value,opt,hint,data)
-    when "checkbox"
-      input_str = _create_checkbox(section,name,table_name,column,value,opt,hint,data)
-    when "select"
-      input_str = _create_select(section,name,table_name,column,value,opt,hint,data)
-    when "multiple_select"
-      input_str = _create_multiple_select(section,name,table_name,column,value,opt,hint,data)
-    when "textarea"
-      input_str = _create_textarea(name,table_name,column,value,opt,hint)
-    when "richtext"
-      input_str = _create_richtext(name,table_name,column,value,opt,hint)
-    else
-      input_str = _create_text(section,name,table_name,column,value,opt,hint,icon)
-    end
+    # 生成输入框
+    input_str = _create_input_str(grid,data_type,name,table_name,column,value,opt,hint,data,icon)
     rusult.push(input_str)
     rusult.push(rules)
     rusult.push(messages)
     return rusult
   end
 
-	# 隐藏输入框
-  def _create_hidden(table_name,column,value)
-    return "<input type='hidden' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' />"
-  end
-  # 普通文本
-  def _create_text(section,name,table_name,column,value,opt,hint,icon)
-    str = %Q|
-    #{section}
-        <label class='label'>#{name}</label>
-        <label class='#{_form_states('input',opt)}'>
-            <i class="icon-append fa fa-#{icon}"></i>
-            <input type='text' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' #{opt.join(" ")}>
-            #{hint.blank? ? "" : "<b class='tooltip tooltip-bottom-right'>#{hint}</b>"}
-        </label>
-    </section>|
-  end
-  # 单选
-  def _create_radio(section,name,table_name,column,value,opt,hint,data)
-    data_str = ""
-    form_state = _form_states('radio',opt) 
-    data.each do |d|
-      options = opt.clone
-      if d.class == Array 
-        options << "checked" if (value && value == d[0])
-        data_str << "<label class='#{form_state}'><input type='radio' name='#{table_name}[#{column}]' value='#{d[0]}' #{options.join(" ")}><i class='rounded-x'></i>#{d[1]}</label>\n"
-      else
-        options << "checked" if (value && value == d)
-        data_str << "<label class='#{form_state}'><input type='radio' name='#{table_name}[#{column}]' value='#{d}' #{options.join(" ")}><i class='rounded-x'></i>#{d}</label>\n"
-      end
-    end
-    str = %Q|
-    #{section}
-        <label class="label">#{name}</label>
-        <div class="inline-group">
-            #{data_str}
-        </div>
-        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
-    </section>|
-  end
-  # 多选
-  def _create_checkbox(section,name,table_name,column,value,opt,hint,data)
-    data_str = ""
-    form_state = _form_states('checkbox',opt)
-    data.each do |d| 
-      options = opt.clone
-      if d.class == Array
-        options << "checked" if (value && value.split(",").include?(d[0]))
-        data_str << "<label class='#{form_state}'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d[0]}' #{options.join(" ")}><i></i>#{d[1]}</label>\n"
-      else
-        options << "checked" if (value && value.split(",").include?(d))
-        data_str << "<label class='#{form_state}'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d}' #{options.join(" ")}><i></i>#{d}</label>\n"
-      end
-    end
-    str = %Q|
-    #{section}
-        <label class="label">#{name}</label>
-        <div class="inline-group">
-            #{data_str}
-        </div>
-        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
-    </section>|
-  end
-  # 下拉单选
-  def _create_select(section,name,table_name,column,value,opt,hint,data)
-    data_str = ""
-    form_state = _form_states('select',opt)
-    data.each do |d| 
-      if d.class == Array
-        checked = (value && value == d[0]) ? 'checked' : ''
-        data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
-      else
-        checked = (value && value == d) ? 'checked' : ''
-        data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
-      end
-    end
-    str = %Q|
-    #{section}
-        <label class='label'>#{name}</label>
-        <label class='#{form_state}'>
-          <select>
-            #{data_str}
-          </select>
-        </label>
-        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
-    </section>|
-  end
-  # 下拉多选
-  def _create_multiple_select(section,name,table_name,column,value,opt,hint,data)
-    data_str = ""
-    form_state = _form_states('select select-multiple',opt)
-    data.each do |d| 
-      if d.class == Array
-        checked = (value && value.split(",").include?(d[0])) ? 'checked' : ''
-        data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
-      else
-        checked = (value && value.split(",").include?(d)) ? 'checked' : ''
-        data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
-      end
-    end
-    str = %Q|
-    #{section}
-        <label class='label'>#{name}</label>
-        <label class='#{form_state}'>
-          <select multiple>
-            #{data_str}
-          </select>
-        </label>
-        <div class='note'><strong>提示:</strong> #{hint.blank? ? '按住ctrl键可以多选。' : "#{hint}；按住ctrl键可以多选。" }</div>
-    </section>|
-  end
-  # 大文本
-  def _create_textarea(name,table_name,column,value,opt,hint)
-  	form_state = _form_states('textarea textarea-resizable',opt)
-    str = %Q|
-    <section class="col col-12">
-        <label class='label'>#{name}</label>
-        <label class='#{form_state}'>
-            <textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>
-        </label>
-        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
-    </section>|
-  end
-  # 富文本
-  def _create_richtext(name,table_name,column,value,opt,hint)
-  	form_state = _form_states('textarea textarea-resizable',opt)
-    str = %Q|
-    <section class="col col-12">
-        <label class='label'>#{name}</label>
-        <label class='#{form_state}'>
-            <textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>
-        </label>
-        #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }
-    </section>|
-  end
   # 样式是否只读
   def _form_states(data_type,opt)
   	return (opt & ["disabled='disabled'","readonly='readonly'"]).empty? ? data_type : "#{data_type} state-disabled"
@@ -396,6 +239,163 @@ module CreateXmlForm
       </li>|
     end
     return "<ul class='timeline-v2'>#{str.reverse.join}</ul>"
+  end
+
+# 生成表单框begin
+  
+  # 生成提交按钮
+  def _create_form_button(id)
+    id = id.nil? ? "" : " id='#{id}'"
+    %Q|
+    <hr />
+    <div>
+      <button#{id} class="btn-u btn-u-lg" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
+      <button#{id} class="btn-u btn-u-lg btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
+    </div>|
+  end
+
+  def _create_input_str(grid,data_type,name,table_name,column,value,opt,hint,data,icon)
+    if data_type == "hidden"
+      return _create_hidden(table_name,column,value) 
+    else
+      if ["textarea","richtext"].include?(data_type)
+        section = grid == 1 ? "<section>" : "<section class='col col-12'>"
+      else
+        section = grid == 1 ? "<section>" : "<section class='col col-#{12/grid}'>"
+      end
+      case data_type
+      when "radio"
+        input_str = _create_radio(section,name,table_name,column,value,opt,hint,data)
+      when "checkbox"
+        input_str = _create_checkbox(section,name,table_name,column,value,opt,hint,data)
+      when "select"
+        input_str = _create_select(section,name,table_name,column,value,opt,hint,data)
+      when "multiple_select"
+        input_str = _create_multiple_select(section,name,table_name,column,value,opt,hint,data)
+      when "textarea"
+        input_str = _create_textarea(section,name,table_name,column,value,opt,hint)
+      when "richtext"
+        input_str = _create_richtext(section,name,table_name,column,value,opt,hint)
+      else
+        input_str = _create_text(section,name,table_name,column,value,opt,hint,icon)
+      end
+      return "#{section}<label class='label'>#{name}</label>#{input_str}</section>"
+    end
+  end
+
+
+# 隐藏输入框
+  def _create_hidden(table_name,column,value)
+    return "<input type='hidden' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' />"
+  end
+  # 普通文本
+  def _create_text(section,name,table_name,column,value,opt,hint,icon)
+    str = %Q|
+    <label class='#{_form_states('input',opt)}'>
+        <i class="icon-append fa fa-#{icon}"></i>
+        <input type='text' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' value='#{value}' #{opt.join(" ")}>
+        #{hint.blank? ? "" : "<b class='tooltip tooltip-bottom-right'>#{hint}</b>"}
+    </label>|
+  end
+  # 单选
+  def _create_radio(section,name,table_name,column,value,opt,hint,data)
+    data_str = ""
+    form_state = _form_states('radio',opt) 
+    data.each do |d|
+      options = opt.clone
+      if d.class == Array 
+        options << "checked" if (value && value == d[0])
+        data_str << "<label class='#{form_state}'><input type='radio' name='#{table_name}[#{column}]' value='#{d[0]}' #{options.join(" ")}><i class='rounded-x'></i>#{d[1]}</label>\n"
+      else
+        options << "checked" if (value && value == d)
+        data_str << "<label class='#{form_state}'><input type='radio' name='#{table_name}[#{column}]' value='#{d}' #{options.join(" ")}><i class='rounded-x'></i>#{d}</label>\n"
+      end
+    end
+    str = %Q|
+    <div class="inline-group">
+        #{data_str}
+    </div>
+    #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }|
+  end
+  # 多选
+  def _create_checkbox(section,name,table_name,column,value,opt,hint,data)
+    data_str = ""
+    form_state = _form_states('checkbox',opt)
+    data.each do |d| 
+      options = opt.clone
+      if d.class == Array
+        options << "checked" if (value && value.split(",").include?(d[0]))
+        data_str << "<label class='#{form_state}'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d[0]}' #{options.join(" ")}><i></i>#{d[1]}</label>\n"
+      else
+        options << "checked" if (value && value.split(",").include?(d))
+        data_str << "<label class='#{form_state}'><input type='checkbox' name='#{table_name}[#{column}]' value='#{d}' #{options.join(" ")}><i></i>#{d}</label>\n"
+      end
+    end
+    str = %Q|
+    <div class="inline-group">
+        #{data_str}
+    </div>
+    #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }|
+  end
+  # 下拉单选
+  def _create_select(section,name,table_name,column,value,opt,hint,data)
+    data_str = ""
+    form_state = _form_states('select',opt)
+    data.each do |d| 
+      if d.class == Array
+        checked = (value && value == d[0]) ? 'checked' : ''
+        data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
+      else
+        checked = (value && value == d) ? 'checked' : ''
+        data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
+      end
+    end
+    str = %Q|
+    <label class='#{form_state}'>
+      <select>
+        #{data_str}
+      </select>
+    </label>
+    #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }|
+  end
+  # 下拉多选
+  def _create_multiple_select(section,name,table_name,column,value,opt,hint,data)
+    data_str = ""
+    form_state = _form_states('select select-multiple',opt)
+    data.each do |d| 
+      if d.class == Array
+        checked = (value && value.split(",").include?(d[0])) ? 'checked' : ''
+        data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
+      else
+        checked = (value && value.split(",").include?(d)) ? 'checked' : ''
+        data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
+      end
+    end
+    str = %Q|
+    <label class='#{form_state}'>
+      <select multiple>
+        #{data_str}
+      </select>
+    </label>
+    <div class='note'><strong>提示:</strong> #{hint.blank? ? '按住ctrl键可以多选。' : "#{hint}；按住ctrl键可以多选。" }</div>|
+  end
+  # 大文本
+  def _create_textarea(section,name,table_name,column,value,opt,hint)
+    form_state = _form_states('textarea textarea-resizable',opt)
+    str = %Q|
+    <label class='#{form_state}'>
+      <textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>
+    </label>
+    #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }|
+  end
+  # 富文本
+  def _create_richtext(section,name,table_name,column,value,opt,hint)
+    form_state = _form_states('textarea textarea-resizable',opt)
+    str = %Q|
+    <label class='#{form_state}'>
+      <textarea class='autosize form-control' id='#{table_name}_#{column}' name='#{table_name}[#{column}]' rows='2' #{opt.join(" ")}>#{value}</textarea>
+    </label>
+    #{hint.blank? ? '' : "<div class='note'><strong>提示:</strong> #{hint}</div>" }|
   end
 
 end

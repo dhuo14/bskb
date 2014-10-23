@@ -43,7 +43,8 @@ $(function() {
 });
 
 // 验证表单字段规则
-function validate_form_rules (form_id,rules,messages={}) {
+function validate_form_rules (form_id,rules,messages) {
+	messages = messages || {}
     $(form_id).validate({
         rules: rules,
         messages: messages,

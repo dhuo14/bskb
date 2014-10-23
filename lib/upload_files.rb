@@ -23,7 +23,7 @@ module UploadFiles
   end 
 
   def get_uploaded_file_icon(type)
-    file = "/plugins/icons/#{type[type.rindex(".")+1,type.length].downcase}.png"
+    file = "/plugins/icons/files/#{type[type.rindex(".")+1,type.length].downcase}.png"
     FileTest.exists?("#{Rails.root}/public/#{file}") ? file : "/plugins/icons/attachment.png"
   end
 
