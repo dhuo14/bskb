@@ -42,6 +42,7 @@ Bskb::Application.routes.draw do
         get :to_do
       end
     end
+    resources :orders
     resources :departments do 
       collection do
         get :ztree

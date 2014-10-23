@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateSuggestion < ActiveRecord::Migration
   def change
     create_table :suggestions do |t|
