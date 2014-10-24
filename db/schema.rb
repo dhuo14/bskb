@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141023062527) do
+ActiveRecord::Schema.define(version: 20141024050735) do
 
   create_table "areas", force: true do |t|
     t.string   "name",           comment: "单位名称"
@@ -147,6 +147,18 @@ ActiveRecord::Schema.define(version: 20141023062527) do
   end
 
   add_index "icons", ["name"], name: "index_icons_on_name", unique: true, using: :btree
+
+  create_table "infos_uploads", force: true do |t|
+    t.integer  "master_id",           default: 0
+    t.string   "upload_file_name",                comment: "文件名称"
+    t.string   "upload_content_type",             comment: "文件类型"
+    t.integer  "upload_file_size",                comment: "文件大小"
+    t.datetime "upload_updated_at",               comment: "时间戳"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "infos_uploads", ["master_id"], name: "index_infos_uploads_on_master_id", using: :btree
 
   create_table "menus", force: true do |t|
     t.string   "name",                                 null: false, comment: "名称"

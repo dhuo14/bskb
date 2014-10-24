@@ -8,4 +8,8 @@ module XmlFormHelper
     return raw "<span class='text-red'>#{txt}</span>".html_safe
   end
 
+  def _create_ms_form()
+  	
+  end 
+
 end

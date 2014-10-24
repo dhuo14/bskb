@@ -1,0 +1,91 @@
+<div class="tag-box tag-box-v6">
+<%= form_tag(action, method: method, class: 'sky-form no-border', id: form_id) %>
+<h2><strong><%= title %></strong></h2>
+<hr />
+<div class="row">
+  <section class="col col-6"><label class="label">项目名称<span class="text-red">*</span></label>
+    <label class="input">
+      <i class="icon-append fa fa-info"></i>
+      <input type="text" value="" name="orders[name]" id="orders_name">
+      <b class="tooltip tooltip-bottom-right">项目名称应该包含主要产品信息，例如：XXX直属库输送机采购项目</b>
+    </label>
+  </section>
+</div>
+<input type="hidden" name="uploaded_file_ids" id="myform_uploaded_file_ids">
+</form>
+<hr />
+<form method="post" id="myform_fileupload" enctype="multipart/form-data" class="sky-form fileupload_form no-border" action="/uploads?upload_model=OrdersUpload" accept-charset="UTF-8"><div style="margin:0;padding:0;display:inline"><input type="hidden" value="✓" name="utf8"><input type="hidden" value="gTNJWggdsAGkVMa2+rVHhWV1wOuBY11d/1rNaRBkeew=" name="authenticity_token"></div>
+  <div class="fileupload-buttonbar">
+    <div class="alert alert-warning  fade in">
+      <h2><strong><i class="fa fa-paperclip"></i> 上传附件</strong></h2>
+      <ol>
+      <li>仅支持jpg、jpeg、png、gif、doc、wps、rar、zip、pdf等格式的文件；</li>
+      <li>单个文件大小不能超过1M；</li>
+      <li>上传文件的数量不超过10个。</li>
+    </ol>
+    </div>
+    <div class="span7">
+      <span class="pull-left btn btn-sm btn-success fileinput-button">
+        <i class="fa fa-plus-circle"></i>
+        <span>添加新文件</span>
+        <input type="file" name="upload_file[upload]" id="myform_upload_file_upload">
+      </span>
+      <button class="btn btn-sm btn-primary start" type="submit">
+        <i class="fa fa-upload"></i>
+        <span>开始上传</span>
+      </button>
+      <button class="btn btn-sm btn-warning cancel" type="reset">
+        <i class="fa fa-ban"></i>
+        <span>取消上传</span>
+      </button>
+      <button class="btn btn-sm btn-danger delete" type="button">
+        <i class="fa fa-trash-o"></i>
+        <span>删除选中文件</span>
+      </button>
+      <label class="checkbox pull-right"><input type="checkbox" class="toggle"><i></i>选中全部文件</label>
+    </div>
+    <div class="span5">
+      <div class="progress progress-striped active fade">
+        <div style="width:0%;" class="bar progress-bar progress-bar-success"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fileupload-loading"></div>
+  <table class="table table-striped"><tbody data-target="#modal-gallery" data-toggle="modal-gallery" class="files"></tbody>
+  </table>
+  <hr>
+  <div>
+    <span id="myform_submit" class="btn-u btn-u-lg"><i class="fa fa-floppy-o"></i> 保 存 </span>
+    <span id="myform_reset" class="btn-u btn-u-lg btn-u-default"><i class="fa fa-repeat"></i> 重 置 </span>
+  </div>
+</form>
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    $("#myform_fileupload").fileupload({
+      autoUpload: true,
+      acceptFileTypes: /(\.|\/)(gif|jpe?g|png|rar|docx?|zip|pdf|wps)$/i,
+      maxNumberOfFiles: 10,
+      maxFileSize: 1048576
+    });
+    $('#myform_submit').on('click',function(){
+      var ids = $('form#myform_fileupload tr.template-download .preview[file_id]').map(function() {
+        return $(this).attr('file_id');
+      }).get().join(',');
+      var minNumberOfFiles = 0;
+      var alertContent = "&lt;div class='alert alert-danger fade in'&gt;&lt;button aria-hidden='true' data-dismiss='alert' class='close' type='button'&gt;×&lt;/button&gt;&lt;h4&gt;出错了!&lt;/h4&gt;&lt;p&gt;上传附件没有达到数量要求（不少于"+ minNumberOfFiles +"个），请按要求上传附件。&lt;/p&gt;&lt;/div&gt;";
+      if (ids.split(",").length &lt; minNumberOfFiles){
+        if ($(this).prevAll("div.alert").length == 0){
+          $(this).parent().prepend(alertContent);
+        }
+        return false;
+      }else{
+        $("#myform_uploaded_file_ids").val(ids);
+        $('#myform').submit();
+      }
+    });
+    $('#myform_reset').on("click",function(){$('#myform')[0].reset();});
+    var myform_rules = {'orders[name]':{required:true, maxlength:80, minlength:6},'orders[buyer]':{required:true},'orders[payer]':{required:true},'orders[seller]':{required:true},'orders[deliver_at]':{required:true, dateISO:true},'orders[bugget]':{required:true, number:true}};
+    var myform_messages = {};
+    validate_form_rules('#myform', myform_rules, myform_messages);
+  });
+</script></div>
