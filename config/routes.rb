@@ -28,8 +28,8 @@ Bskb::Application.routes.draw do
 
   resources :users  do
     collection do
-      get :sign_in, :sign_up, :sign_out, :forgot_password, :edit_dep, :sign_up_upload, :edit_user
-      post :login, :create_user_dep, :update_dep, :upload, :update_user, :valid_dep_name, :valid_user_login
+      get :sign_in, :sign_up, :sign_out, :forgot_password
+      post :login, :create_user_dep, :valid_dep_name, :valid_user_login
     end
   end
 
@@ -45,8 +45,8 @@ Bskb::Application.routes.draw do
     resources :orders
     resources :departments do 
       collection do
-        get :ztree
-        post :move, :valid_dep_name
+        get :ztree, :sign_up_dep, :sign_up_upload, :sign_up_user, :sign_up_show, :sign_up_commit
+        post :move, :valid_dep_name, :sign_up_update_dep, :sign_up_update_upload, :sign_up_update_user
       end
       member do 
         post :add_user, :freeze

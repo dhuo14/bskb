@@ -12,7 +12,7 @@ content = show_xml_info(@dep.class.xml,@dep)
 content << render(:partial => 'user_table')
 arr = [
 	{"div_id" => "info-#{@dep.id.to_s}", "icon" => "fa-info-circle", "title" => "详细信息", "content" => content}, 
-	{"div_id" => "photos-#{@dep.id.to_s}", "icon" => " fa-bar-chart-o ", "title" => "资质证书"}, 
+	{"div_id" => "photos-#{@dep.id.to_s}", "icon" => " fa-bar-chart-o ", "title" => "资质证书" , "content" => render_html('show_upload', uploads: @dep.uploads)}, 
 	{"div_id" => "logs-#{@dep.id.to_s}", "icon" => "fa-clock-o", "title" => "历史记录", "content" => show_logs(@dep)}
 ]
 %>

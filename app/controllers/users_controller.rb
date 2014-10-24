@@ -1,8 +1,8 @@
 # -*- encoding : utf-8 -*-
 class UsersController < JamesController
 
-  skip_before_action :verify_authenticity_token, :only => [ :valid_dep_name, :valid_user_login ]
-  before_action :get_step_array, :only => [:sign_up, :edit_dep, :sign_up_upload, :edit_user, :show]
+  skip_before_action :verify_authenticity_token, :only => [:valid_dep_name, :valid_user_login]
+  before_action :get_step_array, :only => [:sign_up]
 
   def sign_in
   end
@@ -42,48 +42,10 @@ class UsersController < JamesController
       sign_in_user user
       write_logs(dep,"注册",'账号创建成功')
       write_logs(user,"注册",'账号创建成功')
-      redirect_to edit_dep_users_path
+      redirect_to sign_up_dep_kobe_departments_path
     else
       redirect_to sign_up_users_path
     end
-  end
-
-  def edit_dep
-  end
-
-  def edit_user
-  end
-
-  def sign_up_upload
-
-  end
-
-  def upload
-    redirect_to edit_user_users_path
-  end
-
-  def update_dep
-    dep = current_user.department
-    if update_and_write_logs(dep)
-      tips_get("更新单位信息成功。")
-      redirect_to sign_up_upload_users_path
-    else
-      flash_get(dep.errors.full_messages)
-      redirect_back_or
-    end
-  end
-
-  def update_user
-    if update_and_write_logs(current_user)
-      tips_get("更新用户信息成功。")
-      redirect_to user_path(current_user)
-    else
-      flash_get(current_user.errors.full_messages)
-      redirect_back_or
-    end
-  end
-
-  def show
   end
 
   def valid_dep_name
@@ -111,7 +73,4 @@ class UsersController < JamesController
     self.current_user= user
   end
 
-  def get_step_array
-    @arr = ["设置登录名", "填写单位信息", "上传资质证书", "填写用户信息", "提交审核", "注册成功"]
-  end
 end

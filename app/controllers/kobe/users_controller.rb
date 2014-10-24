@@ -2,7 +2,7 @@
 class Kobe::UsersController < KobeController
 
   before_action :get_user, :only => [:edit, :show, :update, :reset_password, :update_password, :show_logs, :freeze, :save_freeze]
-  layout :false, :only => [ :show, :edit, :reset_password, :show_logs ]
+  layout :false, :only => [:show, :edit, :reset_password, :show_logs]
 
 
   def edit

@@ -75,6 +75,10 @@ class Department < ActiveRecord::Base
     if [0,1,404].include?(self.status)
       arr << ["<i class='fa fa-pencil'></i> 修改单位信息", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/edit','#{show_div}')"]
     end
+    # 修改资质证书
+    if [0,404].include?(self.status)
+      arr << ["<i class='fa fa-pencil'></i> 修改资质证书", "javascript:void(0)"]
+    end
     # 分配人员账号
     if [0,1,404].include?(self.status)
       arr << ["<i class='fa fa-pencil'></i> 分配人员账号", "#add_user", "data-toggle" => "modal"]

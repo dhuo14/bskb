@@ -2,11 +2,11 @@
 class Kobe::MenusController < KobeController
   # load_and_authorize_resource
   
-  skip_before_action :verify_authenticity_token, :only => [ :move,:destroy ]
+  skip_before_action :verify_authenticity_token, :only => [:move,:destroy]
   # protect_from_forgery :except => :index
-  before_action :get_menu, :only => [ :edit, :update, :destroy, :show ]
-  before_action :get_icon, :only => [ :new, :index, :edit, :show ]
-  layout false, :only => [ :edit, :new, :show ]
+  before_action :get_menu, :only => [:edit, :update, :destroy, :show]
+  before_action :get_icon, :only => [:new, :index, :edit, :show]
+  layout false, :only => [:edit, :new, :show]
 
 	def index
 		@menu = Menu.new

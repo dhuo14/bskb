@@ -170,7 +170,7 @@
    background-color: #000;
    background-position: 50%;
    background-repeat: no-repeat;
-   background-image:url("../img/overlay-icon.png");
+   background-image:url("/plugins/images/overlay-icon.png");
    filter: alpha(opacity = 0);
    -webkit-backface-visibility: hidden;
    -webkit-transition: all 0.4s ease-in-out;

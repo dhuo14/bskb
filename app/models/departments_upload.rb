@@ -2,7 +2,7 @@
 class DepartmentsUpload < ActiveRecord::Base
   belongs_to :master, class_name: "Department", foreign_key: "master_id"
 
-  has_attached_file :upload, :styles => {:thumbnail => "45x45",:big =>"976x153#"}
+  has_attached_file :upload, :styles => {:thumbnail => "45x45",:big =>"250x160#"}
   validates_attachment_content_type :upload, :content_type => /\Aimage\/.*\Z/, :message => "只能上传图片文件" 
   before_post_process :allow_only_images
 

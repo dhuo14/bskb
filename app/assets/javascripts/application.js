@@ -17,15 +17,16 @@
 //= require plugins/back-to-top
 //= require plugins/jquery.query
 //= require plugins/dialog-min
+//= require plugins/fancybox/source/jquery.fancybox.pack
 //= require app
 //= require form
-//= require plugins/jquery.ztree.all-3.5
-
 
 $(function() {
 
 	// 初始化
 	App.init();
+	// 初始化 图片展示
+	App.initFancybox();
 
 	// 状态筛选,用于list列表页面
 	$(".status_filter").on('click',function(){

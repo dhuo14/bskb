@@ -2,7 +2,7 @@
 class Kobe::ArticlesController < KobeController
   # load_and_authorize_resource
   
-  before_action :get_article, :only => [ :edit, :update, :destroy ]
+  before_action :get_article, :only => [:edit, :update, :destroy]
 
   def index
     # authorize! :index, Article, :message => "您没有相关权限！"

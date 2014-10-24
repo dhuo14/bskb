@@ -5,6 +5,21 @@ module UserHelper
 	  raw render(partial: partial_path, locals: locals).html_safe
 	end
 
+	# 页面提示信息(不是弹框) 用于注册时提交页面 
+	def show_tips(cls_name,alert_title='',msg=[],opt='')		
+		str =%Q{
+			<div class="alert #{cls_name} fade in">
+				<h4>#{alert_title}</h4>
+		}
+		msg.each{ |m| str << %Q{<p>#{m}</p>} }
+		str << opt unless opt.blank?
+		str << %Q{
+			</div>
+		}
+		return raw str.html_safe
+	end
+
+
 	# 弹框 
 	# 按钮要有href="#div_id" data-toggle="modal"
 	# 例如<a class="btn btn-sm btn-default" href="#div_id" data-toggle="modal">

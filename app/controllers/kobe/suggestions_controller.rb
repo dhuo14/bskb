@@ -1,8 +1,8 @@
 # -*- encoding : utf-8 -*-
 class Kobe::SuggestionsController < KobeController
 
-  skip_before_action :verify_authenticity_token, :only => [ :destroy, :mark_as_read, :mark_as_unread ]
-  before_action :get_suggestion, :only => [ :show, :destroy, :mark_as_read, :mark_as_unread ]
+  skip_before_action :verify_authenticity_token, :only => [:destroy, :mark_as_read, :mark_as_unread]
+  before_action :get_suggestion, :only => [:show, :destroy, :mark_as_read, :mark_as_unread]
 
   def show
 

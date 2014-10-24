@@ -1,11 +1,11 @@
 # -*- encoding : utf-8 -*-
 class Kobe::CategoriesController < KobeController
 
-  skip_before_action :verify_authenticity_token, :only => [ :move, :destroy, :save_params, :save_attr, :remove_params ]
+  skip_before_action :verify_authenticity_token, :only => [:move, :destroy, :save_params, :save_attr, :remove_params]
   # protect_from_forgery :except => :index
-  before_action :get_category, :only => [ :edit, :update, :destroy ]
-  before_action :get_icon, :only => [ :new, :index, :edit ]
-  layout false, :only => [ :edit, :new ]
+  before_action :get_category, :only => [:edit, :update, :destroy]
+  before_action :get_icon, :only => [:new, :index, :edit]
+  layout false, :only => [:edit, :new]
 
 	def index
 		@category = Category.new
