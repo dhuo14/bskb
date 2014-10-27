@@ -89,11 +89,6 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    # 注册 生成步骤数组
-    def get_step_array
-      @arr = ["设置登录名", "填写单位信息", "上传资质证书", "填写用户信息", "提交审核", "注册成功"]
-    end
-
     include SaveXmlForm
     include ValidForm
 

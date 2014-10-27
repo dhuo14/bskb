@@ -1,9 +1,0 @@
-<%= step(@arr,5) %>
-
-<%= show_tips(@msg.blank? ? 'alert-info' : 'alert-warning', @msg.blank? ? "恭喜您！请确认无误后点击 #{btn_group([["<i class='fa fa-check'></i> 提交", sign_up_commit_kobe_departments_path]])}" : '很抱歉，您的注册信息不完整！', @msg) %>
-
-<%= render partial: 'sign_up', locals: { title: raw('<i class="fa fa-globe"></i> 单位信息'), opt: btn_group([["<i class='fa fa-pencil'></i> 修改单位信息", sign_up_dep_kobe_departments_path]]), content: show_tab(current_user.department,[{"div_id" => "dep-info-#{current_user.department.id.to_s}", "icon" => "fa-info-circle", "title" => "详细信息", "content" => show_xml_info(Department.xml,current_user.department)}, {"div_id" => "dep-logs-#{current_user.department.id.to_s}", "icon" => "fa-clock-o", "title" => "历史记录", "content" => show_logs(current_user.department)}]) } %>
-
-<%= render partial: 'sign_up', locals: { title: raw('<i class="fa fa-bar-chart-o"></i> 资质证书'), opt: btn_group([["<i class='fa fa-pencil'></i> 修改资质证书", sign_up_upload_kobe_departments_path]]), content: render_html('show_upload', uploads: current_user.department.uploads) } %>
-
-<%= render partial: 'sign_up', locals: { title: raw('<i class="fa fa-user"></i> 用户信息'), opt: btn_group([["<i class='fa fa-pencil'></i> 修改用户信息", sign_up_user_kobe_departments_path]]), content: show_tab(current_user,[{"div_id" => "user-info-#{current_user.id.to_s}", "icon" => "fa-info-circle", "title" => "详细信息", "content" => show_xml_info(User.xml,current_user)}, {"div_id" => "user-logs-#{current_user.id.to_s}", "icon" => "fa-clock-o", "title" => "历史记录", "content" => show_logs(current_user)}]) } %>

@@ -2,7 +2,6 @@
 class UsersController < JamesController
 
   skip_before_action :verify_authenticity_token, :only => [:valid_dep_name, :valid_user_login]
-  before_action :get_step_array, :only => [:sign_up]
 
   def sign_in
   end
@@ -42,7 +41,7 @@ class UsersController < JamesController
       sign_in_user user
       write_logs(dep,"注册",'账号创建成功')
       write_logs(user,"注册",'账号创建成功')
-      redirect_to sign_up_dep_kobe_departments_path
+      redirect_to kobe_departments_path
     else
       redirect_to sign_up_users_path
     end

@@ -148,18 +148,6 @@ ActiveRecord::Schema.define(version: 20141024050735) do
 
   add_index "icons", ["name"], name: "index_icons_on_name", unique: true, using: :btree
 
-  create_table "infos_uploads", force: true do |t|
-    t.integer  "master_id",           default: 0
-    t.string   "upload_file_name",                comment: "文件名称"
-    t.string   "upload_content_type",             comment: "文件类型"
-    t.integer  "upload_file_size",                comment: "文件大小"
-    t.datetime "upload_updated_at",               comment: "时间戳"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "infos_uploads", ["master_id"], name: "index_infos_uploads_on_master_id", using: :btree
-
   create_table "menus", force: true do |t|
     t.string   "name",                                 null: false, comment: "名称"
     t.string   "ancestry",                                          comment: "祖先节点"
@@ -234,12 +222,25 @@ ActiveRecord::Schema.define(version: 20141024050735) do
     t.decimal  "price",         precision: 13, scale: 2, default: 0.0, null: false, comment: "成交价格"
     t.integer  "quantity",                               default: 0,   null: false, comment: "数量"
     t.decimal  "total",         precision: 13, scale: 2, default: 0.0, null: false, comment: "总金额"
+    t.text     "summary",                                                           comment: "基本情况（备注）"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   add_index "orders_products", ["category_code"], name: "index_orders_products_on_category_code", using: :btree
   add_index "orders_products", ["order_id"], name: "index_orders_products_on_order_id", using: :btree
+
+  create_table "orders_uploads", force: true do |t|
+    t.integer  "master_id",           default: 0
+    t.string   "upload_file_name",                comment: "文件名称"
+    t.string   "upload_content_type",             comment: "文件类型"
+    t.integer  "upload_file_size",                comment: "文件大小"
+    t.datetime "upload_updated_at",               comment: "时间戳"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "orders_uploads", ["master_id"], name: "index_Orders_uploads_on_master_id", using: :btree
 
   create_table "permissions", force: true do |t|
     t.string   "name",                       null: false, comment: "名称"

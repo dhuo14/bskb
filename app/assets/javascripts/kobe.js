@@ -25,7 +25,7 @@ function setSelectAll(){
 };
 
 // Ajax加载页面
-function show_content(url,div) {
+function show_content(url,div,upload_form_id) {
     $.ajax({
         type: "get",
         url: url,
@@ -34,11 +34,14 @@ function show_content(url,div) {
         dataType: "html",
         success: function(data) {
             $(div).html(data);
-            // 获取当前tab的id 加载页面以后返回当前tab
-            // if($(div).has('form').length != 0) {
-            //     var tab_id = $(div).parent().attr("id").split("_")[0];
-            //     $(div + " form").append("<input type='hidden' name='tab_id' value='"+tab_id+"'>");
-            // }
+            // 如果有上传附件 加载上传的js
+            if(upload_form_id != undefined){
+                upload_files(upload_form_id);
+            }
+            // 如果有form 加载日期控件
+            if($(div).has('form').length != 0) {
+                Datepicker.initDatepicker();
+            }
         },
         error: function (data, textStatus){
             alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());

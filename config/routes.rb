@@ -45,11 +45,12 @@ Bskb::Application.routes.draw do
     resources :orders
     resources :departments do 
       collection do
-        get :ztree, :sign_up_dep, :sign_up_upload, :sign_up_user, :sign_up_show, :sign_up_commit
-        post :move, :valid_dep_name, :sign_up_update_dep, :sign_up_update_upload, :sign_up_update_user
+        get :ztree
+        post :move, :valid_dep_name
       end
       member do 
-        post :add_user, :freeze
+        get :upload
+        post :add_user, :freeze, :update_upload, :commit
       end
     end
     resources :articles do 
