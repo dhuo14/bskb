@@ -8,7 +8,7 @@ module MyFormHelper
     myform.options[:grid] ||= 1 
     set_top_part(myform) # 设置FORM头部
     set_input_part(myform) # 设置FORM的主体
-    if myform.options.has_key?("upload_files") && myform.options[:upload_files] == true
+    if myform.options.has_key?(:upload_files) && myform.options[:upload_files] == true
       set_upload_part(myform) # 设置上传附件
     else
       set_bottom_part(myform) # 设置底部按钮和JS校验
