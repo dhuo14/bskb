@@ -71,18 +71,18 @@ module ApplicationHelper
   end
 
   # 显示步骤,用于用户注册页面
-  def step(arr,step)
-    len = arr.length
-    active = Array.new(len){|i| i < step ? " class='active'" : ""}
-    color = Array.new(len){|i| i < step ? "badge-u" : "badge-light"}
-    arr.map!.with_index{|a,i|"<li#{active[i]}><a><span class='badge rounded-2x #{color[i]}'>#{i+1}</span> #{a}</a></li>"}
-    str = %Q|
-    <div class="step">
-      <ul class="nav nav-justified">
-        #{arr.join}
-      </ul>     
-    </div>|
-    return raw str.html_safe
-  end
+  # def step(arr,step)
+  #   len = arr.length
+  #   active = Array.new(len){|i| i < step ? " class='active'" : ""}
+  #   color = Array.new(len){|i| i < step ? "badge-u" : "badge-light"}
+  #   arr.map!.with_index{|a,i|"<li#{active[i]}><a><span class='badge rounded-2x #{color[i]}'>#{i+1}</span> #{a}</a></li>"}
+  #   str = %Q|
+  #   <div class="step">
+  #     <ul class="nav nav-justified">
+  #       #{arr.join}
+  #     </ul>     
+  #   </div>|
+  #   return raw str.html_safe
+  # end
 
 end

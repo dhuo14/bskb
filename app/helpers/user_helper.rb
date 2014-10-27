@@ -5,17 +5,21 @@ module UserHelper
 	  raw render(partial: partial_path, locals: locals).html_safe
 	end
 
-	# 页面提示信息(不是弹框) 用于注册时提交页面 
-	def show_tips(cls_name,alert_title='',msg=[],opt='')		
+	# 页面提示信息(不是弹框) 
+	# cls_name = { 'alert-warning', 'alert-danger', 'alert-success', 'alert-info' }
+	def show_tips(cls_name,alert_title='',msg='',opt='')		
 		str =%Q{
 			<div class="alert #{cls_name} fade in">
+				<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
 				<h4>#{alert_title}</h4>
 		}
-		msg.each{ |m| str << %Q{<p>#{m}</p>} }
-		str << opt unless opt.blank?
-		str << %Q{
-			</div>
-		}
+		if msg.class == Array
+			msg.each{ |m| str << %Q{ <p>#{m}</p> } }
+		else
+			str << %Q{ <p>#{msg}</p> }
+		end
+		str << %Q{ <p>#{opt}</p> } unless opt.blank?
+		str << %Q{ </div> }
 		return raw str.html_safe
 	end
 
@@ -37,14 +41,10 @@ module UserHelper
 		end
 		str = %Q{
 			<div class='tab-v2'>
-		}
-		str << show_tab_ul(arr)
-		str << %Q{
+				#{show_tab_ul(arr)}
 			<div class='tab-content'>
 		}
-		arr.each_with_index do |ha,index|
-			str << show_tab_content(ha["div_id"],ha["content"],index)
-		end
+		arr.each_with_index { |ha,index| str << show_tab_content(ha["div_id"],ha["content"],index) }
 		str << %Q{
 			</div>
 		</div>

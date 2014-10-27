@@ -6,6 +6,22 @@
 //= require plugins/datepicker
 //= require plugins/dialog-select
 //= require jquery-fileupload
+//
+function upload_files(form_id){
+	var url = $("#" + form_id).prop("action");
+  if (url.lastIndexOf("master_id") > 0){
+    $.getJSON(url, function(files){
+      var fu = $("#" + form_id).data('blueimpFileupload'), template;
+      fu._adjustMaxNumberOfFiles(-files.length);
+      console.log(files);
+      template = fu._renderDownload(files).appendTo($('#'+ form_id +' .files'));
+      fu._reflow = fu._transition && template.length && template[0].offsetWidth;
+      template.addClass('in');
+      $('#loading').remove();
+    });
+  }
+
+}
 
 $(function() {
   // Masking.initMasking();
@@ -13,18 +29,6 @@ $(function() {
   Datepicker.initDatepicker();
   // 上传附件
   $('form.fileupload_form').each(function(){
-	  var url = $(this).prop("action");
-	  var this_form = $(this);
-	  if (url.lastIndexOf("master_id") > 0){
-	    $.getJSON(url, function(files){
-	      var fu = this_form.data('blueimpFileupload'), template;
-	      fu._adjustMaxNumberOfFiles(-files.length);
-	      console.log(files);
-	      template = fu._renderDownload(files).appendTo($('#'+ this_form.attr("id") +' .files'));
-	      fu._reflow = fu._transition && template.length && template[0].offsetWidth;
-	      template.addClass('in');
-	      $('#loading').remove();
-	    });
-	  }
+  	upload_files($(this).attr("id"));
 	});
 });

@@ -6,7 +6,7 @@ class Department < ActiveRecord::Base
   has_ancestry :cache_depth => true
   default_scope -> {order(:ancestry, :sort, :id)}
   has_many :uploads, class_name: :DepartmentsUpload, foreign_key: :master_id
-  validates :name, presence: true, length: { in: 6..30 }, uniqueness: { case_sensitive: false }
+  validates :name, presence: true, length: { in: 2..30 }, uniqueness: { case_sensitive: false }
 
   include AboutAncestry
   include AboutStatus
@@ -67,6 +67,10 @@ class Department < ActiveRecord::Base
 	def cando_list(action='')
 		show_div = '.tab-content .active.in .show_content'
     arr = [] 
+    # 提交
+    if self.status == 0 && !self.org_code.blank? && !self.uploads.blank? && !self.user.find{ |u| !u.name.blank? }.blank?
+      arr << ["<i class='fa fa-pencil'></i> 提交", "#commit", "data-toggle" => "modal"]
+    end
     # 增加下属单位
     if [0,1,404].include?(self.status)
       arr << ["<i class='fa fa-pencil'></i> 增加下属单位", "javascript:void(0)", onClick: "show_content('/kobe/departments/new?pid=#{self.id}','#{show_div}')"]
@@ -77,7 +81,7 @@ class Department < ActiveRecord::Base
     end
     # 修改资质证书
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 修改资质证书", "javascript:void(0)"]
+      arr << ["<i class='fa fa-pencil'></i> 修改资质证书", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/upload','#{show_div}','edit_upload_fileupload')"]
     end
     # 分配人员账号
     if [0,1,404].include?(self.status)
