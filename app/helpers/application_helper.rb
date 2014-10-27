@@ -8,7 +8,7 @@ module ApplicationHelper
 
   # 格式化时间
   def show_time(t)
-    d.is_a?(Time) ? t.strftime("%Y-%m-%d %H:%M:%S") : t
+    t.is_a?(Time) ? t.strftime("%Y-%m-%d %H:%M:%S") : t
   end
 
   # 显示序号

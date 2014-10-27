@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
 class Kobe::OrdersController < KobeController
+
   def index
   end
 
@@ -8,6 +9,10 @@ class Kobe::OrdersController < KobeController
   	@master_xml = Order.xml
   	@slave_xml = OrdersProduct.xml
   	@master.buyer = @master.payer = current_user.department.name
+@myform = SingleForm.new(Order.xml,Order.new,{"upload_files" => true,"title"=> '录入采购项目',"action"=>kobe_orders_path, "grid"=>2})
+  
+  # render :layout => false
+
   end
 
   def show
