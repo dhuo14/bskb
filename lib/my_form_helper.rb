@@ -1,14 +1,14 @@
 # -*- encoding : utf-8 -*-
 module MyFormHelper
 
-  def create_form_html(myform)
-    myform.options["form_id"] ||= "myform" 
-    myform.options["action"] ||= "" 
-    myform.options["method"] ||= "post"
-    myform.options["grid"] ||= 1 
+  def create_single_form(myform)
+    myform.options[:form_id] ||= "myform" 
+    myform.options[:action] ||= "" 
+    myform.options[:method] ||= "post"
+    myform.options[:grid] ||= 1 
     set_top_part(myform) # 设置FORM头部
     set_input_part(myform) # 设置FORM的主体
-    if myform.options.has_key?("upload_files") && myform.options["upload_files"] == true
+    if myform.options.has_key?("upload_files") && myform.options[:upload_files] == true
       set_upload_part(myform) # 设置上传附件
     else
       set_bottom_part(myform) # 设置底部按钮和JS校验
@@ -17,9 +17,9 @@ module MyFormHelper
   end
 
 	def set_top_part(myform)
-    myform.html_code << form_tag(myform.options["action"], method: myform.options["method"], class: 'sky-form no-border', id: myform.options["form_id"]).to_str
-    unless myform.options["title"].blank?
-      myform.html_code << "<h2><strong>#{myform.options["title"]}</strong></h2><hr />"
+    myform.html_code << form_tag(myform.options[:action], method: myform.options[:method], class: 'sky-form no-border', id: myform.options[:form_id]).to_str
+    unless myform.options[:title].blank?
+      myform.html_code << "<h2><strong>#{myform.options[:title]}</strong></h2><hr />"
     end
 	end
 
@@ -27,7 +27,7 @@ module MyFormHelper
     doc = Nokogiri::XML(myform.xml)
     # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'、'隐藏'的
     tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext'][@data_type!='hidden']")
-    tds.each_slice(myform.options["grid"]).with_index do |node,i|
+    tds.each_slice(myform.options[:grid]).with_index do |node,i|
       tmp = ""
       node.each{|n| tmp << _create_text_field(n,myform)}
       myform.html_code << content_tag(:div, raw(tmp).html_safe, :class=>'row')
@@ -44,10 +44,10 @@ module MyFormHelper
 
 	def set_upload_part(myform)
 		myform.html_code << %Q|
-		<input id='#{myform.options["form_id"]}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />
+		<input id='#{myform.options[:form_id]}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />
 		</form>|
 		# 插入上传组件HTML
-		myform.html_code << render(:partial => '/shared/myform/fileupload',:locals => {form_id: myform.options["form_id"],upload_model: myform.obj.class.upload_model, master_id: myform.obj.id, min_number_of_files: myform.options["min_number_of_files"], rules: myform.rules, messages: myform.messages})
+		myform.html_code << render(:partial => '/shared/myform/fileupload',:locals => {form_id: myform.options[:form_id],upload_model: myform.obj.class.upload_model, master_id: myform.obj.id, min_number_of_files: myform.options[:min_number_of_files], rules: myform.rules, messages: myform.messages})
 	end
 
 	def set_bottom_part(myform)
@@ -56,9 +56,9 @@ module MyFormHelper
     </form>
     <script type="text/javascript">
       jQuery(document).ready(function() {
-        var #{myform.options["form_id"]}_rules = {#{myform.rules.join(",")}};
-        var #{myform.options["form_id"]}_messages = {#{myform.messages.join(",")}};
-        validate_form_rules('##{myform.options["form_id"]}', #{myform.options["form_id"]}_rules, #{myform.options["form_id"]}_messages);
+        var #{myform.options[:form_id]}_rules = {#{myform.rules.join(",")}};
+        var #{myform.options[:form_id]}_messages = {#{myform.messages.join(",")}};
+        validate_form_rules('##{myform.options[:form_id]}', #{myform.options[:form_id]}_rules, #{myform.options[:form_id]}_messages);
       });
     </script>|
   end
@@ -111,13 +111,13 @@ module MyFormHelper
       return input_str
     else
       result = "<label class='label'>#{name}</label>#{input_str}"
-      if myform.options["grid"] == 1
+      if myform.options[:grid].to_i == 1
         return content_tag(:section, raw(result).html_safe)
       else
         if ["textarea","richtext"].include?(input_opts[:data_type])
-          section_class = 'col col-12'
+          section_class = "col col-12"
         else
-          section_class = "'col col-#{12/myform.options["grid"].to_i}'"
+          section_class = "col col-#{12/myform.options[:grid].to_i}"
         end
         return content_tag(:section, raw(result).html_safe, :class => section_class)
       end
