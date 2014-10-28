@@ -5,11 +5,17 @@ class Kobe::OrdersController < KobeController
   end
 
   def new
-  	@master = Order.new
-  	@master_xml = Order.xml
-  	@slave_xml = OrdersProduct.xml
-  	@master.buyer = @master.payer = current_user.department.name
-    @myform = SingleForm.new(Order.xml,Order.new,{upload_files: true, title: '<i class="fa fa-question-circle"></i> 录入采购项目',action: kobe_orders_path, grid: 2})
+  	obj = Order.new
+  	obj.buyer = obj.payer = current_user.department.name
+    @single_form = SingleForm.new(Order.xml,obj,{upload_files: true, title: '<i class="fa fa-question-circle"></i> 录入采购项目',action: kobe_orders_path, grid: 2})
+
+    if obj.products.blank? 
+      slave_objs = [OrdersProduct.new(order_id: obj.id)]
+    else
+      slave_objs = obj.products
+    end
+
+    @ms_form = MasterSlaveForm.new(Order.xml,OrdersProduct.xml,obj,slave_objs,{upload_files: true, title: '<i class="fa fa-question-circle"></i> 录入采购项目',action: kobe_orders_path, grid: 2})
   
   # render :layout => false
 

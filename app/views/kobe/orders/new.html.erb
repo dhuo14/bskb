@@ -4,11 +4,14 @@
     <%#= _create_xml_form(@obj.class.xml,@obj,{"upload_files" => true, "title"=>"创建新单位","grid"=>2,"method"=>"post","action"=>kobe_departments_path }) %>
 </div>
 
-<p>&nbsp;</p>
-
+<p>single form</p>
 <div class='col-md-12'>
     <%#= _create_xml_form(@obj2.class.xml,@obj2,{"form_id"=>"update_form", "upload_files" => true,"min_number_of_files"=>2, "title"=> raw('<i class="fa fa-pencil-square-o"></i> 修改单位信息'),"grid"=>2,"method"=>"patch","action"=>kobe_department_path(@obj2)}) %>
-<%= create_single_form(@myform) %>
-    <%#=  @myform.to_html %>
+<%= draw_myform(@single_form) %>
+    
+</div>
 
+<p>master slave form</p>
+<div class='col-md-12'>
+<%= draw_myform(@ms_form) %>
 </div>

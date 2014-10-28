@@ -51,7 +51,7 @@ class KobeController < ApplicationController
   # 准备主界面的素材 ---- #未读短信息
   def init_themes
     @unread_notifications = current_user.unread_notifications
-    @suggestion_form = SingleForm.new(Suggestion.xml,Suggestion.new,{grid: 1, form_id: "suggestion_form", action: kobe_suggestions_path})
+    @suggestion_form = SingleForm.new(Suggestion.xml,Suggestion.new,{upload_files: true, grid: 1, form_id: "suggestion_form", action: kobe_suggestions_path})
   end
 
   # 获取列表的查询条件,arr应该是一个二维数组,类似于[["name = ? ", "xxx"],["user_id = ? ",11]]

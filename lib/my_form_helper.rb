@@ -1,13 +1,13 @@
 # -*- encoding : utf-8 -*-
 module MyFormHelper
+  include SaveXmlForm
 
-  def create_single_form(myform)
-    myform.options[:form_id] ||= "myform" 
-    myform.options[:action] ||= "" 
-    myform.options[:method] ||= "post"
-    myform.options[:grid] ||= 1 
+  def draw_myform(myform)
     set_top_part(myform) # 设置FORM头部
-    set_input_part(myform) # 设置FORM的主体
+    set_master_input_part(myform) #设置主表input
+    if myform.class == MasterSlaveForm
+      set_slave_input_part(myform) # 设置从表input
+    end
     if myform.options.has_key?(:upload_files) && myform.options[:upload_files] == true
       set_upload_part(myform) # 设置上传附件
     else
@@ -23,24 +23,13 @@ module MyFormHelper
     end
 	end
 
-	def set_input_part(myform)
-    doc = Nokogiri::XML(myform.xml)
-    # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'、'隐藏'的
-    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext'][@data_type!='hidden']")
-    tds.each_slice(myform.options[:grid]).with_index do |node,i|
-      tmp = ""
-      node.each{|n| tmp << _create_text_field(n,myform)}
-      myform.html_code << content_tag(:div, raw(tmp).html_safe, :class=>'row')
-    end
-    # 再生成文本框和富文本框--针对大文本、富文本或者隐藏域
-    doc.xpath("/root/node[@data_type='textarea'] | /root/node[@data_type='richtext'] | /root/node[@data_type='hidden']").each{|n|
-      unless n.attributes["data_type"].to_s == "hidden"
-        myform.html_code << content_tag(:div, raw(_create_text_field(n,myform)).html_safe, :class=>'row')
-      else
-        myform.html_code << _create_text_field(n,myform)
-      end
-    }
+	def set_master_input_part(myform)
+    myform.html_code << myform.get_master_input_part
 	end
+
+  def set_slave_input_part(myform)
+    myform.html_code << myform.get_slave_input_part
+  end
 
 	def set_upload_part(myform)
 		myform.html_code << %Q|
@@ -73,7 +62,7 @@ module MyFormHelper
   #   display 显示方式 disabled 不可操作 readonly 是否只读 skip 跳过不出现
   #   
   # # */
-  def _create_text_field(node,myform)
+  def _create_text_field(myform,node,obj,table_name,grid)
     node_options = node.attributes
     # display=skip的直接跳过
     return "" if node_options.has_key?("display") && node_options["display"].to_s == "skip"
@@ -81,8 +70,8 @@ module MyFormHelper
   	node_options = node.attributes
     name = node_options["name"].blank? ? "" : node_options["name"].to_str
     input_opts = {} #传递参数用的哈希
-    input_opts[:table_name] = myform.table_name
-  	input_opts[:value] = get_node_value(myform.obj,node,{"for_what"=>"form"})
+    input_opts[:table_name] = table_name
+  	input_opts[:value] = get_node_value(obj,node,{"for_what"=>"form"})
     input_opts[:column] = node_options["column"] || node_options["name"]
   	input_opts[:icon] = get_icon(node_options)
     if node_options.has_key?("data") && !node_options["data"].blank?
@@ -95,7 +84,7 @@ module MyFormHelper
       if node_options["rules"].to_s.include?("required:true")
         name << _red_text("*") 
       end
-      myform.rules << get_node_rules(myform.table_name,myform.obj,node_options)
+      myform.rules << get_node_rules(table_name,obj,node_options)
     end
     # 校验提示消息
     if node_options.has_key?("messages") 
@@ -105,22 +94,18 @@ module MyFormHelper
     # 没有标注数据类型的默认为字符
     input_opts[:data_type] = node_options.has_key?("data_type") ? node_options["data_type"].to_s : "text"
     input_opts[:hint] = (node_options.has_key?("hint") && !node_options["hint"].blank?) ? node_options["hint"] : ""
-    input_opts[:node_attr] = get_node_attr(myform.table_name,node_options)
+    input_opts[:node_attr] = get_node_attr(table_name,node_options)
     input_str = _create_input_str(input_opts)
     if input_opts[:data_type] == "hidden"
       return input_str
     else
       result = "<label class='label'>#{name}</label>#{input_str}"
-      if myform.options[:grid].to_i == 1
-        return content_tag(:section, raw(result).html_safe)
+      if ["textarea","richtext"].include?(input_opts[:data_type])
+        section_class = "col col-12"
       else
-        if ["textarea","richtext"].include?(input_opts[:data_type])
-          section_class = "col col-12"
-        else
-          section_class = "col col-#{12/myform.options[:grid].to_i}"
-        end
-        return content_tag(:section, raw(result).html_safe, :class => section_class)
+        section_class = "col col-#{12/grid.to_i}"
       end
+      return content_tag(:section, raw(result).html_safe, :class => section_class)
     end
   end
 
