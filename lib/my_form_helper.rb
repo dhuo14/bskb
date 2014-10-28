@@ -95,7 +95,7 @@ module MyFormHelper
       if node_options["rules"].to_s.include?("required:true")
         name << _red_text("*") 
       end
-      myform.rules << get_node_rules(input_opts[:table_name],input_opts[:column],node_options)
+      myform.rules << get_node_rules(myform.table_name,myform.obj,node_options)
     end
     # 校验提示消息
     if node_options.has_key?("messages") 
@@ -171,15 +171,16 @@ module MyFormHelper
     return opt
   end
 
-  def get_node_rules(table_name,column,node_options)
+  def get_node_rules(table_name,obj,node_options)
+    column = node_options["column"] || node_options["name"]
     # 判断有ajax校验的情况，增加当前节点的ID作为判断参数
     if node_options["rules"].to_s.include?("remote")
       hash_rules = eval(node_options["rules"].to_s)
       hash_remote = hash_rules[:remote]
       if hash_remote.has_key?(:data) 
-        hash_remote[:data][:obj_id] = myform.obj.id unless myform.obj.id.nil?
+        hash_remote[:data][:obj_id] = obj.id unless obj.id.nil?
       else
-        hash_remote[:data] = {obj_id: myform.obj.id} unless myform.obj.id.nil?
+        hash_remote[:data] = {obj_id: obj.id} unless obj.id.nil?
       end
       node_options["rules"] = hash_to_string(hash_rules)
     end
