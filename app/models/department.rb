@@ -66,10 +66,13 @@ class Department < ActiveRecord::Base
 
 	def cando_list(action='')
 		show_div = '.tab-content .active.in .show_content'
+    title = ""
+    dialog = "#opt_dialog"
     arr = [] 
     # 提交
-    if self.status == 0 && !self.org_code.blank? && !self.uploads.blank? && !self.user.find{ |u| !u.name.blank? }.blank?
-      arr << ["<i class='fa fa-pencil'></i> 提交", "#commit", "data-toggle" => "modal"]
+    if [0].include?(self.status) && !self.org_code.blank? && !self.uploads.blank? && !self.user.find{ |u| !u.name.blank? }.blank?
+      title = "<i class='fa fa-pencil'></i> 提交"
+      arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/departments/#{self.id}/commit', '#{dialog}') }]
     end
     # 增加下属单位
     if [0,1,404].include?(self.status)
@@ -85,11 +88,13 @@ class Department < ActiveRecord::Base
     end
     # 分配人员账号
     if [0,1,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 分配人员账号", "#add_user", "data-toggle" => "modal"]
+      title = "<i class='fa fa-pencil'></i> 分配人员账号"
+      arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/departments/#{self.id}/add_user', '#{dialog}') }]
     end
     # 冻结单位
     if [1,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 冻结单位", "#freeze_dep", "data-toggle" => "modal"]
+      title = "<i class='fa fa-pencil'></i> 冻结单位"
+      arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/departments/#{self.id}/freeze', '#{dialog}') }]
     end
     return arr
   end

@@ -79,19 +79,24 @@ class User < ActiveRecord::Base
 
   def cando_list(action='')
     arr = [] 
+    title = ""
+    dialog = "#opt_dialog"
     # 修改
     if [0,404].include?(self.status)
       arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','.tab-content .active.in .show_content')"]
     end
     # 查看日志
-    arr << ["<i class='fa fa-clock-o'></i> 查看日志", "#show_logs", "data-toggle" => "modal", onClick: "show_content('/kobe/users/#{self.id}/show_logs','#show_logs .modal-body')"]
+    title = "<i class='fa fa-clock-o'></i> 查看日志"
+    arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}/show_logs', '#{dialog}') }]
     # 重置密码
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-lock'></i> 重置密码", "#reset_password", "data-toggle" => "modal", onClick: "show_content('/kobe/users/#{self.id}/reset_password','#reset_password .modal-body')"]
+      title = "<i class='fa fa-lock'></i> 重置密码"
+      arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}/reset_password', '#{dialog}') }]
     end
     # 冻结
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-minus-circle'></i> 冻结", "#freeze_user", "data-toggle" => "modal", onClick: "show_content('/kobe/users/#{self.id}/freeze','#freeze_user .modal-body')"]
+      title = "<i class='fa fa-minus-circle'></i> 冻结"
+      arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}/freeze', '#{dialog}') }]
     end
     return arr
   end

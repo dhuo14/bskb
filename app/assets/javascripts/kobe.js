@@ -48,3 +48,10 @@ function show_content(url,div,upload_form_id) {
         }
     });
 }
+
+// 弹框modal_dialog ajax加载显示 
+// 设置modal-header的title并Ajax加载modal-body
+function modal_dialog_show(title,ajax_url,modal_dialog_div,upload_form_id) {
+    $(modal_dialog_div + " .modal-header .modal-title").html(title);
+    show_content(ajax_url, modal_dialog_div + " .modal-body", upload_form_id);
+}

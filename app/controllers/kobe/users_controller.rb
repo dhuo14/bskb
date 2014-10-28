@@ -6,6 +6,7 @@ class Kobe::UsersController < KobeController
 
 
   def edit
+    @myform = SingleForm.new(User.xml, @user, { form_id: "user_form", action: kobe_user_path(@user), method: "patch" })
   end
 
   def show

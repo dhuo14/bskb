@@ -34,17 +34,14 @@ module UserHelper
 	# 多个标签的展示页面
 	def show_tab(obj,arr=[])
 		if arr.blank?
-			arr = [
-				{"div_id" => "info-#{obj.id.to_s}", "icon" => "fa-info-circle", "title" => "详细信息", "content" => show_xml_info(obj.class.xml,obj)}, 
-				{"div_id" => "logs-#{obj.id.to_s}", "icon" => "fa-clock-o", "title" => "历史记录", "content" => show_logs(obj)}
-			]
+			arr = [{ div_id: "info-#{obj.id.to_s}", icon: "fa-info-circle", title: "详细信息", content: show_xml_info(obj.class.xml,obj) }, {div_id: "logs-#{obj.id.to_s}", icon: "fa-clock-o", title: "历史记录", content: show_logs(obj)}]
 		end
 		str = %Q{
 			<div class='tab-v2'>
 				#{show_tab_ul(arr)}
 			<div class='tab-content'>
 		}
-		arr.each_with_index { |ha,index| str << show_tab_content(ha["div_id"],ha["content"],index) }
+		arr.each_with_index { |ha,index| str << show_tab_content(ha[:div_id],ha[:content],index) }
 		str << %Q{
 			</div>
 		</div>
@@ -58,9 +55,9 @@ module UserHelper
 			<ul class='nav nav-tabs'>
 		}
 		arr.each_with_index do |ha,index|
-			icon = ha["icon"].blank? ? "" : " #{ha["icon"]}"
+			icon = ha[:icon].blank? ? "" : " #{ha[:icon]}"
 			str << %Q{
-	        <li#{index == 0 ? " class='active'" : ""}><a data-toggle='tab' href='##{ha["div_id"]}'><i class='fa#{icon}'></i> #{ha["title"]}</a></li>
+	        <li#{index == 0 ? " class='active'" : ""}><a data-toggle='tab' href='##{ha[:div_id]}'><i class='fa#{icon}'></i> #{ha[:title]}</a></li>
 	    }
 	  end
     str << "</ul>"
@@ -82,10 +79,10 @@ module UserHelper
 		grid = options.has_key?("grid") ? options["grid"] : 2
 		str = ""
 		tbody = ""
-    if options.has_key?("title") && !options["title"].blank?
+    if options.has_key?(:title) && !options[:title].blank?
       str << %Q|
       <div class="panel-heading">
-          <h3>#{options["title"]}</h3>
+          <h3>#{options[:title]}</h3>
       </div>|
     else
       str << "<br />"
@@ -119,5 +116,34 @@ module UserHelper
     }
 		return raw str.html_safe
 	end
+
+	def show_logs(obj)
+    return "暂无记录" if obj.logs.blank?
+    icons = Dictionary.icons
+    str = []
+    doc = Nokogiri::XML(obj.logs)
+    doc.xpath("/root/node").each do |n|
+      opt_time = n.attributes["操作时间"].to_s.split(" ")
+      act = n.attributes["操作内容"].to_s[0,2]
+      icon = icons.has_key?(act) ? icons[act] : icons["其他"]
+      infobar = []
+      infobar << "状态:#{obj.status_badge(n.attributes["当前状态"].to_s.to_i)}" if n.attributes.has_key?("当前状态")
+      infobar << "姓名:#{n.attributes["操作人姓名"]}"
+      infobar << "ID:#{n.attributes["操作人ID"]}"
+      infobar << "单位:#{n.attributes["操作人单位"]}"
+      infobar << "IP地址:#{n.attributes["IP地址"]}"
+      str << %Q|
+      <li>
+        <time class='cbp_tmtime' datetime=''><span>#{opt_time[1]}</span> <span>#{opt_time[0]}</span></time>
+      <i class='cbp_tmicon rounded-x hidden-xs'></i>
+        <div class='cbp_tmlabel'>
+          <h2><i class="fa #{icon}"></i> #{n.attributes["操作内容"]}</h2>
+          <p>#{n.attributes["备注"]}</p>
+          <p>#{infobar.join("&nbsp;&nbsp;")}</p>
+        </div>
+      </li>|
+    end
+    return "<ul class='timeline-v2'>#{str.reverse.join}</ul>"
+  end
 
 end

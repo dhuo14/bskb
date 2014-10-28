@@ -7,46 +7,8 @@
 	</div>
 </div>
 
-<%
-content = show_xml_info(@dep.class.xml,@dep)
-content << render(:partial => 'user_table')
-arr = [
-	{"div_id" => "info-#{@dep.id.to_s}", "icon" => "fa-info-circle", "title" => "详细信息", "content" => content}, 
-	{"div_id" => "photos-#{@dep.id.to_s}", "icon" => " fa-bar-chart-o ", "title" => "资质证书" , "content" => render_html('show_upload', uploads: @dep.uploads)}, 
-	{"div_id" => "logs-#{@dep.id.to_s}", "icon" => "fa-clock-o", "title" => "历史记录", "content" => show_logs(@dep)}
-]
+<%= show_tips(@msg.blank? ? 'alert-success' : 'alert-danger', @msg.blank? ? '恭喜您！' : '很抱歉！', @msg.blank? ? "账户信息已填写完整，请点击[提交]，提交并等待审核。" : @msg) if Department.get_status_attributes(@dep.status,1)[0] == '资料未填写' %>
 
-tips_div = ""
-if Department.get_status_attributes(@dep.status,1)[0] == '资料未填写'
-  msg = []
-  msg << "单位信息填写不完整，请点击[修改单位信息]。" if @dep.org_code.blank?
-  msg << "没有上传资质证书，请点击[修改资质证书]。" if @dep.uploads.blank?
-  msg << "用户信息填写不完整，请点击[修改用户信息]。" if @dep.user.find{ |u| !u.name.blank? }.blank?
-  cls_name = msg.blank? ? 'alert-success' : 'alert-danger'
-  alert_title = msg.blank? ? '恭喜您！' : '很抱歉！'
-  msg = "账户信息已填写完整，请点击[提交]，提交并等待审核。" if msg.blank?
-  tips_div = show_tips(cls_name, alert_title, msg)
-  tips_div << alert_dialog("commit", render_html('commit'), "提交并等待审核")
-end
-%>
+<%= show_tab(@dep,[{ div_id: "info-#{@dep.id.to_s}", icon: "fa-info-circle", title: "详细信息", content: render_html('show_info')}, { div_id: "photos-#{@dep.id.to_s}", icon: " fa-bar-chart-o ", title: "资质证书" , content: render_html('show_upload', uploads: @dep.uploads)}, { div_id: "logs-#{@dep.id.to_s}", icon: "fa-clock-o", title: "历史记录", content: show_logs(@dep)}]) %>
 
-<%= tips_div %>
-
-<%= show_tab(@dep,arr) %>
-
-<!-- 单位操作 begin -->
-
-<%= alert_dialog("add_user",render_html('add_user'), "分配人员账号") %>
-
-<%= alert_dialog("freeze_dep", render_html('/shared/dialog/opt_liyou', form_id: 'freeze_dep_form', action: freeze_kobe_department_path(@dep)), "冻结单位") %>
-
-<!-- 单位操作 end -->
-
-<!-- 用户操作 begin -->
-<%= alert_dialog("reset_password",'',"重置密码") %>
-
-<%= alert_dialog("show_logs",'',"查看日志") %>
-
-<%= alert_dialog("freeze_user", '', "冻结用户") %>
-
-<!-- 用户操作 begin -->
+<%= alert_dialog("opt_dialog",'') %>

@@ -2,8 +2,8 @@
 class Kobe::DepartmentsController < KobeController
 
   skip_before_action :verify_authenticity_token, :only => [:move, :valid_dep_name, :destroy]
-  before_action :get_dep, :only => [:index, :show, :edit, :update, :destroy, :freeze, :upload, :update_upload, :commit]
-  layout :false, :only => [:show, :edit, :new, :upload]
+  before_action :get_dep, :only => [:index, :show, :edit, :update, :destroy, :add_user, :freeze, :update_freeze, :upload, :update_upload, :commit, :update_commit]
+  layout :false, :only => [:show, :edit, :new, :add_user, :freeze, :upload, :commit]
 
   def index
     
@@ -20,6 +20,7 @@ class Kobe::DepartmentsController < KobeController
   def new
     @dep = Department.new
     @dep.parent_id = params[:pid] unless params[:pid].blank?
+    @myform = SingleForm.new(Department.xml, @dep, { form_id: "department_form", action: kobe_department_path(@dep) })
   end
 
   def create
@@ -43,9 +44,17 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def edit
+    @myform = SingleForm.new(Department.xml, @dep, { form_id: "department_form", action: kobe_department_path(@dep), method: "patch" })
   end
 
   def show
+    # 注册完成时提交的提示信息
+    @msg = []
+    if Department.get_status_attributes(@dep.status,1)[0] == '资料未填写'
+      @msg << "单位信息填写不完整，请点击[修改单位信息]。" if @dep.org_code.blank?
+      @msg << "没有上传资质证书，请点击[修改资质证书]。" if @dep.uploads.blank?
+      @msg << "用户信息填写不完整，请点击[修改用户信息]。" if @dep.user.find{ |u| !u.name.blank? }.blank?
+    end
   end
 
   # 删除单位
@@ -59,6 +68,9 @@ class Kobe::DepartmentsController < KobeController
 
   # 冻结单位
   def freeze
+  end
+
+  def update_freeze
     logs = prepare_logs_content(@dep,"冻结单位",params[:opt_liyou])
     @dep.change_status_and_write_logs("冻结",logs)
     redirect_to kobe_departments_path(id: @dep)
@@ -66,6 +78,9 @@ class Kobe::DepartmentsController < KobeController
 
   # 分配人员账号
   def add_user
+  end
+
+  def update_add_user
     user = User.new(params.require(:user).permit(:login, :password, :password_confirmation))
     if user.save
       user.update(department_id: params[:id])
@@ -78,6 +93,7 @@ class Kobe::DepartmentsController < KobeController
 
   # 修改资质证书
   def upload
+    @myform = SingleForm.new(nil, @dep, { form_id: "edit_upload", upload_files: true, min_number_of_files: 4, title: "上传资质证书", action: update_upload_kobe_department_path(@dep) })
   end
 
   def update_upload
@@ -86,6 +102,9 @@ class Kobe::DepartmentsController < KobeController
 
   # 注册提交
   def commit
+  end
+
+  def update_commit
     logs = prepare_logs_content(@dep,"提交","注册完成，提交！")
     @dep.change_status_and_write_logs("未审核",logs)
     redirect_to kobe_departments_path(id: @dep)

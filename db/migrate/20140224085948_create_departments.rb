@@ -41,7 +41,7 @@ class CreateDepartments < ActiveRecord::Migration
     end
     
     add_index :departments, :name,                :unique => true
-    add_index :departments, :org_code,            :unique => true
+    # add_index :departments, :org_code,            :unique => true
     add_index :departments, :ancestry
   end
 end

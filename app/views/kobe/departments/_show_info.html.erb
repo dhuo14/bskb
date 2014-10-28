@@ -1,3 +1,4 @@
+<%= show_xml_info(@dep.class.xml,@dep) %>
 <div class="panel panel-grey margin-top-40">
 	<div class="panel-heading">
 		<h3 class="panel-title"><i class="fa fa-user"></i> 用户列表</h3>
@@ -15,6 +16,7 @@
 					<th>用户名</th>
 					<th class="hidden-sm">姓名</th>
 					<th class="hidden-sm">联系电话</th>
+					<th class="hidden-sm">手机</th>
 					<th>状态</th>
 					<th class="cando">操作</th>
 				</tr>
@@ -31,6 +33,7 @@
 					<td><%= user.login %></td>
 					<td><%= user.name %></td>
 					<td><%= user.tel %></td>
+					<td><%= user.mobile %></td>
 					<td><%= user.status_badge %></td>
 					<td><%= btn_group(user.cando_list) %></td>
 				</tr>

@@ -123,7 +123,6 @@ ActiveRecord::Schema.define(version: 20141024050735) do
 
   add_index "departments", ["ancestry"], name: "index_departments_on_ancestry", using: :btree
   add_index "departments", ["name"], name: "index_departments_on_name", unique: true, using: :btree
-  add_index "departments", ["org_code"], name: "index_departments_on_org_code", unique: true, using: :btree
 
   create_table "departments_uploads", force: true do |t|
     t.integer  "master_id",           default: 0
@@ -336,7 +335,7 @@ ActiveRecord::Schema.define(version: 20141024050735) do
     t.string   "gender",             limit: 2,                              comment: "性别"
     t.string   "identity_num",                                              comment: "身份证"
     t.string   "identity_pic",                                              comment: "身份证图片"
-    t.string   "email",                                        null: false, comment: "电子邮箱"
+    t.string   "email",                                                     comment: "电子邮箱"
     t.string   "mobile",                                                    comment: "手机"
     t.boolean  "is_visible",                   default: true,  null: false, comment: "是否公开,目前仅指身份证和手机号"
     t.string   "tel",                                                       comment: "电话"
@@ -353,6 +352,5 @@ ActiveRecord::Schema.define(version: 20141024050735) do
   end
 
   add_index "users", ["login"], name: "index_users_on_login", unique: true, using: :btree
-  add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
 
 end
