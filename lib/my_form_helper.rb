@@ -37,7 +37,7 @@ module MyFormHelper
       unless n.attributes["data_type"].to_s == "hidden"
         myform.html_code << content_tag(:div, raw(_create_text_field(n,myform)).html_safe, :class=>'row')
       else
-        myform.html_code << _create_text_field(n)
+        myform.html_code << _create_text_field(n,myform)
       end
     }
 	end
@@ -79,11 +79,11 @@ module MyFormHelper
     return "" if node_options.has_key?("display") && node_options["display"].to_s == "skip"
     # 生成输入框
   	node_options = node.attributes
-    name = node_options["name"].to_str
+    name = node_options["name"].blank? ? "" : node_options["name"].to_str
     input_opts = {} #传递参数用的哈希
     input_opts[:table_name] = myform.table_name
   	input_opts[:value] = get_node_value(myform.obj,node,{"for_what"=>"form"})
-    input_opts[:column] = node_options["column"] || name
+    input_opts[:column] = node_options["column"] || node_options["name"]
   	input_opts[:icon] = get_icon(node_options)
     if node_options.has_key?("data") && !node_options["data"].blank?
       eval("input_opts[:data] = #{node_options["data"]}")
@@ -220,7 +220,7 @@ module MyFormHelper
   def _create_radio(input_opts)
     data_str = ""
     form_state = _form_states('radio',input_opts[:node_attr]) 
-    data.each do |d|
+    input_opts[:data].each do |d|
       options = input_opts[:node_attr].clone
       if d.class == Array 
         options << "checked" if (input_opts[:value] && input_opts[:value] == d[0])
@@ -240,7 +240,7 @@ module MyFormHelper
   def _create_checkbox(input_opts)
     data_str = ""
     form_state = _form_states('checkbox',input_opts[:node_attr])
-    data.each do |d| 
+    input_opts[:data].each do |d| 
       options = input_opts[:node_attr].clone
       if d.class == Array
         options << "checked" if (input_opts[:value] && input_opts[:value].split(",").include?(d[0]))
@@ -260,7 +260,7 @@ module MyFormHelper
   def _create_select(input_opts)
     data_str = ""
     form_state = _form_states('select',input_opts[:node_attr])
-    data.each do |d| 
+    input_opts[:data].each do |d| 
       if d.class == Array
         checked = (input_opts[:value] && input_opts[:value] == d[0]) ? 'checked' : ''
         data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
@@ -281,7 +281,7 @@ module MyFormHelper
   def _create_multiple_select(input_opts)
     data_str = ""
     form_state = _form_states('select select-multiple',input_opts[:node_attr])
-    data.each do |d| 
+    input_opts[:data].each do |d| 
       if d.class == Array
         checked = (input_opts[:value] && input_opts[:value].split(",").include?(d[0])) ? 'checked' : ''
         data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
