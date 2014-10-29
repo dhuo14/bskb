@@ -1,7 +1,8 @@
 # -*- encoding : utf-8 -*-
 class MyForm
 	include ActionView::Helpers
-	include XmlFormHelper
+	# include BaseFunction
+  include MyFormHelper 
 
 	def get_table_name(obj=self.obj)
 		obj.class.to_s.tableize

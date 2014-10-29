@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   # 开发给view层用的方法
-  helper_method :current_user, :signed_in?, :redirect_back_or, :cando_list, :get_node_value, :hash_to_string
+  helper_method :current_user, :signed_in?, :redirect_back_or, :cando_list
 
   before_action :store_location
   # cancan 权限校验
@@ -72,21 +72,6 @@ class ApplicationController < ActionController::Base
     # 发送邮件
     def send_email(email,title,content)
       # 这里是发送邮件的代码，暂缺
-    end
-
-    # 哈希转成syml格式的字符串，供JS调用
-    def hash_to_string(ha)
-      if ha.class == Hash
-        arr = []
-        ha.each do |key,value|
-          arr << "#{key}:#{hash_to_string(value)}"
-        end
-        return "{#{arr.join(',')}}"
-      elsif ha.class == String
-        return "'#{ha}'"
-      else
-        return ha
-      end
     end
 
     include SaveXmlForm

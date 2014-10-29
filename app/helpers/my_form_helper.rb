@@ -1,6 +1,11 @@
 # -*- encoding : utf-8 -*-
 module MyFormHelper
-  include SaveXmlForm
+  include BaseFunction
+
+  # 红色标记的文本，例如必填项*
+  def _red_text(txt)
+    return raw "<span class='text-red'>#{txt}</span>".html_safe
+  end
 
   def draw_myform(myform)
     set_top_part(myform) # 设置FORM头部
