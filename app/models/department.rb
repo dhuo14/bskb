@@ -70,7 +70,7 @@ class Department < ActiveRecord::Base
     dialog = "#opt_dialog"
     arr = [] 
     # 提交
-    if [0].include?(self.status) && !self.org_code.blank? && !self.uploads.blank? && !self.user.find{ |u| !u.name.blank? }.blank?
+    if [0].include?(self.status) && self.get_tips.blank?
       title = "<i class='fa fa-pencil'></i> 提交"
       arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/departments/#{self.id}/commit', '#{dialog}') }]
     end
@@ -97,6 +97,17 @@ class Department < ActiveRecord::Base
       arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/departments/#{self.id}/freeze', '#{dialog}') }]
     end
     return arr
+  end
+
+  # 获取提示信息 用于1.注册完成时提交的提示信息、2.登录后验证个人信息是否完整
+  def get_tips
+    msg = []
+    if [0].include?(self.status)
+      msg << "单位信息填写不完整，请点击[修改单位信息]。" if self.org_code.blank?
+      msg << "没有上传资质证书，请点击[修改资质证书]。" if self.uploads.blank?
+      msg << "用户信息填写不完整，请点击[修改用户信息]。" if self.user.find{ |u| !u.name.blank? }.blank?
+    end
+    return msg
   end
 
 end

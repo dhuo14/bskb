@@ -57,7 +57,7 @@ class ApplicationController < ActionController::Base
     end
 
     #着重提示，等用户手动关闭
-    def flash_get(message,status="error")
+    def flash_get(message,status=:error)
       unless message.class == Array
         message = [message]
       end

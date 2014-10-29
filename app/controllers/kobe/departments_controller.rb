@@ -48,13 +48,6 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def show
-    # 注册完成时提交的提示信息
-    @msg = []
-    if Department.get_status_attributes(@dep.status,1)[0] == '资料未填写'
-      @msg << "单位信息填写不完整，请点击[修改单位信息]。" if @dep.org_code.blank?
-      @msg << "没有上传资质证书，请点击[修改资质证书]。" if @dep.uploads.blank?
-      @msg << "用户信息填写不完整，请点击[修改用户信息]。" if @dep.user.find{ |u| !u.name.blank? }.blank?
-    end
   end
 
   # 删除单位

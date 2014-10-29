@@ -22,10 +22,11 @@ class UsersController < JamesController
     user = User.find_by(login: params[:user][:login].downcase)
     if user && user.authenticate(params[:user][:password])
       sign_in_user(user, params[:user][:remember_me] == '1')
-      if user.name.blank?
-        flash_get('抱歉，您的资料还未填写，请先维护您的个人信息。',"info")
+      if user.department.get_tips.blank?
+        redirect_to root_path
+      else
+        redirect_to kobe_departments_path
       end
-      redirect_to kobe_departments_path
     else
       flash_get '用户名或者密码错误!'
       redirect_to sign_in_users_path
