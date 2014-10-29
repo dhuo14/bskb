@@ -20,17 +20,35 @@ class MasterSlaveForm < MyForm
 		@options[:form_id] ||= "myform" 
     @options[:action] ||= "" 
     @options[:method] ||= "post"
+    @slave_options[:title] ||= "明细"
 		@slave_options[:grid] ||= 4 
+	end
+
+	def get_input_part
+		tmp = super # 先调用父类中的同名方法生成master_input
+		tmp << "<div class='headline'><h2 class='heading'>#{slave_options[:title]}</h2></div>"
+		tmp << self.get_slave_input_part
+		return tmp
 	end
 
 	def get_slave_input_part
   	tmp = ""
   	slave_objs.each_with_index{|o,i|
-  		tmp << "<div class='panel panel-grey'><div class='panel-heading'><h3 class='panel-title'><i class='fa fa-tasks'></i> #{i+1} 删除</h3></div><div class='panel-body'>"
-  		tmp << self.get_input_str(slave_xml,o,slave_table_name,slave_options[:grid])
-  		tmp << "</div></div>"
+  		# tmp << "<div class='panel panel-grey'><div class='panel-heading'><h3 class='panel-title'><i class='fa fa-tasks'></i> #{i+1} 删除</h3></div><div class='panel-body'>"
+  		# tmp << self.get_input_str(slave_xml,o,slave_table_name,slave_options[:grid])
+  		# tmp << "</div></div>"
+
+  		tmp << %Q|
+			<div class="tag-box tag-box-v4">
+			  <button data-dismiss="alert" class="close" type="button">×</button>
+			  <h2>#{slave_options[:title]} ##{i}</h2>
+			  #{self.get_input_str(slave_xml,o,slave_table_name,slave_options[:grid],i)}
+			</div>|
   	}
   	return tmp
   end
+
+ 	def get_total_input_part
+ 	end
 
 end

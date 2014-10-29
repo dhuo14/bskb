@@ -18,4 +18,8 @@ class SingleForm < MyForm
     @options[:method] ||= "post"
 	end
 
+	# def get_input_part
+ #  	self.get_input_str
+ #  end
+
 end
