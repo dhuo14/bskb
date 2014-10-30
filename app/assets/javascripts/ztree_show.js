@@ -179,7 +179,7 @@ function send_data(targetId,sourceId,moveType,isCopy){
 		dataType: "text",
 		data: json_data ,
 		error: function (data, textStatus){
-			alert("操作失败失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
+			tips_dialog("操作失败失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
 		}
 	})
 }
@@ -259,8 +259,7 @@ function removeTreeNode() {
 }
 
 function ajaxDestroyNode(node,msg) {
-	var result = confirm(msg);
-	if(result){
+	confirm_dialog(msg,	function(){
 		$.ajax({
 			type: "delete",
 			url: get_ztree_params('destroy') + node.id,
@@ -270,13 +269,13 @@ function ajaxDestroyNode(node,msg) {
 			success: function(data) {
 				zTree.removeNode(node);
 				$(show_div).html("");
-				alert(data);
+				tips_dialog(data);
 			},
 			error: function (data, textStatus){
-				alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
+				tips_dialog("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
 			}
 		});
-	}
+	});
 }
 
 // 右键菜单函数end

@@ -31,7 +31,7 @@ class Kobe::ArticlesController < KobeController
       tips_get("文章添加成功。")
       redirect_to kobe_articles_path(article)
     else
-      flash_get(menu.errors.full_messages)
+      flash_get(article.errors.full_messages)
       render 'new'
     end
   end

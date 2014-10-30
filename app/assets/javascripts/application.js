@@ -33,13 +33,13 @@ $(function() {
 		var newUrl = $.query.REMOVE("page");
 		newUrl = $.query.set("status_filter", $(this).attr("value")).toString(); //如果存在会替换掉存在的参数的值
 		location.href = newUrl;
-	})
+	});
 	// 日期筛选,用于list列表页面
 	$(".date_filter").on('click',function(){
 		var newUrl = $.query.REMOVE("page");
 		newUrl = $.query.set("date_filter", $(this).attr("value")).toString(); //如果存在会替换掉存在的参数的值
 		location.href = newUrl;
-	})
+	});
 
 });
 
@@ -54,4 +54,36 @@ function validate_form_rules (form_id,rules,messages) {
 			error.insertAfter(element.parent());
 		}
 	});
+};
+
+// 手动关闭提示弹框
+function flash_dialog (content) {
+	content = "<p>" + content + "</p>"
+	dialog({
+    title: '提示',
+    content: content,
+    fixed: true //  开启固定定位
+	}).show();
+};
+// 自动关闭提示框
+function tips_dialog (content) {
+	var d = dialog({
+    content: content,
+    quickClose: true, // 点击空白处关闭提示框
+    fixed: true
+	});
+	d.show();
+	setTimeout(function () {
+	    d.close().remove();
+	}, 5000);
+};
+// 确认弹框
+function confirm_dialog (content,ok_function) {
+	dialog({
+    content: content,
+    okValue: '确定',
+    ok: ok_function,
+    cancelValue: '取消',
+    cancel: function () {}
+	}).show();
 }

@@ -44,7 +44,7 @@ function show_content(url,div,upload_form_id) {
             }
         },
         error: function (data, textStatus){
-            alert("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
+            tips_dialog("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
         }
     });
 }

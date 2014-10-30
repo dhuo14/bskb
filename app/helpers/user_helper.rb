@@ -33,7 +33,6 @@ module UserHelper
 		return raw str.html_safe
 	end
 
-
 	# modal弹框 
 	# 按钮要有href="#div_id" data-toggle="modal"
 	# 例如<a class="btn btn-sm btn-default" href="#div_id" data-toggle="modal">

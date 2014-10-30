@@ -29,6 +29,7 @@ class Kobe::DepartmentsController < KobeController
       tips_get("创建成功。")
       redirect_to kobe_departments_path(id: dep)
     else
+      flash_get(dep.errors.full_messages)
       redirect_to root_path
     end
   end
@@ -65,7 +66,11 @@ class Kobe::DepartmentsController < KobeController
 
   def update_freeze
     logs = prepare_logs_content(@dep,"冻结单位",params[:opt_liyou])
-    @dep.change_status_and_write_logs("冻结",logs)
+    if @dep.change_status_and_write_logs("冻结",logs)
+      tips_get("冻结单位成功。")
+    else
+      flash_get(@dep.errors.full_messages)
+    end
     redirect_to kobe_departments_path(id: @dep)
   end
 
@@ -78,8 +83,10 @@ class Kobe::DepartmentsController < KobeController
     if user.save
       user.update(department_id: params[:id])
       write_logs(user,"分配人员账号",'账号创建成功')
+      tips_get("账号创建成功。")
       redirect_to kobe_departments_path(id: params[:id],u_id: user.id)
     else
+      flash_get(user.errors.full_messages)
       redirect_back_or
     end
   end
@@ -90,6 +97,7 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def update_upload
+    tips_get("上传资质证书成功。")
     redirect_to kobe_departments_path(id: @dep)
   end
 
@@ -99,7 +107,11 @@ class Kobe::DepartmentsController < KobeController
 
   def update_commit
     logs = prepare_logs_content(@dep,"提交","注册完成，提交！")
-    @dep.change_status_and_write_logs("未审核",logs)
+    if @dep.change_status_and_write_logs("未审核",logs)
+      tips_get("提交成功，请等待审核。")
+    else
+      flash_get(@dep.errors.full_messages)
+    end
     redirect_to kobe_departments_path(id: @dep)
   end
 

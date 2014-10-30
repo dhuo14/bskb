@@ -19,6 +19,5 @@ $(document).ready(function() {
 	$("#user_agreements #agree_btn").on("click", function(){
 		$("#user_agree").attr("checked",true);
 	});
-
 	
 });

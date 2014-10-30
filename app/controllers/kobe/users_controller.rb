@@ -31,6 +31,7 @@ class Kobe::UsersController < KobeController
   def update_password
     if @user.update(params.require(:user).permit(:password, :password_confirmation))
       write_logs(@user,"重置密码",'重置密码成功')
+      tips_get("重置密码成功。")
       redirect_to kobe_departments_path(id: @user.department.id)
     else
       flash_get(@user.errors.full_messages)
@@ -45,7 +46,11 @@ class Kobe::UsersController < KobeController
 
   def save_freeze
     logs = prepare_logs_content(@user,"冻结用户",params[:opt_liyou])
-    @user.change_status_and_write_logs("冻结",logs)
+    if @user.change_status_and_write_logs("冻结",logs)
+      tips_get("冻结用户成功。")
+    else
+      flash_get(@user.errors.full_messages)
+    end
     redirect_to kobe_departments_path(id: @user.department.id)
   end
 

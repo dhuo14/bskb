@@ -15,6 +15,7 @@ class UsersController < JamesController
   def sign_out
     self.current_user = nil
     cookies.delete(:remember_token)
+    tips_get '退出成功！'
     redirect_to sign_in_users_path
   end
 
@@ -23,8 +24,10 @@ class UsersController < JamesController
     if user && user.authenticate(params[:user][:password])
       sign_in_user(user, params[:user][:remember_me] == '1')
       if user.department.get_tips.blank?
-        redirect_to root_path
+        tips_get '登录成功！'
+        redirect_to sign_up_users_path
       else
+        flash_get user.department.get_tips
         redirect_to kobe_departments_path
       end
     else
@@ -42,8 +45,11 @@ class UsersController < JamesController
       sign_in_user user
       write_logs(dep,"注册",'账号创建成功')
       write_logs(user,"注册",'账号创建成功')
+      tips_get '账号创建成功！'
       redirect_to kobe_departments_path
     else
+      msg = dep.errors.full_messages.blank? ? user.errors.full_messages : dep.errors.full_messages
+      flash_get msg
       redirect_to sign_up_users_path
     end
   end
