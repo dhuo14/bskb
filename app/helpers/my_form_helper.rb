@@ -16,7 +16,7 @@ module MyFormHelper
 	def set_top_part(myform)
     myform.html_code << form_tag(myform.options[:action], method: myform.options[:method], class: 'sky-form no-border', id: myform.options[:form_id]).to_str
     unless myform.options[:title].blank?
-      myform.html_code << "<h2><strong>#{myform.options[:title]}</strong></h2><hr />"
+      myform.html_code << "<div class='headline'><h2><strong>#{myform.options[:title]}</strong></h2></div>"
     end
 	end
 

@@ -15,7 +15,7 @@ class Kobe::OrdersController < KobeController
       slave_objs = obj.products
     end
 
-    @ms_form = MasterSlaveForm.new(Order.xml,OrdersProduct.xml,obj,slave_objs,{form_id: 'ms_form', upload_files: true, title: '<i class="fa fa-question-circle"></i> 录入采购项目',action: kobe_orders_path, grid: 2},{title: '<i class="fa fa-angle-double-down"></i> 产品明细', grid: 4})
+    @ms_form = MasterSlaveForm.new(Order.xml,OrdersProduct.xml,obj,slave_objs,{form_id: 'ms_form', upload_files: true, title: '<i class="fa fa-pencil-square-o"></i> 录入采购项目',action: kobe_orders_path, grid: 2},{title: '产品明细', grid: 4})
   
   # render :layout => false
 

@@ -1,8 +1,7 @@
-<hr />
+<div class="headline"><h2><strong><i class="fa fa-paperclip"></i> 上传附件</strong></h2></div>
 <%= form_tag(uploads_path(master_id: master_id, upload_model: upload_model), multipart: true, id: "#{form_id}_fileupload", class: "sky-form fileupload_form no-border" ) %>
   <div class="fileupload-buttonbar">
     <div class="alert alert-warning  fade in">
-      <h2><strong><i class="fa fa-paperclip"></i> 上传附件</strong></h2>
       <%= raw upload_model.tips.html_safe %>
     </div>
     <div class="span7">
@@ -60,8 +59,27 @@
       }
     });
     $('#<%= form_id %>_reset').on("click",function(){$('#<%= form_id %>')[0].reset();});
+    
     var <%= form_id %>_rules = {<%= raw rules.join(",").html_safe %>};
     var <%= form_id %>_messages = {<%= raw messages.join(",").html_safe %>};
-    validate_form_rules('#<%= form_id %>', <%= form_id %>_rules, <%= form_id %>_messages);
+    // validate_form_rules('#<%= form_id %>', <%= form_id %>_rules, <%= form_id %>_messages);
+
+    jQuery.validator.addClassRules({
+      'required': {
+        required: true,
+        minlength: 2
+      },
+      'zip': {
+        required: true,
+        digits: true,
+        minlength: 5,
+        maxlength: 5
+      }
+    });
+
+    $("#<%= form_id %>").validate({
+      rules: <%= form_id %>_rules,
+      messages: <%= form_id %>_messages
+    });
   });
 </script>

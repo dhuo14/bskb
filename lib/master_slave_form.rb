@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 class MasterSlaveForm < MyForm
 
-	attr_accessor :options, :slave_options, :rules, :messages, :html_code
+	attr_accessor :options, :slave_options, :rules, :messages, :html_code, :add_content
 	attr_reader :xml, :slave_xml, :obj, :slave_objs, :table_name, :slave_table_name
 
 	def initialize(master_xml,slave_xml,obj,slave_objs,master_options={},slave_options={})
@@ -26,7 +26,8 @@ class MasterSlaveForm < MyForm
 
 	def get_input_part
 		tmp = super # 先调用父类中的同名方法生成master_input
-		tmp << "<div class='headline'><h2 class='heading'>#{slave_options[:title]}</h2></div>"
+		# tmp << "<div class='headline'><h2 class='heading'>#{slave_options[:title]}</h2></div>"
+		tmp << "<div class='headline'><h2><strong><i class='fa fa-cubes'></i> #{slave_options[:title]}</strong></h2></div>"
 		tmp << self.get_slave_input_part
 		return tmp
 	end
@@ -34,21 +35,31 @@ class MasterSlaveForm < MyForm
 	def get_slave_input_part
   	tmp = ""
   	slave_objs.each_with_index{|o,i|
-  		# tmp << "<div class='panel panel-grey'><div class='panel-heading'><h3 class='panel-title'><i class='fa fa-tasks'></i> #{i+1} 删除</h3></div><div class='panel-body'>"
-  		# tmp << self.get_input_str(slave_xml,o,slave_table_name,slave_options[:grid])
-  		# tmp << "</div></div>"
-
-  		tmp << %Q|
-			<div class="tag-box tag-box-v4">
-			  <button data-dismiss="alert" class="close" type="button">×</button>
-			  <h2>#{slave_options[:title]} ##{i}</h2>
-			  #{self.get_input_str(slave_xml,o,slave_table_name,slave_options[:grid],i)}
-			</div>|
+  		tmp << get_input_content(o,i)
+  		self.add_content = tmp if i == 0 
   	}
   	return tmp
   end
 
+  def get_add_content
+
+  end
+
+
  	def get_total_input_part
  	end
+
+ 	private
+
+ 	def get_input_content(slave_obj,index)
+  	%Q|
+			<div class="tag-box tag-box-v4 details_part">
+			  <button data-dismiss="alert" class="close" type="button">×</button>
+			  <span rel="box-shadow-outset" class="btn-u btn-u-sm rounded-2x btn-u-default margin-bottom-20"><i class="fa  fa-chevron-circle-down"></i> #{slave_options[:title]} ##{index+1}</span>
+			  <div class="input_part">
+			  #{self.get_input_str(slave_xml,slave_obj,slave_table_name,slave_options[:grid],index)}
+			  </div>
+			</div>|
+  end
 
 end
