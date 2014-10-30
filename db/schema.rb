@@ -192,7 +192,7 @@ ActiveRecord::Schema.define(version: 20141024050735) do
     t.string   "buyer_code",                                                                   comment: "采购单位编号"
     t.string   "seller",                                                                       comment: "供应商单位名称"
     t.string   "seller_code",                                                                  comment: "供应商单位编号"
-    t.decimal  "bugget",                   precision: 13, scale: 2, default: 0.0, null: false, comment: "总预算"
+    t.decimal  "bugget",                   precision: 13, scale: 2,                            comment: "总预算"
     t.decimal  "total",                    precision: 13, scale: 2, default: 0.0, null: false, comment: "总金额"
     t.datetime "deliver_at",                                                                   comment: "交付时间"
     t.string   "invoice_number",                                                               comment: "发票编号"

@@ -33,7 +33,7 @@ module MyFormHelper
 	end
 
 	def set_bottom_part(myform)
-	  myform.html_code << _create_form_button
+	  myform.html_code << myform.create_form_button
     myform.html_code << %Q|
     </form>
     <script type="text/javascript">

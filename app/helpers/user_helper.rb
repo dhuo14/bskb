@@ -1,13 +1,24 @@
 # -*- encoding : utf-8 -*-
 module UserHelper
 
+	# render partial的Helper方法 
 	def render_html(partial_path, locals = {})
 	  raw render(partial: partial_path, locals: locals).html_safe
 	end
 
 	# 页面提示信息(不是弹框) 
-	# cls_name = { 'alert-warning', 'alert-danger', 'alert-success', 'alert-info' }
-	def show_tips(cls_name,alert_title='',msg='',opt='')		
+	def show_tips(type,alert_title='',msg='')
+		cls_name = ""
+		case type
+		when "info"
+			cls_name = 'alert-info'
+		when "error"
+			cls_name = 'alert-danger'
+		when "tips"
+			cls_name = 'alert-success'
+		when "warning"
+			cls_name = 'alert-warning'
+		end
 		str =%Q{
 			<div class="alert #{cls_name} fade in">
 				<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
@@ -18,16 +29,15 @@ module UserHelper
 		else
 			str << %Q{ <p>#{msg}</p> }
 		end
-		str << %Q{ <p>#{opt}</p> } unless opt.blank?
 		str << %Q{ </div> }
 		return raw str.html_safe
 	end
 
 
-	# 弹框 
+	# modal弹框 
 	# 按钮要有href="#div_id" data-toggle="modal"
 	# 例如<a class="btn btn-sm btn-default" href="#div_id" data-toggle="modal">
-	def alert_dialog(div_id,content,title='提示')
+	def modal_dialog(div_id='modal_dialog',content='',title='提示')
 		raw render_html('/shared/dialog/modal_dialog', div_id: div_id, content: content, title: title).html_safe
 	end
 

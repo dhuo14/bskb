@@ -7,8 +7,8 @@
 	</div>
 </div>
 
-<%= show_tips(@dep.get_tips.blank? ? 'alert-success' : 'alert-danger', @dep.get_tips.blank? ? '恭喜您！' : '很抱歉！', @dep.get_tips.blank? ? "账户信息已填写完整，请点击[提交]，提交并等待审核。" : @dep.get_tips) if Department.get_status_attributes(@dep.status,1)[0] == '资料未填写' %>
+<%= show_tips(@dep.get_tips.blank? ? 'tips' : 'error', @dep.get_tips.blank? ? '恭喜您！' : '很抱歉！', @dep.get_tips.blank? ? "账户信息已填写完整，请点击[提交]，提交并等待审核。" : @dep.get_tips) if Department.get_status_attributes(@dep.status,1)[0] == '资料未填写' %>
 
 <%= show_tab(@dep,[{ div_id: "info-#{@dep.id.to_s}", icon: "fa-info-circle", title: "详细信息", content: render_html('show_info')}, { div_id: "photos-#{@dep.id.to_s}", icon: " fa-bar-chart-o ", title: "资质证书" , content: render_html('show_upload', uploads: @dep.uploads)}, { div_id: "logs-#{@dep.id.to_s}", icon: "fa-clock-o", title: "历史记录", content: show_logs(@dep)}]) %>
 
-<%= alert_dialog("opt_dialog",'') %>
+<%= modal_dialog("opt_dialog") %>

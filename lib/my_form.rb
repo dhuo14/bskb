@@ -32,6 +32,17 @@ class MyForm
     return input_str
   end
 
+  # 生成提交按钮
+  def create_form_button(id=nil)
+    id = id.nil? ? "" : " id='#{id}'"
+    %Q|
+    <hr />
+    <div>
+      <button#{id} class="btn-u btn-u-lg" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
+      <button#{id} class="btn-u btn-u-lg btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
+    </div>|
+  end
+
 private
 
   # 生成输入框函数
@@ -160,17 +171,6 @@ private
     return "'#{table_name}[#{column}]':#{node_options["rules"]}"
   end
 
-  # 生成提交按钮
-  def _create_form_button(id=nil)
-    id = id.nil? ? "" : " id='#{id}'"
-    %Q|
-    <hr />
-    <div>
-      <button#{id} class="btn-u btn-u-lg" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
-      <button#{id} class="btn-u btn-u-lg btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
-    </div>|
-  end
-
   # 样式是否只读
   def _form_states(input_style,opt)
     return (opt & ["disabled='disabled'","readonly='readonly'"]).empty? ? input_style : "#{input_style} state-disabled"
@@ -178,7 +178,7 @@ private
 
 # 隐藏输入框
   def _create_hidden(input_opts)
-    return "<input type='hidden' id='#{input_opts[:node_attr][1]}' name='#{input_opts[:node_attr][0]}' value='#{input_opts[:value]}' />"
+    return "<input type='hidden' #{input_opts[:node_attr].join(" ")} value='#{input_opts[:value]}' />"
   end
   # 普通文本
   def _create_text(input_opts)
@@ -244,7 +244,7 @@ private
     end
     str = %Q|
     <label class='#{form_state}'>
-      <select id='#{input_opts[:node_attr][1]}' name='#{input_opts[:node_attr][1]}'>
+      <select #{input_opts[:node_attr].join(" ")}>
         #{data_str}
       </select>
     </label>
@@ -265,7 +265,7 @@ private
     end
     str = %Q|
     <label class='#{form_state}'>
-      <select multiple id='#{input_opts[:node_attr][1]}' name='#{input_opts[:node_attr][0]}'>
+      <select multiple #{input_opts[:node_attr].join(" ")}>
         #{data_str}
       </select>
     </label>
