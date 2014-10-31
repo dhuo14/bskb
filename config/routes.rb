@@ -49,8 +49,8 @@ Bskb::Application.routes.draw do
         post :move, :valid_dep_name
       end
       member do 
-        get :add_user, :freeze, :upload, :commit
-        post :update_add_user, :update_freeze, :update_upload, :update_commit
+        get :add_user, :freeze, :upload
+        post :update_add_user, :update_freeze, :update_upload, :commit
       end
     end
     resources :articles do 

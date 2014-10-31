@@ -179,7 +179,7 @@ function send_data(targetId,sourceId,moveType,isCopy){
 		dataType: "text",
 		data: json_data ,
 		error: function (data, textStatus){
-			tips_dialog("操作失败失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
+			flash_dialog("操作失败失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
 		}
 	})
 }
@@ -272,7 +272,7 @@ function ajaxDestroyNode(node,msg) {
 				tips_dialog(data);
 			},
 			error: function (data, textStatus){
-				tips_dialog("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
+				flash_dialog("操作失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
 			}
 		});
 	});
