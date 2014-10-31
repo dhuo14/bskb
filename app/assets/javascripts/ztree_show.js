@@ -171,17 +171,7 @@ function setTrigger() {
 // 提交数据给后台
 function send_data(targetId,sourceId,moveType,isCopy){
 	var json_data = jQuery.param({ "sourceId": sourceId, "targetId": targetId, "moveType": moveType, "isCopy": isCopy });
-	$.ajax({
-		type: "post",
-		url: get_ztree_params('move'),
-		async: false,
-		cache: false,
-		dataType: "text",
-		data: json_data ,
-		error: function (data, textStatus){
-			flash_dialog("操作失败失败，请重试！错误代码：" + textStatus + "\n" + data, init_ztree());
-		}
-	})
+	$.post(get_ztree_params('move'), json_data);
 }
 
 
