@@ -29,11 +29,11 @@ module MyFormHelper
 		<input id='#{myform.options[:form_id]}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />
 		</form>|
 		# 插入上传组件HTML
-		myform.html_code << render(:partial => '/shared/myform/fileupload',:locals => {form_id: myform.options[:form_id],upload_model: myform.obj.class.upload_model, master_id: myform.obj.id, min_number_of_files: myform.options[:min_number_of_files], rules: myform.rules, messages: myform.messages})
+		myform.html_code << render(:partial => '/shared/myform/fileupload',:locals => {a: "ddd", myform: myform})
 	end
 
 	def set_bottom_part(myform)
-	  myform.html_code << myform.create_form_button
+	  myform.html_code << myform.get_form_button
     myform.html_code << %Q|
     </form>
     <script type="text/javascript">
@@ -43,6 +43,10 @@ module MyFormHelper
         validate_form_rules('##{myform.options[:form_id]}', #{myform.options[:form_id]}_rules, #{myform.options[:form_id]}_messages);
       });
     </script>|
+  end
+
+  def get_button_part(myform,has_uploaded=false)
+    myform.get_form_button(has_uploaded)
   end
 
 	

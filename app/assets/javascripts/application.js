@@ -44,11 +44,11 @@ $(function() {
 });
 
 // 验证表单字段规则
-function validate_form_rules (form_id,rules,messages) {
-	messages = messages || {};
+function validate_form_rules (form_id,form_rules,form_messages) {
+	form_messages = form_messages || {};
 	$(form_id).validate({
-		rules: rules,
-		messages: messages,
+		rules: form_rules,
+		messages: form_messages,
 		errorPlacement: function(error, element)
 		{
 			error.insertAfter(element.parent());

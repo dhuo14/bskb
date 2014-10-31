@@ -1,3 +1,11 @@
+<%
+form_id = myform.options[:form_id]
+upload_model = myform.obj.class.upload_model
+master_id = myform.obj.id
+min_number_of_files = myform.options[:min_number_of_files]
+rules = myform.rules
+messages = myform.messages
+%>
 <div class="headline"><h2><strong><i class="fa fa-paperclip"></i> 上传附件</strong></h2></div>
 <%= form_tag(uploads_path(master_id: master_id, upload_model: upload_model), multipart: true, id: "#{form_id}_fileupload", class: "sky-form fileupload_form no-border" ) %>
   <div class="fileupload-buttonbar">
@@ -5,20 +13,20 @@
       <%= raw upload_model.tips.html_safe %>
     </div>
     <div class="span7">
-      <span class="pull-left btn btn-sm btn-success fileinput-button">
+      <span class="pull-left btn btn-xs btn-success fileinput-button">
         <i class="fa fa-plus-circle"></i>
         <span>添加新文件</span>
         <input id="<%= "#{form_id}_upload_file_upload" %>" name="upload_file[upload]" type="file" />
       </span>
-      <button type="submit" class="btn btn-sm btn-primary start">
+      <button type="submit" class="btn btn-xs btn-primary start">
         <i class="fa fa-upload"></i>
         <span>开始上传</span>
       </button>
-      <button type="reset" class="btn btn-sm btn-warning cancel">
+      <button type="reset" class="btn btn-xs btn-warning cancel">
         <i class="fa fa-ban"></i>
         <span>取消上传</span>
       </button>
-      <button type="button" class="btn btn-sm btn-danger delete">
+      <button type="button" class="btn btn-xs btn-danger delete">
         <i class="fa fa-trash-o"></i>
         <span>删除选中文件</span>
       </button>
@@ -33,11 +41,7 @@
   <div class="fileupload-loading"></div>
   <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
   </table>
-  <hr />
-  <div>
-    <span class="btn-u btn-u-lg" id="<%= form_id%>_submit"><i class="fa fa-floppy-o"></i> 保 存 </span>
-    <span class="btn-u btn-u-lg btn-u-default" id="<%= form_id %>_reset"><i class="fa fa-repeat"></i> 重 置 </span>
-  </div>
+  <%= raw get_button_part(myform,true).html_safe %>
 </form>
 <script type="text/javascript">
   jQuery(document).ready(function() {
@@ -59,27 +63,10 @@
       }
     });
     $('#<%= form_id %>_reset').on("click",function(){$('#<%= form_id %>')[0].reset();});
-    
+
     var <%= form_id %>_rules = {<%= raw rules.join(",").html_safe %>};
     var <%= form_id %>_messages = {<%= raw messages.join(",").html_safe %>};
-    // validate_form_rules('#<%= form_id %>', <%= form_id %>_rules, <%= form_id %>_messages);
+    validate_form_rules('#<%= form_id %>', <%= form_id %>_rules, <%= form_id %>_messages);
 
-    jQuery.validator.addClassRules({
-      'required': {
-        required: true,
-        minlength: 2
-      },
-      'zip': {
-        required: true,
-        digits: true,
-        minlength: 5,
-        maxlength: 5
-      }
-    });
-
-    $("#<%= form_id %>").validate({
-      rules: <%= form_id %>_rules,
-      messages: <%= form_id %>_messages
-    });
   });
 </script>

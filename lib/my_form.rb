@@ -33,17 +33,32 @@ class MyForm
   end
 
   # 生成提交按钮
-  def create_form_button(id=nil)
-    id = id.nil? ? "" : " id='#{id}'"
-    %Q|
-    <hr />
-    <div>
-      <button#{id} class="btn-u btn-u-lg" type="submit"><i class="fa fa-floppy-o"></i> 保 存 </button>
-      <button#{id} class="btn-u btn-u-lg btn-u-default" type="reset"><i class="fa fa-repeat"></i> 重 置 </button>
-    </div>|
+  def get_form_button(has_uploaded=false)
+    tmp = self.class == MasterSlaveForm ? master_slave_button(has_uploaded) : single_button(has_uploaded)
+    return "<hr/><div>#{tmp}</div>"
   end
 
 private
+
+  def single_button(has_uploaded=false)
+    tmp = []
+    tmp << "<button id='#{options[:form_id]}_submit' class='btn-u' type='submit'><i class='fa fa-floppy-o'></i> 保 存 </button>"
+    tmp << "<button id='#{options[:form_id]}_reset' class='btn-u btn-u-default' type='reset'><i class='fa fa-repeat'></i> 重 置 </button>"
+    if has_uploaded
+      tmp.unshift("<button id='add_content' class='btn-u btn-u-blue' type='button'><i class='fa fa-plus-square'></i> 增 加 </button>")
+    end
+    return tmp.join(" ")
+  end
+
+  def master_slave_button(has_uploaded=false)
+    tmp = []
+    tmp << "<span class='btn-u' id='#{options[:form_id]}_submit'><i class='fa fa-floppy-o'></i> 保 存 </span>"
+    tmp << "<span class='btn-u btn-u-default' id='#{options[:form_id]}_reset'><i class='fa fa-repeat'></i> 重 置 </span>"
+    if has_uploaded 
+      tmp.unshift("<span id='add_content' class='btn-u btn-u-blue'><i class='fa fa-plus-square'></i> 增 加 </span>")
+    end
+    return tmp.join(" ")
+  end
 
   # 生成输入框函数
   # /*options参数说明
@@ -73,16 +88,19 @@ private
       input_opts[:data] = []
     end 
     input_opts[:node_attr] = get_node_attr(table_name,node_options,column,index)
-    # 校验规则
-    if node_options.has_key?("rules") 
-      if node_options["rules"].to_s.include?("required:true")
-        name << _red_text("*") 
+    # 主表有个性化规则
+    if index.nil?
+      # 校验规则
+      if node_options.has_key?("rules") 
+        if node_options["rules"].to_s.include?("required:true")
+          name << _red_text("*") 
+        end
+        self.rules << get_node_rules(table_name,obj,node_options,column)
       end
-      self.rules << get_node_rules(table_name,obj,node_options,column)
-    end
-    # 校验提示消息
-    if node_options.has_key?("messages") 
-      self.messages << "'#{table_name}[#{column}]':'#{node_options["messages"]}'"
+      # 校验提示消息
+      if node_options.has_key?("messages") 
+        self.messages << "'#{table_name}[#{column}]':'#{node_options["messages"]}'"
+      end
     end
     
     # 没有标注数据类型的默认为字符
@@ -129,23 +147,26 @@ private
   end
 
   def get_icon(node_options)
-    unless node_options.has_key?("class")
-      default_icon = "info"
-    else
-      case node_options["class"].to_str
-      when "tree_checkbox","tree_radio","box_checkbox","box_radio"
+    if node_options.has_key?("class")
+      tmp = node_options["class"].to_str.split(" ")
+      if ["tree_checkbox","tree_radio","box_checkbox","box_radio"] & tmp
         default_icon = "chevron-down"
-      when "date_select"
+      elsif ["date_select"] & tmp
         default_icon = "calendar"
       end
     end
-    return node_options.has_key?("icon") ? node_options["icon"] : default_icon
+    return node_options.has_key?("icon") ? node_options["icon"] : (default_icon || "info")
   end
 
   def get_node_attr(table_name,node_options,column,index)
     opt = []
-    opt << "name='#{table_name}[#{column}]'"
-    opt << "id='#{table_name}_#{column}_#{index}'"
+    if index.nil? # 主表
+      opt << "name='#{table_name}[#{column}]'"
+      opt << "id='#{table_name}_#{column}'"
+    else # 从表
+      opt << "name='#{table_name}[#{column}][#{index}]'"
+      opt << "id='#{table_name}_#{column}_#{index}'"
+    end
     opt << "disabled='disabled'" if node_options.has_key?("display") && node_options["display"].to_s == "disabled"
     opt << "readonly='readonly'" if node_options.has_key?("display") && node_options["display"].to_s == "readonly"
     opt << "placeholder='#{node_options["placeholder"]}'" if node_options.has_key?("placeholder")
