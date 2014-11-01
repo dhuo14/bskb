@@ -45,8 +45,8 @@ module MyFormHelper
     </script>|
   end
 
-  def get_button_part(myform,has_uploaded=false)
-    myform.get_form_button(has_uploaded)
+  def get_button_part(myform,self_form=true)
+    myform.get_form_button(self_form)
   end
 
 	

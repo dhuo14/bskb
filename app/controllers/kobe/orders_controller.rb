@@ -7,7 +7,7 @@ class Kobe::OrdersController < KobeController
   def new
   	obj = Order.new
   	obj.buyer = obj.payer = current_user.department.name
-    @single_form = SingleForm.new(Order.xml,obj,{form_id: 'single_form', upload_files: true, title: '<i class="fa fa-question-circle"></i> 录入采购项目',action: kobe_orders_path, grid: 2})
+    @single_form = SingleForm.new(Order.xml,obj,{form_id: 'single_form', upload_files: false, title: '<i class="fa fa-question-circle"></i> 录入采购项目',action: kobe_orders_path, grid: 2})
 
     if obj.products.blank? 
       slave_objs = [OrdersProduct.new(order_id: obj.id),OrdersProduct.new(order_id: obj.id)]
