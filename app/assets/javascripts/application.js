@@ -81,6 +81,7 @@ function tips_dialog (content) {
 function confirm_dialog (content,ok_function) {
 	dialog({
     content: content,
+    fixed: true,
     okValue: '确定',
     ok: ok_function,
     cancelValue: '取消',

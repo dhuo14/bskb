@@ -72,7 +72,7 @@ class Department < ActiveRecord::Base
     # 提交
     if [0].include?(self.status) && self.get_tips.blank?
       title = "<i class='fa fa-pencil'></i> 提交"
-      arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/departments/#{self.id}/commit', '#{dialog}') }]
+      arr << [title, "/kobe/departments/#{self.id}/commit", method: "post", data: { confirm: "提交后不允许再修改，确定提交吗?" }]
     end
     # 增加下属单位
     if [0,1,404].include?(self.status)

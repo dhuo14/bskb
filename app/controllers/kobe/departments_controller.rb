@@ -1,8 +1,8 @@
 # -*- encoding : utf-8 -*-
 class Kobe::DepartmentsController < KobeController
 
-  skip_before_action :verify_authenticity_token, :only => [:move, :valid_dep_name, :destroy]
-  before_action :get_dep, :only => [:index, :show, :edit, :update, :destroy, :add_user, :freeze, :update_freeze, :upload, :update_upload, :commit, :update_commit]
+  skip_before_action :verify_authenticity_token, :only => [:move, :valid_dep_name, :destroy, :commit]
+  before_action :get_dep, :only => [:index, :show, :edit, :update, :destroy, :add_user, :freeze, :update_freeze, :upload, :update_upload, :commit]
   layout :false, :only => [:show, :edit, :new, :add_user, :freeze, :upload, :commit]
 
   def index
@@ -93,7 +93,7 @@ class Kobe::DepartmentsController < KobeController
 
   # 修改资质证书
   def upload
-    @myform = SingleForm.new(nil, @dep, { form_id: "edit_upload", upload_files: true, min_number_of_files: 4, title: "上传资质证书", action: update_upload_kobe_department_path(@dep) })
+    @myform = SingleForm.new(nil, @dep, { form_id: "edit_upload", upload_files: true, min_number_of_files: 4, action: update_upload_kobe_department_path(@dep) })
   end
 
   def update_upload
@@ -103,9 +103,6 @@ class Kobe::DepartmentsController < KobeController
 
   # 注册提交
   def commit
-  end
-
-  def update_commit
     logs = prepare_logs_content(@dep,"提交","注册完成，提交！")
     if @dep.change_status_and_write_logs("未审核",logs)
       tips_get("提交成功，请等待审核。")

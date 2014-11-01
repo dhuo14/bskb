@@ -25,7 +25,7 @@ class UsersController < JamesController
       sign_in_user(user, params[:user][:remember_me] == '1')
       if user.department.get_tips.blank?
         tips_get '登录成功！'
-        redirect_to sign_up_users_path
+        redirect_to kobe_departments_path # 登录成功返回页面待定
       else
         flash_get user.department.get_tips
         redirect_to kobe_departments_path
