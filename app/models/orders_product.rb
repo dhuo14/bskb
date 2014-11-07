@@ -6,6 +6,7 @@ class OrdersProduct < ActiveRecord::Base
 	  %Q{
 	    <?xml version='1.0' encoding='UTF-8'?>
 	    <root>
+	    	<node column='id' data_type='hidden'/>
 	    	<node column='category_code' data_type='hidden'/>
 	    	<node name='品目' class='tree_radio required' json_url='/json/areas' partner='category_code'/>
 	    	<node name='品牌' column='brand' class='required'/>

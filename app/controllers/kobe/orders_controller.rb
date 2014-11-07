@@ -24,6 +24,10 @@ class Kobe::OrdersController < KobeController
   def show
   end
 
+  def create
+    render :text => params
+  end
+
   def edit
   end
 end

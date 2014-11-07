@@ -32,6 +32,7 @@ table th.date {width:88px;}
 table th.time {width:140px;}
 table th.cando {width:114px;}
 .no-border {border: none;}
+#add_content {display: none;}
 /*
 .step {border-bottom: 2px solid #eee; position: relative; z-index: 99; margin-bottom: 20px;	background: none repeat scroll 0 0 rgba(0, 0, 0, 0);}
 .step .nav-justified {position: relative; top: 2px;}

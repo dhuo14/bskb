@@ -34,16 +34,14 @@ class MasterSlaveForm < MyForm
 	end
 
 	def get_slave_input_part
+		self.add_content = get_add_content
   	tmp = ""
-  	slave_objs.each_with_index{|o,i|
-  		tmp << get_input_content(o,i+1)
-  		self.add_content = tmp if i == 0 
-  	}
+  	slave_objs.each_with_index{|o,i|tmp << get_input_content(o,i+1)}
   	return tmp
   end
 
   def get_add_content
-  	"<div id='add_content'>#{get_input_content(slave_objs[0].class.new,'$_$')}</div>"
+  	"<div id='add_content'>#{get_input_content(slave_objs[0].class.new,'_orz_')}</div>"
   end
 
 

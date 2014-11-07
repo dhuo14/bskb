@@ -15,3 +15,24 @@
 <div class='col-md-12'>
 <%= draw_myform(@ms_form) %>
 </div>
+
+<script type="text/javascript">
+	$(function() {
+		// 增加明细
+		var add_div = $("#add_content");
+		var add_max = add_div.siblings(".details_part").length;
+		var add_content = add_div.html();
+		add_div.empty();
+		$("#add_button").click(function(){
+			add_max += 1;
+			add_div.before(add_content.replaceAll("_orz_",add_max));
+		})
+
+		// 折叠/展开明细
+		$('body').on("click","div.details_part span i.fa",function(){
+			$(this).toggleClass("fa-chevron-circle-down");
+			$(this).toggleClass("fa-chevron-circle-right");
+			$(this).parent().next("div.input_part").slideToggle("fast");
+		});
+	});
+</script>
