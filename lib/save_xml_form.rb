@@ -3,6 +3,30 @@ module SaveXmlForm
 
   include BaseFunction
 
+  # 创建主从表并写日志
+  def create_msform_and_write_logs(master,slave,other_attrs={})
+    master_obj = create_and_write_logs(master,other_attrs)
+    slave_params = params.require(slave.to_s.tableize.to_sym)
+    column_name = get_column_and_name_array(slave)
+    
+    # 参数的高度即slava的数量,预设必须有ID这个参数
+    slave_objs = []
+    slave_params["id"].keys.each do |i|
+      attribute = {"details" => {}}
+      column_name[0].each{|column| attribute[column] = slave_params[column][i]}
+      column_name[1].each{|name| attribute["details"][name] = slave_params[name][i]}
+      if attribute["id"].blank?
+        attribute["#{master.to_s.underscore}_id"] = master_obj.id #主键
+        attribute.delete("id")
+        attribute["details"] = prepare_details(attribute["details"])
+        slave.create(attribute)
+      else
+        obj = slave.find(attribute["id"])
+        obj.update_attributes(attribute)
+      end
+    end
+  end
+
   #创建并写日志
   def create_and_write_logs(model,other_attrs={})
     attribute = prepare_params_for_save(model,other_attrs)
@@ -55,6 +79,12 @@ private
 
   #XML_FORM表单提交后生成的参数，返回二维数组，第一维是存入数据库的column参数，第二维是拼成details的name参数
   def get_xmlform_params(model,who='',options={})
+    tmp = get_column_and_name_array(model,who,options)
+    return [params.require(model.to_s.tableize.to_sym).permit(tmp[0]) ,params.require(model.to_s.tableize.to_sym).permit(tmp[1])]
+  end
+
+  # 返回二维数组，第一维是存入数据库的column参数，第二维是拼成details的name参数
+  def get_column_and_name_array(model,who='',options={})
     column_params = []
     name_params = []
     doc = Nokogiri::XML(model.xml(who,options))
@@ -65,7 +95,7 @@ private
         name_params << node.attributes["name"].to_s
       end
     }
-    return [params.require(model.to_s.tableize.to_sym).permit(column_params) ,params.require(model.to_s.tableize.to_sym).permit(name_params)]
+    return [column_params,name_params]
   end
 
   #根据XML_FORM表单提交后的参数准备好details的XML文档

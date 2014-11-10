@@ -7,7 +7,7 @@
 <p>single form</p>
 <div class='col-md-12'>
     <%#= _create_xml_form(@obj2.class.xml,@obj2,{"form_id"=>"update_form", "upload_files" => true,"min_number_of_files"=>2, "title"=> raw('<i class="fa fa-pencil-square-o"></i> 修改单位信息'),"grid"=>2,"method"=>"patch","action"=>kobe_department_path(@obj2)}) %>
-<%= draw_myform(@single_form) %>
+<%#= draw_myform(@single_form) %>
     
 </div>
 
@@ -17,22 +17,5 @@
 </div>
 
 <script type="text/javascript">
-	$(function() {
-		// 增加明细
-		var add_div = $("#add_content");
-		var add_max = add_div.siblings(".details_part").length;
-		var add_content = add_div.html();
-		add_div.empty();
-		$("#add_button").click(function(){
-			add_max += 1;
-			add_div.before(add_content.replaceAll("_orz_",add_max));
-		})
 
-		// 折叠/展开明细
-		$('body').on("click","div.details_part span i.fa",function(){
-			$(this).toggleClass("fa-chevron-circle-down");
-			$(this).toggleClass("fa-chevron-circle-right");
-			$(this).parent().next("div.input_part").slideToggle("fast");
-		});
-	});
 </script>

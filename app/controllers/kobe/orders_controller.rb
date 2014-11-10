@@ -25,6 +25,7 @@ class Kobe::OrdersController < KobeController
   end
 
   def create
+    create_msform_and_write_logs(Order,OrdersProduct)
     render :text => params
   end
 

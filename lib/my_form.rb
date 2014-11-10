@@ -45,7 +45,7 @@ private
     tmp << "<button id='#{options[:form_id]}_submit' class='btn-u' type='submit'><i class='fa fa-floppy-o'></i> 保 存 </button>"
     tmp << "<button id='#{options[:form_id]}_reset' class='btn-u btn-u-default' type='reset'><i class='fa fa-repeat'></i> 重 置 </button>"
     if is_ms_form
-      tmp.unshift("<button id='add_button' class='btn-u btn-u-blue' type='button'><i class='fa fa-plus-square'></i> 增 加 </button>")
+      tmp.insert(1,"<button id='add_button' class='btn-u btn-u-blue' type='button'><i class='fa fa-plus-square'></i> 增 加 </button>")
     end
     return tmp.join(" ")
   end
@@ -55,7 +55,7 @@ private
     tmp << "<span class='btn-u' id='#{options[:form_id]}_submit'><i class='fa fa-floppy-o'></i> 保 存 </span>"
     tmp << "<span class='btn-u btn-u-default' id='#{options[:form_id]}_reset'><i class='fa fa-repeat'></i> 重 置 </span>"
     if is_ms_form 
-      tmp.unshift("<span id='add_button' class='btn-u btn-u-blue'><i class='fa fa-plus-square'></i> 增 加 </span>")
+      tmp.insert(1,"<span id='add_button' class='btn-u btn-u-blue'><i class='fa fa-plus-square'></i> 增加 </span>")
     end
     return tmp.join(" ")
   end

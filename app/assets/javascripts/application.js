@@ -21,6 +21,7 @@
 //= require app
 //= require form
 
+
 $(function() {
 
 	// 初始化
@@ -41,7 +42,32 @@ $(function() {
 		location.href = newUrl;
 	});
 
+  // 增加明细
+  var add_div = $("#add_content");
+  var add_max = add_div.siblings(".details_part").length;
+  var add_content = add_div.html();
+  add_div.empty();
+  $("#add_button").click(function(){
+    add_max += 1;
+    add_div.before(add_content.replaceAll("_orz_",add_max));
+  })
+
+  // 折叠/展开明细
+  $('body').on("click","div.details_part span i.fa",ToggleDetails);
+
+  // FORM提交前先展开所有明细，不然表单不校验
+  $("form.sky-form").on("submit",function(){
+    $("div.details_part span i.fa-chevron-circle-right").each(ToggleDetails);
+  });
+
 });
+
+// 折叠/展开明细
+function ToggleDetails(){
+  $(this).toggleClass("fa-chevron-circle-down");
+  $(this).toggleClass("fa-chevron-circle-right");
+  $(this).parent().next("div.input_part").slideToggle("fast");
+}
 
 // 验证表单字段规则
 function validate_form_rules (form_id,form_rules,form_messages) {
