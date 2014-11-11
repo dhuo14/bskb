@@ -215,6 +215,9 @@ private
   def save_slaves(master_obj,slave,slave_title="数据")
     logs_remark = "" # 从表不纪录日志,日志纪录到主表中去
     slave_params = params.require(slave.to_s.tableize.to_sym)
+    foreign_key = "#{master_obj.class.to_s.underscore}_id"
+    # 数据库中原来存在的从表记录
+    tables_ids = slave.where(["#{foreign_key} = ?", master_obj.id]).map(&:id)
     column_name = get_column_and_name_array(slave)
     # 参数的高度即slava的数量,预设必须有ID这个参数
     slave_params["id"].keys.each do |i|
@@ -225,7 +228,7 @@ private
       all_params = attribute.merge details # 分析日志用的参数
       attribute["details"] = prepare_details(details)
       if attribute["id"].blank?
-        attribute["#{master_obj.class.to_s.underscore}_id"] = master_obj.id #主键
+        attribute[foreign_key] = master_obj.id #主键
         attribute.delete("id")
         obj = slave.create(attribute)
         logs_remark << prepare_origin_logs_remark(slave,"添加#{slave_title}##{obj.id}",all_params)
@@ -234,6 +237,13 @@ private
         logs_remark << prepare_edit_logs_remark(obj,"修改#{slave_title}##{obj.id}",all_params)
         obj.update_attributes(attribute)
       end
+    end
+    # 参数中存在的ID，即原数据库中没有被删除的
+    exists_ids = slave_params["id"].values.delete_if{|x|x == ""}.map{|x|x.to_i}
+    delete_ids = tables_ids - exists_ids
+    unless delete_ids.blank?
+      slave.delete(delete_ids) # 删除部分从表记录
+      logs_remark << %Q|<div class="alert alert-danger fade in">删除#{slave_title} ##{delete_ids.join(" #")}</div>|.html_safe.to_str
     end
     return logs_remark
   end
