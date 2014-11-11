@@ -49,5 +49,64 @@ module MyFormHelper
     myform.get_form_button(self_form)
   end
 
+  # 显示页面
+  # 生成XML表格函数
+  # /*options参数说明
+  #   title  表单标题 可有可无
+  #   grid 每一行显示几个输入框
+  # */
+  def _show_xml_table(xml,obj,options={})
+    grid = options.has_key?("grid") ? options["grid"] : 2
+    str = %Q|
+    <div class='tab-v2'>
+      <ul class='nav nav-tabs'>
+        <li class='active'><a data-toggle='tab' href='#info-#{obj.id.to_s}'><i class="fa fa-info-circle"></i> 详细信息</a></li>
+        <li class=''><a data-toggle='tab' href='#logs-#{obj.id.to_s}'><i class="fa fa-clock-o"></i> 历史记录</a></li>
+      </ul>                
+      <div class='tab-content'>
+        <div id='info-#{obj.id.to_s}' class='tab-pane fade in active'>|
+    tbody = ""
+    if options.has_key?("title") && !options["title"].blank?
+      str << %Q|
+      <div class="panel-heading">
+          <h3>#{options["title"]}</h3>
+      </div>|
+    else
+      str << "<br />"
+    end  
+    doc = Nokogiri::XML(xml)
+    # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'的
+    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='hidden'][@data_type!='textarea'][@data_type!='richtext']")
+    tds.each_slice(grid).with_index do |node,i|
+      tbody << "<tr>"
+      node.each_with_index{|n,ii|
+        tbody << "<td>#{n.attributes["name"]}</td><td>#{get_node_value(obj,n,{"for_what"=>"table"})}</td>"
+        tbody << "<td></td><td></td>" * (grid-ii-1) if (n == node.last) && (ii != grid -1)
+      }
+      tbody << "</tr>"
+    end
+    # 再生成文本框和富文本框--针对大文本或者富文本
+    doc.xpath("/root/node[contains(@data_type,'text')]").each_slice(1) do |node|
+      node.each{|n|
+        tbody << "<tr>"
+          tbody << "<td>#{n.attributes["name"]}</td><td colspan='#{grid*2-1}'>#{get_node_value(obj,n)}</td>"
+        tbody << "</tr>"
+      }
+    end
+
+    str << %Q|
+          <table class="table table-striped table-bordered">
+            <tbody>
+              #{tbody}
+            </tbody>
+          </table>
+        </div>
+        <div id='logs-#{obj.id.to_s}' class='tab-pane fade in'>
+          #{show_logs(obj)}
+        </div>
+      </div>
+    </div>|
+    return raw str.html_safe
+  end
 	
 end

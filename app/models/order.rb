@@ -2,10 +2,22 @@
 class Order < ActiveRecord::Base
 	has_many :products, class_name: :OrdersProduct
 	has_many :uploads, class_name: :OrdersUpload, foreign_key: :master_id
+	include AboutStatus
 
 	  # 附件的类
   def self.upload_model
     OrdersUpload
+  end
+
+	# 中文意思 状态值 标签颜色 进度 
+	def self.status_array
+		[
+	    ["未提交",0,"orange",10,[1,4,101],[1,0]],
+	    ["等待审核",1,"blue",50,[0,4],[3,4]],
+	    ["已完成",3,"u",100,[1,4],[3,4]],
+	    ["未评价",4,"purple",100,[0,1,101],[3,4]],
+	    ["已删除",404,"red",100,[0,1,3,4],nil]
+    ]
   end
 
 	def self.xml(who='',options={})

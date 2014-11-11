@@ -12,7 +12,7 @@ class CreateOrders < ActiveRecord::Migration
     	t.string :seller_code            , :comment => "供应商单位编号"
         t.decimal :bugget, :precision => 13, :scale => 2, :comment => "总预算"
     	t.decimal :total, :precision => 13, :scale => 2, :null => false, :default => 0, :comment => "总金额"
-    	t.datetime :deliver_at		     , :comment => "交付时间"
+    	t.date :deliver_at		     , :comment => "交付时间"
     	t.string :invoice_number         , :comment => "发票编号"
     	t.text :summary                  , :comment => "基本情况（备注）"
     	t.belongs_to :user, :default => 0, :comment => "用户ID", :null => false

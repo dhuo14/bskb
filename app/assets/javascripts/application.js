@@ -53,7 +53,9 @@ $(function() {
   })
 
   // 折叠/展开明细
-  $('body').on("click","div.details_part span i.fa",ToggleDetails);
+  // $('body').on("click","div.details_part span i.fa",ToggleDetails);
+  $('body').on("click","i.fa-chevron-circle-down",ToggleDetails);
+  $('body').on("click","i.fa-chevron-circle-right",ToggleDetails);
 
   // FORM提交前先展开所有明细，不然表单不校验
   $("form.sky-form").on("submit",function(){
@@ -66,7 +68,7 @@ $(function() {
 function ToggleDetails(){
   $(this).toggleClass("fa-chevron-circle-down");
   $(this).toggleClass("fa-chevron-circle-right");
-  $(this).parent().next("div.input_part").slideToggle("fast");
+  $(this).parent().next().slideToggle("fast");
 }
 
 // 验证表单字段规则
