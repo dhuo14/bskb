@@ -4,39 +4,47 @@ module SaveXmlForm
   include BaseFunction
 
   # 创建主从表并写日志
-  def create_msform_and_write_logs(master,slave,other_attrs={})
-    master_obj = create_and_write_logs(master,other_attrs)
-    slave_params = params.require(slave.to_s.tableize.to_sym)
-    column_name = get_column_and_name_array(slave)
-    
-    # 参数的高度即slava的数量,预设必须有ID这个参数
-    slave_objs = []
-    slave_params["id"].keys.each do |i|
-      attribute = {"details" => {}}
-      column_name[0].each{|column| attribute[column] = slave_params[column][i]}
-      column_name[1].each{|name| attribute["details"][name] = slave_params[name][i]}
-      if attribute["id"].blank?
-        attribute["#{master.to_s.underscore}_id"] = master_obj.id #主键
-        attribute.delete("id")
-        attribute["details"] = prepare_details(attribute["details"])
-        slave.create(attribute)
-      else
-        obj = slave.find(attribute["id"])
-        obj.update_attributes(attribute)
-      end
+  def create_msform_and_write_logs(master,slave,title={},other_attrs={})
+    other_attrs = set_default_column(other_attrs)
+    title[:action] ||= "录入数据"
+    title[:master_title] ||= "基本信息"
+    title[:slave_title] ||= "明细信息"
+    attribute = prepare_params_for_save(master,other_attrs) # 获取并整合主表参数信息
+    master_obj = master.create(attribute) #保存主表
+    save_uploads(master_obj) # 保存附件
+    logs_remark = prepare_origin_logs_remark(master,title[:master_title]) #主表日志
+    logs_remark << save_slaves(master_obj,slave,title[:slave_title]) # 保存从表并将日志添加到主表日志
+    unless logs_remark.blank?
+      write_logs(master_obj,title[:action],logs_remark) # 写日志
+    end
+  end
+
+  # 更新主从表并写日志
+  def update_msform_and_write_logs(master_obj,slave,title={},other_attrs={})
+    title[:action] ||= "修改数据"
+    title[:master_title] ||= "基本信息"
+    title[:slave_title] ||= "明细信息"
+    attribute = prepare_params_for_save(master_obj.class,other_attrs) # 获取并整合主表参数信息
+    save_uploads(master_obj) # 保存附件
+    logs_remark = prepare_edit_logs_remark(master_obj,"修改#{title[:master_title]}") #主表日志--修改痕迹 先取日志再更新主表，否则无法判断修改前后的变化情况
+    master_obj.update_attributes(attribute) #更新主表
+    logs_remark << save_slaves(master_obj,slave,title[:slave_title]) # 保存从表并将日志添加到主表日志
+    unless logs_remark.blank?
+      write_logs(master_obj,title[:action],logs_remark) # 写日志
     end
   end
 
   #创建并写日志
   def create_and_write_logs(model,other_attrs={})
+    other_attrs = set_default_column(other_attrs)
     attribute = prepare_params_for_save(model,other_attrs)
-    attribute["logs"] = get_origin_data(model)
+    logs = get_single_origin_data(model)
+    unless logs.nil?
+      attribute["logs"] = logs
+    end
     obj = model.new(attribute)
     if obj.save
-      unless params["uploaded_file_ids"].blank?
-        uploads = model.upload_model.where(master_id: 0, id: params["uploaded_file_ids"].split(","))
-        obj.uploads << uploads
-      end
+      save_uploads(obj)
       return obj
     else
       return false
@@ -46,13 +54,17 @@ module SaveXmlForm
   #更新并写日志
   def update_and_write_logs(obj,other_attrs={})
     attribute = prepare_params_for_save(obj.class,other_attrs)
-    attribute["logs"] = get_edit_spoor(obj)
+    logs = get_single_edit_spoor(obj)
+    unless logs.nil?
+      attribute["logs"] = logs
+    end
+    save_uploads(obj)
     return obj.update_attributes(attribute)
   end
 
   #  手动写入日志 确保表里面有logs和status字段才能用这个函数
-  def write_logs(obj,content,remark='')
-    doc = prepare_logs_content(obj,content,remark)
+  def write_logs(obj,action,remark='')
+    doc = prepare_logs_content(obj,action,remark)
     obj.update_columns("logs" => doc)
   end
 
@@ -71,8 +83,8 @@ module SaveXmlForm
   end
 
   # 批量操作要替换的日志
-  def batch_logs(content,remark='来自批量操作')
-    return %Q|<node 操作时间="#{Time.new.to_s(:db)}" 操作人ID="#{current_user.id}" 操作人姓名="#{current_user.name}" 操作人单位="#{current_user.department.nil? ? "暂无" : current_user.department.name}" 操作内容="#{content}" 当前状态="$STATUS$" 备注="#{remark}" IP地址="#{request.remote_ip}[#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}]"/>|
+  def batch_logs(action,remark='来自批量操作')
+    return %Q|<node 操作时间="#{Time.new.to_s(:db)}" 操作人ID="#{current_user.id}" 操作人姓名="#{current_user.name}" 操作人单位="#{current_user.department.nil? ? "暂无" : current_user.department.name}" 操作内容="#{action}" 当前状态="$STATUS$" 备注="#{remark}" IP地址="#{request.remote_ip}[#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}]"/>|
   end
 
 private
@@ -113,7 +125,7 @@ private
   end
 
   # 准备日志的内容
-  def prepare_logs_content(obj,content,remark='')
+  def prepare_logs_content(obj,action,remark='')
     user = current_user
     unless obj.logs.nil?
       doc = Nokogiri::XML(obj.logs)
@@ -127,18 +139,18 @@ private
     node["操作人ID"] = user.id.to_s
     node["操作人姓名"] = user.name.to_s
     node["操作人单位"] = user.department.nil? ? "暂无" : user.department.name.to_s
-    node["操作内容"] = content
+    node["操作内容"] = action
     node["当前状态"] = (!obj.attribute_names.include?("status") || obj.status.nil?) ? "-" : obj.status
     node["备注"] = remark
     node["IP地址"] = "#{request.remote_ip}|#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}"
     return doc.to_s
   end
 
-  # 获取创建时的原始数据
-  def get_origin_data(model)
+  # 准备创建纪录时的原始日志
+  def prepare_origin_logs_remark(model,title='详细信息',all_params={})
+    all_params = params.require(model.to_s.tableize.to_sym) if all_params.length == 0
     spoor = ""
     doc = Nokogiri::XML(model.xml)
-    all_params = params.require(model.to_s.tableize.to_sym)
     doc.xpath("/root/node").each{|node|
       attr_name = node.attributes.has_key?("name") ? node.attributes["name"] : node.attributes["column"]
       if node.attributes.has_key?("column")
@@ -149,16 +161,18 @@ private
       new_value = transform_boolean(new_value,"table") if attr_name.to_str.index("是否") == 0
       spoor << "<tr><td>#{attr_name.to_str}</td><td>#{new_value}</td></tr>" unless new_value.to_s.blank?
     }
-    remark = %Q|<font class='view_logs_detail'>详细信息</font><div class='logs_detail'><table class='table table-bordered'><thead><tr><th>参数名称</th><th>参数值</th></tr></thead><tbody>#{spoor}</tbody></table></div>|.html_safe
-    return prepare_logs_content(model.new,"录入数据",remark)
+    if spoor.blank?
+      return ""
+    else
+      return %Q|<div class="headline"><h3 class="heading-sm">#{title}</h3></div><table class='table table-bordered'><thead><tr><th>参数名称</th><th>参数值</th></tr></thead><tbody>#{spoor}</tbody></table>|.html_safe.to_str
+    end
   end
 
-  # 获取修改痕迹
-  def get_edit_spoor(obj)
-    model = obj.class
+  # 准备修改纪录时的痕迹纪录
+  def prepare_edit_logs_remark(obj,title='修改痕迹',all_params={})
+    all_params = params.require(obj.class.to_s.tableize.to_sym) if all_params.length == 0
     spoor = ""
-    doc = Nokogiri::XML(model.xml)
-    all_params = params.require(model.to_s.tableize.to_sym)
+    doc = Nokogiri::XML(obj.class.xml)
     doc.xpath("/root/node").each{|node|
       attr_name = node.attributes.has_key?("name") ? node.attributes["name"] : node.attributes["column"]
       if node.attributes.has_key?("column")
@@ -170,8 +184,71 @@ private
       old_value = get_node_value(obj,node,{"for_what"=>"table"})
       spoor << "<tr><td>#{attr_name.to_str}</td><td>#{old_value}</td><td>#{new_value}</td></tr>" unless old_value.to_s == new_value.to_s || new_value.nil?
     }
-    remark = %Q|<font class='view_logs_detail'>修改痕迹</font><div class='logs_detail'><table class='table table-bordered'><thead><tr><th>参数名称</th><th>修改前</th><th>修改后</th></tr></thead><tbody>#{spoor}</tbody></table></div>|.html_safe
-    return prepare_logs_content(obj,"修改数据",remark)
+    if spoor.blank?
+      return ""
+    else
+      return %Q|<div class="headline"><h3 class="heading-sm">#{title}</h3></div><table class='table table-bordered'><thead><tr><th>参数名称</th><th>修改前</th><th>修改后</th></tr></thead><tbody>#{spoor}</tbody></table>|.html_safe.to_str
+    end
+  end
+
+  # 获取SingleForm创建时的原始数据
+  def get_single_origin_data(model)
+    logs_remark = prepare_origin_logs_remark(model)
+    unless logs_remark.blank?
+      return prepare_logs_content(model.new,"录入数据",logs_remark)
+    else
+      return nil
+    end
+  end
+
+  # 获取SingleForm修改痕迹
+  def get_single_edit_spoor(obj)
+    logs_remark = prepare_edit_logs_remark(obj)
+    unless logs_remark.blank?
+      return prepare_logs_content(obj,"修改数据",logs_remark)
+    else
+      return nil
+    end
+  end
+
+  # 保存从表数据
+  def save_slaves(master_obj,slave,slave_title="数据")
+    logs_remark = "" # 从表不纪录日志,日志纪录到主表中去
+    slave_params = params.require(slave.to_s.tableize.to_sym)
+    column_name = get_column_and_name_array(slave)
+    # 参数的高度即slava的数量,预设必须有ID这个参数
+    slave_params["id"].keys.each do |i|
+      attribute = {}
+      details = {}
+      column_name[0].each{|column| attribute[column] = slave_params[column][i]}
+      column_name[1].each{|name| details[name] = slave_params[name][i]}
+      all_params = attribute.merge details # 分析日志用的参数
+      attribute["details"] = prepare_details(details)
+      if attribute["id"].blank?
+        attribute["#{master_obj.class.to_s.underscore}_id"] = master_obj.id #主键
+        attribute.delete("id")
+        obj = slave.create(attribute)
+        logs_remark << prepare_origin_logs_remark(slave,"添加#{slave_title}##{obj.id}",all_params)
+      else
+        obj = slave.find(attribute["id"])
+        logs_remark << prepare_edit_logs_remark(obj,"修改#{slave_title}##{obj.id}",all_params)
+        obj.update_attributes(attribute)
+      end
+    end
+    return logs_remark
+  end
+
+  # 保存附件
+  def save_uploads(obj)
+    unless params["uploaded_file_ids"].blank?
+      uploads = obj.class.upload_model.where(master_id: 0, id: params["uploaded_file_ids"].split(","))
+      obj.uploads << uploads
+    end
+  end
+
+  # 保存数据时设置默认字段
+  def set_default_column(other_attrs)
+    return other_attrs.update({user_id: current_user.id}) # 当前用户
   end
 
 end

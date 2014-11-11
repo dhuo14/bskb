@@ -146,8 +146,8 @@ module UserHelper
         <time class='cbp_tmtime' datetime=''><span>#{opt_time[1]}</span> <span>#{opt_time[0]}</span></time>
       <i class='cbp_tmicon rounded-x hidden-xs'></i>
         <div class='cbp_tmlabel'>
-          <h2><i class="fa #{icon}"></i> #{n.attributes["操作内容"]}</h2>
-          <p>#{n.attributes["备注"]}</p>
+          <h2><i class="fa fa-chevron-circle-right"></i> #{n.attributes["操作内容"]} <i class="fa #{icon}"></i></h2>
+          <div style="display:none;">#{n.attributes["备注"]}</div>
           <p>#{infobar.join("&nbsp;&nbsp;")}</p>
         </div>
       </li>|

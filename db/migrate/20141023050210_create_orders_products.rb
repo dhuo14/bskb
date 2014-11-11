@@ -16,7 +16,6 @@ class CreateOrdersProducts < ActiveRecord::Migration
     	t.decimal	:total, :precision => 13, :scale => 2, :null => false, :default => 0, :comment => "总金额"
         t.text :summary                  , :comment => "基本情况（备注）"
         t.text :details                  , :comment => "明细"
-        t.text :logs                     , :comment => "日志"
       t.timestamps
     end
     add_index :orders_products, :order_id
