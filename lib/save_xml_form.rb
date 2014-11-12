@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 module SaveXmlForm
-
   include BaseFunction
+  include ActionView::Helpers::NumberHelper # number_to_human_size 函数
 
   # 创建主从表并写日志
   def create_msform_and_write_logs(master,slave,title={},other_attrs={})
@@ -11,8 +11,8 @@ module SaveXmlForm
     title[:slave_title] ||= "明细信息"
     attribute = prepare_params_for_save(master,other_attrs) # 获取并整合主表参数信息
     master_obj = master.create(attribute) #保存主表
-    save_uploads(master_obj) # 保存附件
     logs_remark = prepare_origin_logs_remark(master,title[:master_title]) #主表日志
+    logs_remark << save_uploads(master_obj) # 保存附件并将日志添加到主表日志
     logs_remark << save_slaves(master_obj,slave,title[:slave_title]) # 保存从表并将日志添加到主表日志
     unless logs_remark.blank?
       write_logs(master_obj,title[:action],logs_remark) # 写日志
@@ -25,8 +25,8 @@ module SaveXmlForm
     title[:master_title] ||= "基本信息"
     title[:slave_title] ||= "明细信息"
     attribute = prepare_params_for_save(master_obj.class,other_attrs) # 获取并整合主表参数信息
-    save_uploads(master_obj) # 保存附件
     logs_remark = prepare_edit_logs_remark(master_obj,"修改#{title[:master_title]}") #主表日志--修改痕迹 先取日志再更新主表，否则无法判断修改前后的变化情况
+    save_uploads(master_obj) # 保存附件,附件日志已经在文件上传时记录了
     master_obj.update_attributes(attribute) #更新主表
     logs_remark << save_slaves(master_obj,slave,title[:slave_title]) # 保存从表并将日志添加到主表日志
     unless logs_remark.blank?
@@ -35,31 +35,32 @@ module SaveXmlForm
   end
 
   #创建并写日志
-  def create_and_write_logs(model,other_attrs={})
+  def create_and_write_logs(model,title={},other_attrs={})
     other_attrs = set_default_column(other_attrs)
+    title[:action] ||= "录入数据"
+    title[:master_title] ||= "详细信息"
     attribute = prepare_params_for_save(model,other_attrs)
-    logs = get_single_origin_data(model)
-    unless logs.nil?
-      attribute["logs"] = logs
+    obj = model.create(attribute)
+    logs_remark = prepare_origin_logs_remark(model,title[:master_title]) #主表日志
+    logs_remark << save_uploads(obj) # 保存附件并将日志添加到主表日志
+    unless logs_remark.blank?
+      write_logs(obj,title[:action],logs_remark) # 写日志
     end
-    obj = model.new(attribute)
-    if obj.save
-      save_uploads(obj)
-      return obj
-    else
-      return false
-    end
+    return obj
   end
 
   #更新并写日志
   def update_and_write_logs(obj,other_attrs={})
+    title[:action] ||= "修改数据"
+    title[:master_title] ||= "详细信息"
     attribute = prepare_params_for_save(obj.class,other_attrs)
-    logs = get_single_edit_spoor(obj)
-    unless logs.nil?
-      attribute["logs"] = logs
+    logs_remark = prepare_edit_logs_remark(obj,"修改#{title[:master_title]}") #主表日志--修改痕迹 先取日志再更新主表，否则无法判断修改前后的变化情况
+    save_uploads(obj) # 保存附件，附件日志已经上文件上传时记录了
+    obj.update_attributes(attribute) #更新主表
+    unless logs_remark.blank?
+      write_logs(obj,title[:action],logs_remark) # 写日志
     end
-    save_uploads(obj)
-    return obj.update_attributes(attribute)
+    return obj
   end
 
   #  手动写入日志 确保表里面有logs和status字段才能用这个函数
@@ -76,10 +77,7 @@ module SaveXmlForm
       result["details"] = prepare_details(tmp[1]) if model.attribute_method?(:details)
       result["parent_id"] = tmp[1]["parent_id"] if tmp[1].has_key?("parent_id")
     end
-    other_attrs.each{|key,value|
-      result[key] = value
-    }
-    return result
+    return result.update(other_attrs)
   end
 
   # 批量操作要替换的日志
@@ -191,25 +189,27 @@ private
     end
   end
 
-  # 获取SingleForm创建时的原始数据
-  def get_single_origin_data(model)
-    logs_remark = prepare_origin_logs_remark(model)
-    unless logs_remark.blank?
-      return prepare_logs_content(model.new,"录入数据",logs_remark)
-    else
-      return nil
-    end
-  end
+  # 下面两个方法暂时不用,single form 的日志暂时用prepare_origin_logs_remark 来代替
 
-  # 获取SingleForm修改痕迹
-  def get_single_edit_spoor(obj)
-    logs_remark = prepare_edit_logs_remark(obj)
-    unless logs_remark.blank?
-      return prepare_logs_content(obj,"修改数据",logs_remark)
-    else
-      return nil
-    end
-  end
+  # # 获取SingleForm创建时的原始数据
+  # def get_single_origin_data(model)
+  #   logs_remark = prepare_origin_logs_remark(model)
+  #   unless logs_remark.blank?
+  #     return prepare_logs_content(model.new,"录入数据",logs_remark)
+  #   else
+  #     return nil
+  #   end
+  # end
+
+  # # 获取SingleForm修改痕迹
+  # def get_single_edit_spoor(obj)
+  #   logs_remark = prepare_edit_logs_remark(obj)
+  #   unless logs_remark.blank?
+  #     return prepare_logs_content(obj,"修改数据",logs_remark)
+  #   else
+  #     return nil
+  #   end
+  # end
 
   # 保存从表数据
   def save_slaves(master_obj,slave,slave_title="数据")
@@ -252,13 +252,28 @@ private
   def save_uploads(obj)
     unless params["uploaded_file_ids"].blank?
       uploads = obj.class.upload_model.where(master_id: 0, id: params["uploaded_file_ids"].split(","))
-      obj.uploads << uploads
+      unless uploads.blank?
+        obj.uploads << uploads
+        logs_remark = '<div class="headline"><h3 class="heading-sm">上传附件</h3></div>'
+        logs_remark << prepare_upload_logs_remark(uploads)
+        return logs_remark
+      else
+        return ""
+      end
+    else
+      return ""
     end
   end
 
   # 保存数据时设置默认字段
   def set_default_column(other_attrs)
     return other_attrs.update({user_id: current_user.id}) # 当前用户
+  end
+
+  # 上传附件时记录的日志信息
+  def prepare_upload_logs_remark(uploads,action="create")
+    style = action == "create" ? "alert-success" : "alert-danger"
+    return %Q|<div class="alert #{style} fade in">#{uploads.map{|u|"#{u.upload_file_name} [#{number_to_human_size(u.upload_file_size)}]"}.join("<br>")}</div>|.html_safe.to_str
   end
 
 end

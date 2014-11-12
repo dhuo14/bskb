@@ -2,27 +2,26 @@
 class Kobe::OrdersController < KobeController
 
   before_action :get_obj, :only => [:show, :edit, :update, :destroy]
+
   def index
   end
 
   def new
   	obj = Order.new
   	obj.buyer = obj.payer = current_user.department.name
-    @single_form = SingleForm.new(Order.xml,obj,{form_id: 'single_form', upload_files: false, title: '<i class="fa fa-question-circle"></i> 录入采购项目',action: kobe_orders_path, grid: 2})
-
-    if obj.products.blank? 
-      slave_objs = [OrdersProduct.new(order_id: obj.id),OrdersProduct.new(order_id: obj.id)]
-    else
-      slave_objs = obj.orders_products
-    end
-
-    @ms_form = MasterSlaveForm.new(Order.xml,OrdersProduct.xml,obj,slave_objs,{form_id: 'ms_form', upload_files: true, title: '<i class="fa fa-pencil-square-o"></i> 下单',action: kobe_orders_path, grid: 2},{title: '产品明细', grid: 4})
-  
-  # render :layout => false
-
+    slave_objs = [OrdersProduct.new(order_id: obj.id)]
+    @ms_form = MasterSlaveForm.new(Order.xml,OrdersProduct.xml,obj,slave_objs,{form_id: 'new_order', upload_files: true, title: '<i class="fa fa-pencil-square-o"></i> 下单',action: kobe_orders_path, grid: 2},{title: '产品明细', grid: 4})
   end
 
   def show
+    obj_contents = show_obj_table(@obj,Order.xml,{title: "基本信息"})
+    @obj.products.each do |product|
+      obj_contents << show_obj_table(product,OrdersProduct.xml,{title: "产品明细 ##{product.id}"})
+    end
+    @arr  = []
+    @arr << {title: "详细信息", icon: "fa-info", content: obj_contents}
+    @arr << {title: "附件", icon: "fa-paperclip", content: show_uploads(@obj)}
+    @arr << {title: "历史记录", icon: "fa-clock-o", content: show_logs(@obj)}
   end
 
   def create
@@ -37,7 +36,7 @@ class Kobe::OrdersController < KobeController
 
   def edit
     slave_objs = @obj.products
-    @ms_form = MasterSlaveForm.new(Order.xml,OrdersProduct.xml,@obj,slave_objs,{upload_files: true, title: '<i class="fa fa-pencil-square-o"></i> 修改订单',action: kobe_order_path(@obj), method: "patch", grid: 2},{title: '产品明细', grid: 4})
+    @ms_form = MasterSlaveForm.new(Order.xml,OrdersProduct.xml,@obj,slave_objs,{upload_files: true, title: '<i class="fa fa-wrench"></i> 修改订单',action: kobe_order_path(@obj), method: "patch", grid: 2},{title: '产品明细', grid: 4})
   end
 
   private

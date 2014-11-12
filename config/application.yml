@@ -50,6 +50,7 @@ defaults: &defaults
     "提交": "fa-paper-plane-o"
     "下单": "fa-shopping-cart"
     "打印": "fa-print"
+    "上传": "fa-paperclip"
     "标记": "fa-flag"
     "其他": "fa-tag"
 

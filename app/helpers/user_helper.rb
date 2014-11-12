@@ -126,33 +126,4 @@ module UserHelper
 		return raw str.html_safe
 	end
 
-	def show_logs(obj)
-    return "暂无记录" if obj.logs.blank?
-    icons = Dictionary.icons
-    str = []
-    doc = Nokogiri::XML(obj.logs)
-    doc.xpath("/root/node").each do |n|
-      opt_time = n.attributes["操作时间"].to_s.split(" ")
-      act = n.attributes["操作内容"].to_s[0,2]
-      icon = icons.has_key?(act) ? icons[act] : icons["其他"]
-      infobar = []
-      infobar << "状态:#{obj.status_badge(n.attributes["当前状态"].to_s.to_i)}" if n.attributes.has_key?("当前状态")
-      infobar << "姓名:#{n.attributes["操作人姓名"]}"
-      infobar << "ID:#{n.attributes["操作人ID"]}"
-      infobar << "单位:#{n.attributes["操作人单位"]}"
-      infobar << "IP地址:#{n.attributes["IP地址"]}"
-      str << %Q|
-      <li>
-        <time class='cbp_tmtime' datetime=''><span>#{opt_time[1]}</span> <span>#{opt_time[0]}</span></time>
-      <i class='cbp_tmicon rounded-x hidden-xs'></i>
-        <div class='cbp_tmlabel'>
-          <h2><i class="fa fa-chevron-circle-right"></i> #{n.attributes["操作内容"]} <i class="fa #{icon}"></i></h2>
-          <div style="display:none;">#{n.attributes["备注"]}</div>
-          <p>#{infobar.join("&nbsp;&nbsp;")}</p>
-        </div>
-      </li>|
-    end
-    return "<ul class='timeline-v2'>#{str.reverse.join}</ul>"
-  end
-
 end

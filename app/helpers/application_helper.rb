@@ -70,6 +70,31 @@ module ApplicationHelper
     return btn_group(arr,true)
   end
 
+  # 多个标签的显示,数组中三个标志 title,icon,content
+  def show_tabs(arr=[],tag="mytab")
+    titles = []
+    contents = []
+    arr.each_with_index do |a,i|
+      icon = a.has_key?(:icon) ? "<i class='fa #{a[:icon]}'></i>" : ""
+      if i == 0 
+        titles << "<li class='active'><a href='##{tag}-#{i}' data-toggle='tab'><h4>#{icon} #{a[:title]}</h4></a></li>"
+        contents << "<div class='tab-pane fade in active' id='#{tag}-#{i}'>#{a[:content]}</div>"
+      else
+        titles << "<li><a href='##{tag}-#{i}' data-toggle='tab'><h4>#{icon} #{a[:title]}</h4></a></li>"
+        contents << "<div class='tab-pane fade in' id='#{tag}-#{i}'>#{a[:content]}</div>"
+      end
+    end
+    return raw %Q|
+    <div class="tab-v2">
+      <ul class="nav nav-tabs">
+        #{titles.join}
+      </ul>                
+      <div class="tab-content">
+        #{contents.join}
+      </div>
+    </div>|.html_safe
+  end
+
   # 显示步骤,用于用户注册页面
   # def step(arr,step)
   #   len = arr.length
