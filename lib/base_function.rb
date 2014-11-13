@@ -53,7 +53,7 @@ def get_node_value(obj,node,options={})
   end
 
   # 显示obj记录的信息
-  def show_obj_table(obj,xml,options={})
+  def show_obj_info(obj,xml,options={})
     grid = options.has_key?(:grid) ? options[:grid] : 2
     str = ""
     tbody = ""
@@ -86,18 +86,20 @@ def get_node_value(obj,node,options={})
     return str.html_safe
   end
 
+  # 显示评价记录 -- 订单或产品 
+  def show_estimates(obj)
+  end
+
   # 显示记录的操作日志
   def show_logs(obj)
     return "暂无记录" if obj.logs.blank?
-    icons = Dictionary.icons
     str = []
     doc = Nokogiri::XML(obj.logs)
     doc.xpath("/root/node").each do |n|
       opt_time = n.attributes["操作时间"].to_s.split(" ")
       act = n.attributes["操作内容"].to_s[0,2]
-      icon = icons.has_key?(act) ? icons[act] : icons["其他"]
       infobar = []
-      infobar << "状态:#{obj.status_badge(n.attributes["当前状态"].to_s.to_i)}" if n.attributes.has_key?("当前状态")
+      infobar << "状态:#{obj.status_badge(n.attributes["当前状态"].to_str.to_i)}" if n.attributes.has_key?("当前状态")
       infobar << "姓名:#{n.attributes["操作人姓名"]}"
       infobar << "ID:#{n.attributes["操作人ID"]}"
       infobar << "单位:#{n.attributes["操作人单位"]}"
@@ -107,7 +109,7 @@ def get_node_value(obj,node,options={})
         <time class='cbp_tmtime' datetime=''><span>#{opt_time[1]}</span> <span>#{opt_time[0]}</span></time>
         <i class='cbp_tmicon rounded-x hidden-xs'></i>
         <div class='cbp_tmlabel'>
-          <h4><i class="fa fa-chevron-circle-right"></i> #{n.attributes["操作内容"]} <i class="fa #{icon}"></i></h4>
+          <h4><i class="fa fa-chevron-circle-right"></i> #{obj.icon_action(n.attributes["操作内容"].to_str,false)}</h4>
           <div style="display:none;">#{n.attributes["备注"]}</div>
           <p>#{infobar.join("&nbsp;&nbsp;")}</p>
         </div>
@@ -117,7 +119,40 @@ def get_node_value(obj,node,options={})
   end
 
   # 显示附件
-  def show_uploads(obj,style="picture")
+  def show_uploads(obj,picture=false,grid=4)
+    result = ""
+    # 图片类型
+    if picture
+      tmp = obj.uploads.map do |file|
+        %Q|<div class="col-md-#{12/grid}"><div class="thumbnails thumbnail-style thumbnail-kenburn">
+            <a href="#{file.upload.url(:original)}" title="#{file.upload_file_name}" data-rel="fancybox-button" class="fancybox-button zoomer">
+              <span class="overlay-zoom overflow-hidden">  
+                <img alt="" src="#{file.upload.url(:md)}" class="img-responsive">
+                <span class="zoom-icon"></span>                   
+              </span>                                              
+            </a>
+            <div class="caption">
+              <p class="word_break">#{file.upload_file_name}<br>[#{number_to_human_size(file.upload_file_size)}]</p>
+            </div>                  
+          </div></div>|.html_safe
+      end
+    # 非图片类型
+    else
+      tmp = obj.uploads.map do |file|
+        %Q|<div class="col-md-#{12/grid}">
+          <div class="servive-block servive-block-default">
+            <a href="#{file.upload.url(:original)}" title="#{file.upload_file_name}" target="_blank">
+              <img alt="" src="#{file.to_jq_upload["thumbnail_url"]}">
+              <p class="word_break">#{file.upload_file_name}<br>[#{number_to_human_size(file.upload_file_size)}]</p>
+            </a>                          
+          </div>
+        </div>|.html_safe
+      end
+    end
+    tmp.each_slice(grid) do |t|
+      result << "<div class='row'>#{t.join}</div>"
+    end
+    return result.html_safe
   end
 
   # 生成随机数

@@ -34,8 +34,10 @@ class MyForm
 
   # 生成提交按钮
   def get_form_button(self_form=true)
-    tmp = self_form ? self_form_button(self.class==MasterSlaveForm) : upload_form_button(self.class==MasterSlaveForm)
-    return "<hr/><div>#{tmp}</div>"
+    if self.options[:button]
+      tmp = self_form ? self_form_button(self.class==MasterSlaveForm) : upload_form_button(self.class==MasterSlaveForm)
+      return "<hr/><div>#{tmp}</div>"
+    end
   end
 
 private

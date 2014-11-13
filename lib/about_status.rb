@@ -50,4 +50,11 @@ module AboutStatus
 		self.update_columns("status" => status, "logs" => logs) unless status == self.status
 	end
 
+	# 带图标的动作
+	def icon_action(action,left=true)
+		key = Dictionary.icons.keys.find{|key|action.index(key)}
+		icon = key ? Dictionary.icons[key] : Dictionary.icons["其他"]
+		return left ? "<i class='fa #{icon}'></i> #{action}" : "#{action} <i class='fa #{icon}'></i>"
+	end
+
 end

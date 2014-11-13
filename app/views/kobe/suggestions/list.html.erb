@@ -1,27 +1,28 @@
 <div class="panel panel-grey margin-bottom-40">
     <div class="panel-heading">
-        <h3 class="panel-title"><i class="fa fa-globe"></i> 意见反馈列表</h3>
+        <h3 class="panel-title"><i class="fa fa-tasks"></i> 意见反馈列表</h3>
     </div>
     <div class="panel-body">
-        <%= form_tag(batch_opt_kobe_suggestions_path, method: 'post', id: "list_form") do %>
         <div class="row margin-bottom-10">
             <div class="col-md-9 pull-left">
-                <button class="btn btn-sm btn-danger rounded" value="delete" name="batch_opt">
-                    <i class="fa fa-trash-o"></i>
-                    删除
-                </button>
-                <button class="btn btn-sm btn-info rounded" value="read" name="batch_opt">
-                    <i class="fa fa-check-square-o"></i>
-                    标记为已读
-                </button>
-                <button class="btn btn-sm btn-warning rounded" value="unread" name="batch_opt">
-                    <i class="fa fa-minus-square-o"></i>
-                    标记为未读
-                </button>
-                <button class="btn btn-sm btn-danger rounded" value="clean" name="batch_opt">
-                    <i class="fa fa-trash-o"></i>
-                    彻底删除
-                </button>
+                <%= form_tag(batch_opt_kobe_suggestions_path, method: 'post', id: "list_form") do %>
+                    <button class="btn btn-sm btn-danger rounded" value="delete" name="batch_opt">
+                        <i class="fa fa-trash-o"></i>
+                        删除
+                    </button>
+                    <button class="btn btn-sm btn-info rounded" value="read" name="batch_opt">
+                        <i class="fa fa-check-square-o"></i>
+                        标记为已读
+                    </button>
+                    <button class="btn btn-sm btn-warning rounded" value="unread" name="batch_opt">
+                        <i class="fa fa-minus-square-o"></i>
+                        标记为未读
+                    </button>
+                    <button class="btn btn-sm btn-danger rounded" value="clean" name="batch_opt">
+                        <i class="fa fa-trash-o"></i>
+                        彻底删除
+                    </button>
+                </form>
             </div>
             <div class="col-md-3 pull-right">
                 <div class="input-group">

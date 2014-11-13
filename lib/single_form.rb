@@ -16,6 +16,7 @@ class SingleForm < MyForm
 		@options[:form_id] ||= "myform" 
     @options[:action] ||= "" 
     @options[:method] ||= "post"
+    @options[:button] ||= true
 	end
 
 	# def get_input_part

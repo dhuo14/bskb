@@ -42,23 +42,23 @@ class Suggestion < ActiveRecord::Base
     arr = [] 
     # 查看详细
     if [0,1,2,3,4,404].include?(self.status)
-    	arr << ["<i class='fa fa-search-plus'></i> 详细", "/kobe/suggestions/#{self.id}", target: "_blank"]
+    	arr << [self.icon_action("详细"), "/kobe/suggestions/#{self.id}", target: "_blank"]
    	end
     # 标记为已读
     if [0,4,404].include?(self.status)
-    	arr << ["<i class='fa fa-eye'></i> 标记为已读", "/kobe/suggestions/#{self.id}/mark_as_read", method: :post]
+    	arr << [self.icon_action("标记为已读"), "/kobe/suggestions/#{self.id}/mark_as_read", method: :post]
     end
     # 标记为未读
     if [1,404].include?(self.status)
-    	arr << ["<i class='fa fa-eye-slash'></i> 标记为未读", "/kobe/suggestions/#{self.id}/mark_as_unread", method: :post]
+    	arr << [self.icon_action("标记为未读"), "/kobe/suggestions/#{self.id}/mark_as_unread", method: :post]
     end
     # 删除
     if [0,1,3,4].include?(self.status)
-	    arr << ["<i class='fa fa-trash-o'></i> 删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "确定要删除吗?"}]
+	    arr << [self.icon_action("删除"), "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "确定要删除吗?"}]
 	  end
     # 彻底删除
     if self.status == 404
-	    arr << ["<i class='fa fa-times'></i> 彻底删除", "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "删除后不可恢复，确定要删除吗?"}]
+	    arr << [self.icon_action("彻底删除"), "/kobe/suggestions/#{self.id}", method: :delete, data: {confirm: "删除后不可恢复，确定要删除吗?"}]
 	  end
 	  return arr
   end

@@ -93,7 +93,7 @@ class Kobe::DepartmentsController < KobeController
 
   # 修改资质证书
   def upload
-    @myform = SingleForm.new(nil, @dep, { form_id: "edit_upload", upload_files: true, min_number_of_files: 4, action: update_upload_kobe_department_path(@dep) })
+    @myform = SingleForm.new(nil, @dep, { form_id: "edit_upload", button: false, upload_files: true, min_number_of_files: 4, action: update_upload_kobe_department_path(@dep) })
   end
 
   def update_upload

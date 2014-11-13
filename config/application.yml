@@ -36,6 +36,7 @@ defaults: &defaults
   tags:
     articles: ['党建','人才','档案','办公']
   icons:
+    "详细": "fa-search-plus"
     "录入": "fa-pencil-square-o"
     "填写": "fa-pencil"
     "修改": "fa-wrench"
@@ -51,6 +52,8 @@ defaults: &defaults
     "下单": "fa-shopping-cart"
     "打印": "fa-print"
     "上传": "fa-paperclip"
+    "未读": "fa-eye-slash"
+    "已读": "fa-eye"
     "标记": "fa-flag"
     "其他": "fa-tag"
 

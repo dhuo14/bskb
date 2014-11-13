@@ -36,7 +36,7 @@ module ApplicationHelper
   def btn_group(arr,dropdown=true)
     return "" if arr.blank?
     unless dropdown || arr.length > 10
-      return raw arr.map{|a|arr_to_link(a)}.join.html_safe
+      return raw arr.map{|a|arr_to_link(a)}.join(" ").html_safe
     else 
       first = arr_to_link(arr.shift)
       if first.index("<a").nil?

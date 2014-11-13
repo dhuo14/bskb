@@ -29,7 +29,7 @@ module MyFormHelper
 		<input id='#{myform.options[:form_id]}_uploaded_file_ids' name='uploaded_file_ids' type='hidden' />
 		</form>|
 		# 插入上传组件HTML
-		myform.html_code << render(:partial => '/shared/myform/fileupload',:locals => {a: "ddd", myform: myform})
+		myform.html_code << render(:partial => '/shared/myform/fileupload',:locals => {myform: myform})
 	end
 
 	def set_bottom_part(myform)

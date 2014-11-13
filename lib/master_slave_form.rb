@@ -20,6 +20,7 @@ class MasterSlaveForm < MyForm
 		@options[:form_id] ||= "myform" 
     @options[:action] ||= "" 
     @options[:method] ||= "post"
+    @options[:button] ||= true
     @slave_options[:title] ||= "明细"
 		@slave_options[:grid] ||= 4 
 	end
