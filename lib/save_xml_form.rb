@@ -5,7 +5,7 @@ module SaveXmlForm
 
   # 创建主从表并写日志
   def create_msform_and_write_logs(master,slave,title={},other_attrs={})
-    other_attrs = set_default_column(other_attrs)
+    other_attrs = set_default_column(master.class,other_attrs)
     title[:action] ||= "录入数据"
     title[:master_title] ||= "基本信息"
     title[:slave_title] ||= "明细信息"
@@ -36,7 +36,7 @@ module SaveXmlForm
 
   #创建并写日志
   def create_and_write_logs(model,title={},other_attrs={})
-    other_attrs = set_default_column(other_attrs)
+    other_attrs = set_default_column(model,other_attrs)
     title[:action] ||= "录入数据"
     title[:master_title] ||= "详细信息"
     attribute = prepare_params_for_save(model,other_attrs)
@@ -266,8 +266,12 @@ private
   end
 
   # 保存数据时设置默认字段
-  def set_default_column(other_attrs)
-    return other_attrs.update({user_id: current_user.id}) # 当前用户
+  def set_default_column(model,other_attrs)
+    if model.attribute_names.include?("user_id")
+      return other_attrs.update({user_id: current_user.id}) # 当前用户
+    else
+      return  other_attrs
+    end
   end
 
   # 上传附件时记录的日志信息

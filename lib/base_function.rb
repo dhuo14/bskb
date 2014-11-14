@@ -88,6 +88,7 @@ def get_node_value(obj,node,options={})
 
   # 显示评价记录 -- 订单或产品 
   def show_estimates(obj)
+    something_not_found
   end
 
   # 显示记录的操作日志
@@ -120,6 +121,7 @@ def get_node_value(obj,node,options={})
 
   # 显示附件
   def show_uploads(obj,picture=false,grid=4)
+    return something_not_found if obj.uploads.blank?
     result = ""
     # 图片类型
     if picture
@@ -161,6 +163,10 @@ def get_node_value(obj,node,options={})
     tmp = ""
     1.upto(len) {|i| tmp << chars[rand(chars.size-1)]}
     return tmp
+  end
+
+  def something_not_found
+    "<div class='alert alert-danger fade in'><h4><i class='fa fa-frown-o font_24px'></i> 抱歉，没有找到相关信息。</h4></div>"
   end
 
 end
