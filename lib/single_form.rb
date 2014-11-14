@@ -16,7 +16,7 @@ class SingleForm < MyForm
 		@options[:form_id] ||= "myform" 
     @options[:action] ||= "" 
     @options[:method] ||= "post"
-    @options[:button] ||= true
+    @options[:button] = true if @options[:button].nil?
 	end
 
 	# def get_input_part

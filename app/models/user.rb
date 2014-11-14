@@ -83,7 +83,8 @@ class User < ActiveRecord::Base
     dialog = "#opt_dialog"
     # 修改
     if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 修改", "javascript:void(0)", onClick: "show_content('/kobe/users/#{self.id}/edit','.tab-content .active.in .show_content')"]
+      title = "<i class='fa fa-pencil'></i> 修改"
+      arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}/edit', '#{dialog}') }]
     end
     # 查看日志
     title = "<i class='fa fa-clock-o'></i> 查看日志"

@@ -49,6 +49,9 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def show
+    @arr  = []
+    @arr << { title: "附件", icon: "fa-paperclip", content: show_uploads(@dep,true) }
+    @arr << { title: "历史记录", icon: "fa-clock-o", content: show_logs(@dep) }
   end
 
   # 删除单位

@@ -37,6 +37,8 @@ class MyForm
     if self.options[:button]
       tmp = self_form ? self_form_button(self.class==MasterSlaveForm) : upload_form_button(self.class==MasterSlaveForm)
       return "<hr/><div>#{tmp}</div>"
+    else
+      return ""
     end
   end
 

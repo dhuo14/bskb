@@ -50,7 +50,7 @@ module SaveXmlForm
   end
 
   #更新并写日志
-  def update_and_write_logs(obj,other_attrs={})
+  def update_and_write_logs(obj,title={},other_attrs={})
     title[:action] ||= "修改数据"
     title[:master_title] ||= "详细信息"
     attribute = prepare_params_for_save(obj.class,other_attrs)

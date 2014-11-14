@@ -65,7 +65,7 @@ class Department < ActiveRecord::Base
 	end
 
 	def cando_list(action='')
-		show_div = '.tab-content .active.in .show_content'
+		show_div = '.tab-content .active.in .show_content .show_ajax_div'
     title = ""
     dialog = "#opt_dialog"
     arr = [] 

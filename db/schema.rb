@@ -194,7 +194,7 @@ ActiveRecord::Schema.define(version: 20141024050735) do
     t.string   "seller_code",                                                                  comment: "供应商单位编号"
     t.decimal  "bugget",                   precision: 13, scale: 2,                            comment: "总预算"
     t.decimal  "total",                    precision: 13, scale: 2, default: 0.0, null: false, comment: "总金额"
-    t.datetime "deliver_at",                                                                   comment: "交付时间"
+    t.date     "deliver_at",                                                                   comment: "交付时间"
     t.string   "invoice_number",                                                               comment: "发票编号"
     t.text     "summary",                                                                      comment: "基本情况（备注）"
     t.integer  "user_id",                                           default: 0,   null: false, comment: "用户ID"
@@ -222,6 +222,7 @@ ActiveRecord::Schema.define(version: 20141024050735) do
     t.integer  "quantity",                               default: 0,   null: false, comment: "数量"
     t.decimal  "total",         precision: 13, scale: 2, default: 0.0, null: false, comment: "总金额"
     t.text     "summary",                                                           comment: "基本情况（备注）"
+    t.text     "details",                                                           comment: "明细"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
