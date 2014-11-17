@@ -58,13 +58,6 @@ class ApplicationController < ActionController::Base
 
     #着重提示，等用户手动关闭
     def flash_get(message)
-      # unless message.class == Array
-      #   message = [message]
-      # end
-      # flash[status] = message
-      if message.class == Array
-        message = message.join("</p><p>")
-      end
       flash[:notice] = message
     end
 

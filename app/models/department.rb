@@ -69,14 +69,12 @@ class Department < ActiveRecord::Base
     title = ""
     dialog = "#opt_dialog"
     arr = [] 
+    # 查看单位信息
+    arr << ["<i class='fa fa-pencil'></i> 查看单位信息", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}', '.tab-content .active.in .show_content')"]
     # 提交
     if [0].include?(self.status) && self.get_tips.blank?
       title = "<i class='fa fa-pencil'></i> 提交"
       arr << [title, "/kobe/departments/#{self.id}/commit", method: "post", data: { confirm: "提交后不允许再修改，确定提交吗?" }]
-    end
-    # 增加下属单位
-    if [0,1,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 增加下属单位", "javascript:void(0)", onClick: "show_content('/kobe/departments/new?pid=#{self.id}','#{show_div}')"]
     end
     # 修改单位信息
     if [0,1,404].include?(self.status)
@@ -85,6 +83,10 @@ class Department < ActiveRecord::Base
     # 修改资质证书
     if [0,404].include?(self.status)
       arr << ["<i class='fa fa-pencil'></i> 修改资质证书", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/upload','#{show_div}','edit_upload_fileupload')"]
+    end
+    # 增加下属单位
+    if [0,1,404].include?(self.status)
+      arr << ["<i class='fa fa-pencil'></i> 增加下属单位", "javascript:void(0)", onClick: "show_content('/kobe/departments/new?pid=#{self.id}','#{show_div}')"]
     end
     # 分配人员账号
     if [0,1,404].include?(self.status)

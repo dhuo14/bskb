@@ -97,17 +97,24 @@ module ApplicationHelper
 
   # 页面提示信息(不是弹框) 
   def show_tips(type,title='',msg='')
-    if msg.is_a?(Array)
-      msg = msg.map{|m|content_tag(:p,m)}.join
-    else
-      msg = content_tag(:p,msg)
-    end
     return raw %Q|
       <div class="alert #{get_alert_style(type)} fade in">
         <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
         <h4>#{title}</h4>
-        #{msg}
+        #{get_tips_msg(msg)}
       </div>|.html_safe
+  end
+
+  # 给提示信息加<p>标签 
+  def get_tips_msg(msg)
+    unless msg.blank?
+      if msg.is_a?(Array)
+        msg = msg.map{|m|content_tag(:p,m)}.join
+      else
+        msg = content_tag(:p,msg)
+      end
+    end
+    return msg
   end
 
   # modal弹框 
