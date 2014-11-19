@@ -29,7 +29,7 @@ Bskb::Application.routes.draw do
   resources :users  do
     collection do
       get :sign_in, :sign_up, :sign_out, :forgot_password
-      post :login, :create_user_dep, :valid_dep_name, :valid_user_login
+      post :login, :create_user_dep, :valid_dep_name, :valid_user_login, :valid_captcha, :valid_user
     end
   end
 

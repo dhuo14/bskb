@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 class UsersController < JamesController
 
-  skip_before_action :verify_authenticity_token, :only => [:valid_dep_name, :valid_user_login]
+  skip_before_action :verify_authenticity_token, :only => [:valid_dep_name, :valid_user_login, :valid_captcha, :valid_user]
 
   def sign_in
   end
@@ -20,9 +20,10 @@ class UsersController < JamesController
   end
 
   def login
-    user = User.find_by(login: params[:user][:login].downcase)
-    if user && user.authenticate(params[:user][:password])
-      sign_in_user(user, params[:user][:remember_me] == '1')
+    user_params = params.require(:user).permit(:login, :password, :remember_me)
+    user = User.find_by(login: user_params[:login].downcase)
+    if user && user.authenticate(user_params[:password])
+      sign_in_user(user, user_params[:remember_me] == '1')
       if user.department.get_tips.blank?
         tips_get '登录成功！'
         redirect_to kobe_departments_path # 登录成功返回页面待定
@@ -45,7 +46,7 @@ class UsersController < JamesController
       sign_in_user user
       write_logs(dep,"注册",'账号创建成功')
       write_logs(user,"注册",'账号创建成功')
-      # UserMailer.registration_confirmation(user).deliver
+      UserMailer.registration_confirmation(user).deliver
       tips_get '账号创建成功！请激活账号'
       redirect_to kobe_departments_path
     else
@@ -56,11 +57,23 @@ class UsersController < JamesController
   end
 
   def valid_dep_name
-    render :text => valid_unique_dep_name(params[:user][:dep])
+    render :text => valid_unique_dep_name(params.require(:user).permit(:dep)[:dep])
   end
 
   def valid_user_login
-    render :text => valid_unique_user_login(params[:user][:login])
+    render :text => valid_unique_user_login(params.require(:user).permit(:login)[:login])
+  end
+
+  # 验证码输入是否正确
+  def valid_captcha
+    render :text => captcha_valid?(params.require(:user).permit(:captcha)[:captcha])
+  end
+
+  # 验证用户名密码是否正确，不正确显示验证码
+  def valid_user
+    user_params = params.permit(:user_name, :pwd)
+    user = User.find_by(login: user_params[:user_name].downcase)
+    render :text => user && user.authenticate(user_params[:pwd])
   end
 
   private  

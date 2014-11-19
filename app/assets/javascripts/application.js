@@ -86,7 +86,6 @@ function validate_form_rules (form_id,form_rules,form_messages) {
 
 // 手动关闭提示弹框
 function flash_dialog (content) {
-	content = "<p>" + content + "</p>"
 	dialog({
     title: '提示',
     content: content,

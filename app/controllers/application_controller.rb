@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+  # reset captcha code after each request for security
+  after_filter :reset_last_captcha_code!
+
 
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -58,13 +61,6 @@ class ApplicationController < ActionController::Base
 
     #着重提示，等用户手动关闭
     def flash_get(message)
-      # unless message.class == Array
-      #   message = [message]
-      # end
-      # flash[status] = message
-      if message.class == Array
-        message = message.join("</p><p>")
-      end
       flash[:notice] = message
     end
 

@@ -24,17 +24,27 @@ function setSelectAll(){
     }
 };
 
+// Ajax 正在加载中。。。
+function ajax_before_send(div){
+    $(div).html('<div class="ajax_loading">正在加载中，请稍后...</div>');
+}
+
 // Ajax加载页面
 function show_content(url,div,upload_form_id) {
-    $.get(url, function(data) {
-        $(div).html(data);
-        // 如果有上传附件 加载上传的js
-        if(upload_form_id != undefined){
-            upload_files(upload_form_id);
-        }
-        // 如果有form 加载日期控件
-        if($(div).has('form').length != 0) {
-            Datepicker.initDatepicker();
+    $.ajax({
+        type: "get",
+        url: url,
+        beforeSend: ajax_before_send(div),
+        success: function(data) {
+            $(div).html(data);
+            // 如果有上传附件 加载上传的js
+            if(upload_form_id != undefined){
+                upload_files(upload_form_id);
+            }
+            // 如果有form 加载日期控件
+            if($(div).has('form').length != 0) {
+                Datepicker.initDatepicker();
+            }
         }
     });
 }

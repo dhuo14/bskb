@@ -5,8 +5,8 @@ class UserMailer < ActionMailer::Base
 
   def registration_confirmation(user)
   	@user = user
-  	# email_with_name = "#{@user.name} <#{@user.email}>"
-		mail(to: @user.email, subject: "激活邮件")
+  	email_with_name = @user.name.blank? ? @user.email : "#{@user.name} <#{@user.email}>"
+		mail(to: email_with_name, subject: "激活邮件")
   end
 
 end
