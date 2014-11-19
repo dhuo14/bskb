@@ -5,17 +5,22 @@ module SaveXmlForm
 
   # 创建主从表并写日志
   def create_msform_and_write_logs(master,slave,title={},other_attrs={})
-    other_attrs = set_default_column(master.class,other_attrs)
+    other_attrs = set_default_column(master,other_attrs)
     title[:action] ||= "录入数据"
     title[:master_title] ||= "基本信息"
     title[:slave_title] ||= "明细信息"
     attribute = prepare_params_for_save(master,other_attrs) # 获取并整合主表参数信息
     master_obj = master.create(attribute) #保存主表
-    logs_remark = prepare_origin_logs_remark(master,title[:master_title]) #主表日志
-    logs_remark << save_uploads(master_obj) # 保存附件并将日志添加到主表日志
-    logs_remark << save_slaves(master_obj,slave,title[:slave_title]) # 保存从表并将日志添加到主表日志
-    unless logs_remark.blank?
-      write_logs(master_obj,title[:action],logs_remark) # 写日志
+    unless master_obj.errors.messages.blank?
+      flash_get master_obj.errors.messages[:base]
+      return 
+    else
+      logs_remark = prepare_origin_logs_remark(master,title[:master_title]) #主表日志
+      logs_remark << save_uploads(master_obj) # 保存附件并将日志添加到主表日志
+      logs_remark << save_slaves(master_obj,slave,title[:slave_title]) # 保存从表并将日志添加到主表日志
+      unless logs_remark.blank?
+        write_logs(master_obj,title[:action],logs_remark) # 写日志
+      end
     end
   end
 

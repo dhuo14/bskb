@@ -28,7 +28,11 @@ class Kobe::OrdersController < KobeController
 
   def create
     create_msform_and_write_logs(Order,OrdersProduct,{:action => "下单", :master_title => "基本信息",:slave_title => "产品信息"})
-    redirect_to kobe_orders_path
+    if flash[:notice]
+      redirect_back_or
+    else
+      redirect_to kobe_orders_path
+    end
   end
 
   def update

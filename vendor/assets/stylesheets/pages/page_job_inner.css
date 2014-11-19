@@ -42,7 +42,7 @@
 }
 
 .image-block {
-	background: url(../../img/job/slider.jpg) 70% 40% no-repeat;
+	background: url(/plugins/images/job/slider.jpg) 70% 40% no-repeat;
 }
 
 /*Company Description*/

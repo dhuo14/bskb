@@ -4,7 +4,7 @@
     </div>
     <div class="panel-body">
         <div class="row margin-bottom-10">
-            <div class="col-md-9 pull-left">
+            <div class="col-md-8 pull-left">
             	<%= form_tag(batch_opt_kobe_suggestions_path, method: 'post', id: "list_form") do %>
                 <button class="btn btn-sm btn-danger rounded" value="delete" name="batch_opt">
                     <i class="fa fa-trash-o"></i>
@@ -24,14 +24,14 @@
                 </button>
               </form>
             </div>
-            <div class="col-md-3 pull-right">
+            <div class="col-md-4 pull-right">
                 <div class="input-group">
                     <input type="text" class="form-control input-sm" placeholder="请输入关键字...">
                     <span class="input-group-btn">
                       <button class="btn btn-success btn-sm" type="button">搜索</button>
                       <button type="button" class="btn btn-success btn-sm" style="margin-left:6px;"><i class="fa fa-filter"></i> 高级搜索</button>
                     </span>
-                  </div>
+                </div>
             </div>
         </div>
         <table class="table table-bordered table-hover">

@@ -100,7 +100,7 @@ group :development, :test do
 	# console print&debug 这个是手动，需要在代码里面写binding.pry
 	gem "pry-rails", "~> 0.3.2"
 	# 这2个加起来是自动，报错的地方会停下来，也能写代码
-  gem "better_errors", "~> 1.1.0"
+  gem 'better_errors', '~> 2.0.0'
   gem "binding_of_caller", "~> 0.7.2"
   # 开发模式加速
   gem 'rails-dev-tweaks', '~> 1.2.0'

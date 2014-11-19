@@ -10,7 +10,7 @@ Bskb::Application.configure do
   config.eager_load = false
 
   # Show full error reports and disable caching.
-  config.consider_all_requests_local       = true
+  config.consider_all_requests_local = true
   config.action_controller.perform_caching = false
 
   # Don't care if the mailer can't send.
@@ -26,6 +26,9 @@ Bskb::Application.configure do
   # This option may cause significant delays in view rendering with a large
   # number of complex assets.
   config.assets.debug = true
+
+  # 虚拟机测试环境在外部访问，友好错误提示
+  BetterErrors::Middleware.allow_ip! "10.0.2.2"
 
   config.dev_tweaks.autoload_rules do
     keep :all

@@ -221,7 +221,7 @@ private
     form_state = _form_states('radio',input_opts[:node_attr]) 
     input_opts[:data].each do |d|
       options = input_opts[:node_attr].clone
-      if d.class == Array 
+      if d.is_a?(Array) 
         options << "checked" if (input_opts[:value] && input_opts[:value] == d[0])
         data_str << "<label class='#{form_state}'><input type='radio' value='#{d[0]}' #{options.join(" ")}><i class='rounded-x'></i>#{d[1]}</label>\n"
       else
@@ -241,7 +241,7 @@ private
     form_state = _form_states('checkbox',input_opts[:node_attr])
     input_opts[:data].each do |d| 
       options = input_opts[:node_attr].clone
-      if d.class == Array
+      if d.is_a?(Array)
         options << "checked" if (input_opts[:value] && input_opts[:value].split(",").include?(d[0]))
         data_str << "<label class='#{form_state}'><input type='checkbox' value='#{d[0]}' #{options.join(" ")}><i></i>#{d[1]}</label>\n"
       else
@@ -260,7 +260,7 @@ private
     data_str = ""
     form_state = _form_states('select',input_opts[:node_attr])
     input_opts[:data].each do |d| 
-      if d.class == Array
+      if d.is_a?(Array)
         checked = (input_opts[:value] && input_opts[:value] == d[0]) ? 'checked' : ''
         data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
       else
@@ -281,7 +281,7 @@ private
     data_str = ""
     form_state = _form_states('select select-multiple',input_opts[:node_attr])
     input_opts[:data].each do |d| 
-      if d.class == Array
+      if d.is_a?(Array)
         checked = (input_opts[:value] && input_opts[:value].split(",").include?(d[0])) ? 'checked' : ''
         data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
       else

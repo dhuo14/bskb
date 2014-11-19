@@ -39,13 +39,13 @@ def get_node_value(obj,node,options={})
 
   # 哈希转成syml格式的字符串，供JS调用
   def hash_to_string(ha)
-  	if ha.class == Hash
+  	if ha.is_a?(Hash)
   		arr = []
   		ha.each do |key,value|
   			arr << "#{key}:#{hash_to_string(value)}"
   		end
   		return "{#{arr.join(',')}}"
-  	elsif ha.class == String
+  	elsif ha.is_a?(String)
   		return "'#{ha}'"
   	else
   		return ha

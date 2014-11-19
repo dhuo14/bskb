@@ -33,7 +33,7 @@
 /*Revolution Slider
 ------------------------------------*/
 .bg-black-opacity {
-   background: url(../img/sliders/revolution/bg-text.html) repeat;
+   background: url(/plugins/images/sliders/revolution/bg-text.html) repeat;
    padding: 7px;
    text-shadow: none !important;
 }
