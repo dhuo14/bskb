@@ -71,9 +71,12 @@ class UsersController < JamesController
 
   # 验证用户名密码是否正确，不正确显示验证码
   def valid_user
-    user_params = params.permit(:user_name, :pwd)
-    user = User.find_by(login: user_params[:user_name].downcase)
-    render :text => user && user.authenticate(user_params[:pwd])
+    user = User.find_by(login: params.permit(:user_name)[:user_name].downcase)
+    if user && user.authenticate(params.require(:user).permit(:password)[:password])
+      render :text => true
+    else
+      render :text => false
+    end
   end
 
   private  
