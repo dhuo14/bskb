@@ -27,8 +27,8 @@ class Kobe::OrdersController < KobeController
   end
 
   def create
-    create_msform_and_write_logs(Order,OrdersProduct,{:action => "下单", :master_title => "基本信息",:slave_title => "产品信息"})
-    if flash[:notice]
+    obj = create_msform_and_write_logs(Order,OrdersProduct,{:action => "下单", :master_title => "基本信息",:slave_title => "产品信息"})
+    unless obj.id
       redirect_back_or
     else
       redirect_to kobe_orders_path

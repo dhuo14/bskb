@@ -13,7 +13,7 @@ module SaveXmlForm
     master_obj = master.create(attribute) #保存主表
     unless master_obj.errors.messages.blank?
       flash_get master_obj.errors.messages[:base]
-      return 
+      return master_obj
     else
       logs_remark = prepare_origin_logs_remark(master,title[:master_title]) #主表日志
       logs_remark << save_uploads(master_obj) # 保存附件并将日志添加到主表日志
@@ -21,6 +21,7 @@ module SaveXmlForm
       unless logs_remark.blank?
         write_logs(master_obj,title[:action],logs_remark) # 写日志
       end
+      return master_obj
     end
   end
 
@@ -37,6 +38,7 @@ module SaveXmlForm
     unless logs_remark.blank?
       write_logs(master_obj,title[:action],logs_remark) # 写日志
     end
+    return master_obj
   end
 
   #创建并写日志
