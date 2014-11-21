@@ -1,4 +1,4 @@
-class CategoriesProduct < ActiveRecord::Base
+class CategoriesParam < ActiveRecord::Base
 	belongs_to :category
 
 	def self.xml(who='',options={})

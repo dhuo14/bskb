@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141120015751) do
+ActiveRecord::Schema.define(version: 20141121004635) do
 
   create_table "areas", force: true do |t|
     t.string   "name",           comment: "单位名称"
@@ -82,6 +82,21 @@ ActiveRecord::Schema.define(version: 20141120015751) do
   end
 
   add_index "categories", ["name"], name: "index_categories_on_name", unique: true, using: :btree
+
+  create_table "categories_params", force: true do |t|
+    t.integer  "category_id", default: 0,     null: false, comment: "品目ID"
+    t.string   "name",                        null: false, comment: "参数名称"
+    t.string   "data_type",                   null: false, comment: "参数类型"
+    t.string   "column",                                   comment: "参数别名"
+    t.boolean  "is_required", default: false, null: false, comment: "是否必填"
+    t.string   "hint",                                     comment: "提示"
+    t.string   "placeholder",                              comment: "占位符"
+    t.text     "details",                                  comment: "明细"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "categories_params", ["category_id"], name: "index_categories_params_on_category_id", using: :btree
 
   create_table "categories_products", force: true do |t|
     t.integer  "category_id", default: 0,     null: false, comment: "品目ID"

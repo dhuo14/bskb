@@ -1,6 +1,6 @@
-class CreateCategoriesProducts < ActiveRecord::Migration
+class CreateCategoriesParams < ActiveRecord::Migration
   def change
-    create_table :categories_products do |t|
+    create_table :categories_params do |t|
     	t.belongs_to :category, :default => 0, :comment => "品目ID", :null => false
       t.string :name, :comment => "参数名称", :null => false
       t.string :data_type, :comment => "参数类型", :null => false
@@ -11,6 +11,6 @@ class CreateCategoriesProducts < ActiveRecord::Migration
       t.text :details, :comment => "明细"
       t.timestamps
     end
-    add_index :categories_products, :category_id
+    add_index :categories_params, :category_id
   end
 end

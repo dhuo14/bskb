@@ -1,6 +1,6 @@
 # -*- encoding : utf-8 -*-
 class Category < ActiveRecord::Base
-	has_many :products, class_name: :CategoriesProduct
+	has_many :params, class_name: :CategoriesParam
 	# 树形结构
   has_ancestry :cache_depth => true
   default_scope -> {order(:ancestry, :sort, :id)}
