@@ -74,7 +74,11 @@ class ApplicationController < ActionController::Base
       # 这里是发送邮件的代码，暂缺
     end
 
+    # 验证表单remote  true：通过验证，false：已存在
+    def valid_remote(obj_class,cdt)
+      return obj_class.where(cdt).blank? ? true :false
+    end
+
     include SaveXmlForm
-    include ValidForm
 
 end

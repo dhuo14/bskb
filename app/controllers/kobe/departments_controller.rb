@@ -117,7 +117,7 @@ class Kobe::DepartmentsController < KobeController
 
   # 验证单位名称
   def valid_dep_name
-    render :text => valid_unique_dep_name(params[:departments][:name],params[:obj_id])
+    render :text => valid_remote(Department, ["name = ? and id != ?", params[:departments][:name], params[:obj_id]])
   end
 
   private  

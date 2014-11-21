@@ -58,11 +58,6 @@ Bskb::Application.routes.draw do
         post :batch_task
       end
     end
-    resources :categorys, :only => :index do
-      collection do
-        get :category_json
-      end
-    end
     resources :menus do
       collection do
         get :ztree
@@ -75,10 +70,10 @@ Bskb::Application.routes.draw do
         post :update_password, :save_freeze
       end
     end
-    resources :categories, :except => :show do
+    resources :categories do
       collection do
-        get :ztree, :set_params
-        post :move, :save_params, :save_attr, :remove_params
+        get :ztree
+        post :move, :valid_name
       end
     end
     # 意见反馈

@@ -1,43 +1,48 @@
 # -*- encoding : utf-8 -*-
 class Kobe::CategoriesController < KobeController
 
-  skip_before_action :verify_authenticity_token, :only => [:move, :destroy, :save_params, :save_attr, :remove_params]
+  skip_before_action :verify_authenticity_token, :only => [:move, :destroy, :valid_name]
   # protect_from_forgery :except => :index
-  before_action :get_category, :only => [:edit, :update, :destroy]
-  before_action :get_icon, :only => [:new, :index, :edit]
-  layout false, :only => [:edit, :new]
+  before_action :get_category, :only => [:index, :edit, :show, :update, :destroy]
+  layout false, :only => [:edit, :new, :show]
 
 	def index
-		@category = Category.new
 	end
 
+  def show
+    obj_contents = show_obj_info(@category,nil,{title: @category.name})
+    @category.products.each do |product|
+      obj_contents << show_obj_info(product,CategoriesProduct.xml,{title: "参数明细 ##{product.id}"})
+    end
+    @arr  = []
+    @arr << {title: "详细信息", icon: "fa-info", content: obj_contents}
+    @arr << {title: "历史记录", icon: "fa-clock-o", content: show_logs(@category)}
+  end
+
   def new
-  	@category = Category.new
+    category = Category.new
+    category.parent_id = params[:pid] unless params[:pid].blank?
+    slave_objs = [CategoriesProduct.new(category_id: category.id)]
+    @ms_form = MasterSlaveForm.new(Category.xml, CategoriesProduct.xml, category, slave_objs, { form_id: 'new_category', title: '<i class="fa fa-pencil-square-o"></i> 新增品目', action: kobe_categories_path, grid: 2 }, { title: '参数明细', grid: 2 })
   end
 
   def edit
-
+    slave_objs = @category.products.blank? ? [CategoriesProduct.new(category_id: @category.id)] : @category.products
+    @ms_form = MasterSlaveForm.new(Category.xml, CategoriesProduct.xml, @category, slave_objs, { title: '<i class="fa fa-wrench"></i> 修改品目', action: kobe_category_path(@category), method: "patch", grid: 2 }, { title: '参数明细', grid: 2 })
   end
 
   def create
-    category = Category.new(category_params)
-    if category.save
-      tips_get("操作成功。")
-      redirect_to kobe_categories_path
+    category = create_msform_and_write_logs(Category, CategoriesProduct, { :action => "新增品目", :master_title => "基本信息", :slave_title => "参数信息" })
+    unless category.id
+      redirect_back_or
     else
-      flash_get(category.errors.full_messages)
-      render 'index'
+      redirect_to kobe_categories_path(id: category)
     end
   end
 
   def update
-    if @category.update(category_params)
-      tips_get("操作成功。")
-      redirect_to kobe_categoriess_path
-    else
-      flash_get(@category.errors.full_messages)
-      render 'index'
-    end
+    update_msform_and_write_logs(@category, CategoriesProduct, { :action => "修改品目", :master_title => "基本信息", :slave_title => "参数信息" })
+    redirect_to kobe_categories_path(id: @category)
   end
 
   def destroy
@@ -56,112 +61,14 @@ class Kobe::CategoriesController < KobeController
     ztree_json(Category)
   end
 
-  def set_params
-    if params[:format].blank?
-      @category = Category.new
-    else
-      @category = Category.find(params[:format])
-    end
+  # 验证品目名称
+  def valid_name
+    params[:obj_id] ||= 0
+    render :text => valid_remote(Category, ["name = ? and id != ?", params[:categories][:name], params[:obj_id]])
   end
 
-  def save_params
-    if params[:html].blank?
-      render :text => "无效HTML!"
-    else
-      html = Nokogiri::HTML(params[:html])
-      xml = Nokogiri::XML::Document.new
-      xml.encoding = "UTF-8"
-      xml << "<root>"
-      create_node(html, xml.root)
-      if params[:id].blank?
-        render :text => "无效Category!"
-      else
-        category = Category.find(params[:id])
-        category.update(params: xml.to_xml)
-        render :text => "操作成功。"
-      end
-    end
-  end
-
-  def create_node(html, node)
-    ol = html.at("ol")
-    ol.children.each do | li |
-      n = li.at("div")
-      next if n.blank?
-      new_node = node.add_child("<node>").first
-      new_node["name"] = n.text.strip
-      n.attributes.each do | k, v |
-        next if k == "class"
-        new_node[k] = v
-      end
-      create_node(li, new_node) if li.at("ol")
-    end
-    return node
-  end
-
-  def save_attr
-    unless params[:id].blank?
-      category = Category.find(params[:id])
-      doc = category.params
-      if doc.blank?
-        xml = Nokogiri::XML::Document.new
-        xml.encoding = "UTF-8"
-        xml << "<root>"
-        node = xml.root.add_child("<node>").first
-      else
-        xml = Nokogiri::XML(doc)
-        node = xml.at("node[@name='#{params[:attr][:name]}']")
-        if node.blank?
-          node = xml.root.add_child("<node>").first
-        end
-      end
-      params[:attr].each do |k,v|
-        if v.blank?
-          node.delete(k)
-        else
-          node[k] = v
-        end
-      end
-      category.update(params: xml.to_xml)
-      tips_get("保存成功") 
-      redirect_to set_params_kobe_categories_path(params[:id])
-    end
-  end
-
-  def remove_params
-    unless params[:id].blank? && params[:html].blank?
-      category = Category.find(params[:id])
-      doc = category.params
-      xml = Nokogiri::XML(doc)
-      html = Nokogiri::HTML(params[:html])
-      para = html.at('div')
-      node_attr = ""
-      para.attributes.each do |k,v|
-        next if k == "class" 
-        node_attr << "[@#{k}='#{v}']"
-      end
-      unless para.text.blank?
-        node_attr << "[@name='#{para.text}']"
-      end
-      xml.at("node#{node_attr}").unlink
-      category.update(params: xml.to_xml)
-      render :text => "删除成功！"
-    end
-  end
-
-
-  private  
-
-    # 只允许传递过来的参数
-    def category_params  
-      params.require(:category).permit(:name, :icon, :sort, :status, :parent_id)  
-    end
-
+  private
     def get_category
       @category = Category.find(params[:id]) unless params[:id].blank?
-    end
-
-    def get_icon
-      @icon = Icon.leaves.map(&:name)
     end
 end

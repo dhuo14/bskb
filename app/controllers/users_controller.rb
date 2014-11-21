@@ -57,11 +57,11 @@ class UsersController < JamesController
   end
 
   def valid_dep_name
-    render :text => valid_unique_dep_name(params.require(:user).permit(:dep)[:dep])
+    render :text => valid_remote(Department, ["name = ?", params.require(:user).permit(:dep)[:dep]])
   end
 
   def valid_user_login
-    render :text => valid_unique_user_login(params.require(:user).permit(:login)[:login])
+    render :text => valid_remote(User, login: params.require(:user).permit(:login)[:login])
   end
 
   # 验证码输入是否正确
