@@ -29,7 +29,7 @@ class MyValidator < ActiveModel::Validator
   end
 
   def is_email?(s)
-    return s =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
+    return /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i.match(s)
   end
 
   def is_date?(s)

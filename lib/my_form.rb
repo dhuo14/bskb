@@ -262,7 +262,7 @@ private
     input_opts[:data].each do |d| 
       if d.is_a?(Array)
         checked = (input_opts[:value] && input_opts[:value] == d[0]) ? 'checked' : ''
-        data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
+        data_str << "<option value='#{d[0]}' #{checked}>#{d[1]}</option>\n"
       else
         checked = (input_opts[:value] && input_opts[:value] == d) ? 'checked' : ''
         data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
@@ -283,7 +283,7 @@ private
     input_opts[:data].each do |d| 
       if d.is_a?(Array)
         checked = (input_opts[:value] && input_opts[:value].split(",").include?(d[0])) ? 'checked' : ''
-        data_str << "<option value='#{d}' #{checked}>#{d[1]}</option>\n"
+        data_str << "<option value='#{d[0]}' #{checked}>#{d[1]}</option>\n"
       else
         checked = (input_opts[:value] && input_opts[:value].split(",").include?(d)) ? 'checked' : ''
         data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
