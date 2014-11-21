@@ -84,7 +84,7 @@ private
     column = node_options["column"] || node_options["name"]
     input_opts = {} #传递参数用的哈希
     input_opts[:table_name] = table_name
-    input_opts[:value] = get_node_value(obj,node,{"for_what"=>"form"}) 
+    input_opts[:value] = get_node_value(obj,node,{for_form: true}) 
     input_opts[:icon] = get_icon(node_options)
     if node_options.has_key?("data") && !node_options["data"].blank?
       eval("input_opts[:data] = #{node_options["data"]}")
