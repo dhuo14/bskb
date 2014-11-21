@@ -67,7 +67,8 @@ $(function() {
   $('body').on("click","i.fa-chevron-circle-right",ToggleDetails);
 
   // FORM提交前先展开所有明细，不然表单不校验
-  $("form.sky-form").on("submit",function(){
+  $('body').on("submit","form.sky-form",function(){
+    $("#add_content").empty();
     $("div.details_part span i.fa-chevron-circle-right").each(ToggleDetails);
   });
 

@@ -72,10 +72,11 @@ ActiveRecord::Schema.define(version: 20141121004635) do
     t.string   "name",                                 null: false, comment: "名称"
     t.string   "ancestry",                                          comment: "祖先节点"
     t.integer  "ancestry_depth",                                    comment: "层级"
-    t.string   "icon",                                              comment: "图标"
     t.integer  "status",         limit: 2, default: 0, null: false, comment: "状态"
     t.integer  "sort",                                              comment: "排序"
-    t.text     "params",                                            comment: "参数"
+    t.text     "audit_rules",                                       comment: "审核规则"
+    t.text     "details",                                           comment: "明细"
+    t.text     "logs",                                              comment: "日志"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
