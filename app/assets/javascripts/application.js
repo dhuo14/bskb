@@ -43,14 +43,23 @@ $(function() {
 	});
 
   // 增加明细
-  var add_div = $("#add_content");
-  var add_max = add_div.siblings(".details_part").length;
-  var add_content = add_div.html();
-  add_div.empty();
-  $("#add_button").click(function(){
+  var add_max = -1;
+  var add_html = "";
+
+  function init_add_content(){
+    add_max = $("#add_content").siblings(".details_part").length;
+    add_html = $("#add_content").html();
+    $("#add_content").empty();
+    return add_max;
+  }
+
+  $('body').on("click","#add_button",function(){
+    if (add_html == ""){
+      init_add_content();
+    }
     add_max += 1;
-    add_div.before(add_content.replaceAll("_orz_",add_max));
-  })
+    $("#add_content").before(add_html.replaceAll("_orz_",add_max));
+  });
 
   // 折叠/展开明细
   // $('body').on("click","div.details_part span i.fa",ToggleDetails);

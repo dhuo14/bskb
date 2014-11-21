@@ -2,6 +2,7 @@
 class OrdersProduct < ActiveRecord::Base
 	belongs_to :order
 	
+	# 从表的XML加ID是为了修改的时候能找到记录
 	def self.xml(who='',options={})
 	  %Q{
 	    <?xml version='1.0' encoding='UTF-8'?>
