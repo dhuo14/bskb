@@ -153,12 +153,13 @@ private
   def get_icon(node_options)
     if node_options.has_key?("class")
       tmp = node_options["class"].to_str.split(" ")
-      if ["tree_checkbox","tree_radio","box_checkbox","box_radio"] & tmp
+      if !(["tree_checkbox","tree_radio","box_checkbox","box_radio"] & tmp).blank?
         default_icon = "chevron-down"
-      elsif ["date_select"] & tmp
+      elsif !(["date_select"] & tmp).blank?
         default_icon = "calendar"
       end
     end
+    
     return node_options.has_key?("icon") ? node_options["icon"] : (default_icon || "info")
   end
 
