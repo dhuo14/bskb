@@ -2,7 +2,7 @@
 module BaseFunction
 
 # 获取某实例的字段值
-def get_node_value(obj,node,options={})
+def get_node_value(obj,node,for_form=false)
     # 父节点特殊处理
     if obj.attributes.include?("ancestry")
     	return obj.parent_id if node["name"] == "parent_id" 
@@ -19,11 +19,11 @@ def get_node_value(obj,node,options={})
     		result = tmp.blank? ? "" : tmp["value"]
     	end
     end
-    return transform_node_value(node,result,options[:for_form])
+    return transform_node_value(node,result,for_form)
   end
 
   # 如果是二维数组的选择类型的，需要转换KEY和VALUE
-  def transform_node_value(node,result,for_form)
+  def transform_node_value(node,result,for_form=false)
     unless for_form 
       if node.attributes.has_key?("data") 
         arr = eval(node.attributes["data"].to_str)

@@ -84,7 +84,7 @@ private
     column = node_options["column"] || node_options["name"]
     input_opts = {} #传递参数用的哈希
     input_opts[:table_name] = table_name
-    input_opts[:value] = get_node_value(obj,node,{for_form: true}) 
+    input_opts[:value] = get_node_value(obj,node,true) 
     input_opts[:icon] = get_icon(node_options)
     if node_options.has_key?("data") && !node_options["data"].blank?
       eval("input_opts[:data] = #{node_options["data"]}")
@@ -261,10 +261,10 @@ private
     form_state = _form_states('select',input_opts[:node_attr])
     input_opts[:data].each do |d| 
       if d.is_a?(Array)
-        checked = (input_opts[:value] && input_opts[:value] == d[0]) ? 'checked' : ''
+        checked = (input_opts[:value] && input_opts[:value] == d[0]) ? 'selected' : ''
         data_str << "<option value='#{d[0]}' #{checked}>#{d[1]}</option>\n"
       else
-        checked = (input_opts[:value] && input_opts[:value] == d) ? 'checked' : ''
+        checked = (input_opts[:value] && input_opts[:value] == d) ? 'selected' : ''
         data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
       end
     end
@@ -282,10 +282,10 @@ private
     form_state = _form_states('select select-multiple',input_opts[:node_attr])
     input_opts[:data].each do |d| 
       if d.is_a?(Array)
-        checked = (input_opts[:value] && input_opts[:value].split(",").include?(d[0])) ? 'checked' : ''
+        checked = (input_opts[:value] && input_opts[:value].split(",").include?(d[0])) ? 'selected' : ''
         data_str << "<option value='#{d[0]}' #{checked}>#{d[1]}</option>\n"
       else
-        checked = (input_opts[:value] && input_opts[:value].split(",").include?(d)) ? 'checked' : ''
+        checked = (input_opts[:value] && input_opts[:value].split(",").include?(d)) ? 'selected' : ''
         data_str << "<option value='#{d}' #{checked}>#{d}</option>\n"
       end
     end
