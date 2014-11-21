@@ -163,7 +163,7 @@ private
       else
         new_value = all_params[node.attributes["name"].to_str]
       end 
-      new_value = transform_boolean(new_value,"table") if attr_name.to_str.index("是否") == 0
+      new_value = transform_node_value(node,new_value)
       spoor << "<tr><td>#{attr_name.to_str}</td><td>#{new_value}</td></tr>" unless new_value.to_s.blank?
     }
     if spoor.blank?
@@ -185,8 +185,8 @@ private
       else
         new_value = all_params[node.attributes["name"].to_str]
       end 
-      new_value = transform_boolean(new_value,"table") if attr_name.to_str.index("是否") == 0
-      old_value = get_node_value(obj,node,{"for_what"=>"table"})
+      new_value = transform_node_value(node,new_value)
+      old_value = get_node_value(obj,node)
       spoor << "<tr><td>#{attr_name.to_str}</td><td>#{old_value}</td><td>#{new_value}</td></tr>" unless old_value.to_s == new_value.to_s || new_value.nil?
     }
     if spoor.blank?

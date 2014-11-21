@@ -19,22 +19,33 @@ def get_node_value(obj,node,options={})
     		result = tmp.blank? ? "" : tmp["value"]
     	end
     end
-    # 对布尔型的值转换
-    if result == true || result == false
-    	for_what = options.has_key?("for_what") ? options["for_what"] : "table"
-    	result = transform_boolean(result,for_what)
+    return transform_node_value(node,result,options[:for_form])
+  end
+
+  # 如果是二维数组的选择类型的，需要转换KEY和VALUE
+  def transform_node_value(node,result,for_form)
+    unless for_form 
+      if node.attributes.has_key?("data") 
+        arr = eval(node.attributes["data"].to_str)
+        if arr[0].is_a?(Array)
+          tmp = arr.find{|d|d[0] == tranform_boolean(result)}
+          result = tmp[1] unless tmp.blank?
+        end
+      end
+    else
+      result = tranform_boolean(result)
     end
     return result
   end
 
-  #布尔型转换
-  def transform_boolean(s,for_what)
-  	return s unless [true,false,1,0,'1','0','是','否'].include?(s)
-  	if for_what == "table"
-  		return (s == true || s.to_s == "1") ? "是" : "否"
-  	elsif for_what == "form"
-  		return (s == true || s.to_s == "是") ? 1 : 0
-  	end
+  def tranform_boolean(s)
+    if s == true
+      return 1 
+    elsif s == false
+      return 0
+    else
+      return s
+    end
   end
 
   # 哈希转成syml格式的字符串，供JS调用
@@ -68,7 +79,7 @@ def get_node_value(obj,node,options={})
     tds.each_slice(grid).with_index do |node,i|
       tbody << "<tr>"
       node.each_with_index{|n,ii|
-        tbody << "<td>#{n.attributes["name"]}</td><td>#{get_node_value(obj,n,{"for_what"=>"table"})}</td>"
+        tbody << "<td>#{n.attributes["name"]}</td><td>#{get_node_value(obj,n)}</td>"
         tbody << "<td></td><td></td>" * (grid-ii-1) if (n == node.last) && (ii != grid -1)
       }
       tbody << "</tr>"
