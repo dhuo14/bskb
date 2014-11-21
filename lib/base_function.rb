@@ -28,23 +28,34 @@ def get_node_value(obj,node,for_form=false)
       if node.attributes.has_key?("data") 
         arr = eval(node.attributes["data"].to_str)
         if arr[0].is_a?(Array)
-          tmp = arr.find{|d|d[0] == tranform_boolean(result)}
+          tmp = arr.find{|d|d[0] == tranform_boolean(result,true)}
           result = tmp[1] unless tmp.blank?
         end
       end
     else
-      result = tranform_boolean(result)
+      result = tranform_boolean(result,for_form)
     end
     return result
   end
 
-  def tranform_boolean(s)
-    if s == true
-      return 1 
-    elsif s == false
-      return 0
+  # 对布尔型进行转换，在form里要显示1或0，在show时要显示是或否
+  def tranform_boolean(s,show_cn=true)
+    if show_cn
+      if s == true
+        return 1 
+      elsif s == false
+        return 0
+      else
+        return s
+      end
     else
-      return s
+      if s == true
+        return "是"
+      elsif s == false
+        return "否"
+      else
+        return s
+      end
     end
   end
 
