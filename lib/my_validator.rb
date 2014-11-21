@@ -14,7 +14,6 @@ class MyValidator < ActiveModel::Validator
 
   private 
 
-
   # 获取节点属性的值
   def attr_value(node,record)
     if node.attributes.has_key?("column")

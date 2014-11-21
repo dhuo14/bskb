@@ -76,6 +76,7 @@ Bskb::Application.routes.draw do
         post :move, :valid_name
       end
     end
+    resources :products
     # 意见反馈
     resources :suggestions do
       post :mark_as_read, :mark_as_unread, on: :member

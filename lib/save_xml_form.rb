@@ -4,20 +4,20 @@ module SaveXmlForm
   include ActionView::Helpers::NumberHelper # number_to_human_size 函数
 
   # 创建主从表并写日志
-  def create_msform_and_write_logs(master,slave,title={},other_attrs={})
+  def create_msform_and_write_logs(master,master_xml,slave,slave_xml,title={},other_attrs={})
     other_attrs = set_default_column(master,other_attrs)
     title[:action] ||= "录入数据"
     title[:master_title] ||= "基本信息"
     title[:slave_title] ||= "明细信息"
-    attribute = prepare_params_for_save(master,other_attrs) # 获取并整合主表参数信息
+    attribute = prepare_params_for_save(master,master_xml,other_attrs) # 获取并整合主表参数信息
     master_obj = master.create(attribute) #保存主表
     unless master_obj.errors.messages.blank?
       flash_get master_obj.errors.messages[:base]
       return master_obj
     else
-      logs_remark = prepare_origin_logs_remark(master,title[:master_title]) #主表日志
+      logs_remark = prepare_origin_logs_remark(master,master_xml,title[:master_title]) #主表日志
       logs_remark << save_uploads(master_obj) # 保存附件并将日志添加到主表日志
-      logs_remark << save_slaves(master_obj,slave,title[:slave_title]) # 保存从表并将日志添加到主表日志
+      logs_remark << save_slaves(master_obj,slave,slave_xml,title[:slave_title]) # 保存从表并将日志添加到主表日志
       unless logs_remark.blank?
         write_logs(master_obj,title[:action],logs_remark) # 写日志
       end
@@ -26,15 +26,15 @@ module SaveXmlForm
   end
 
   # 更新主从表并写日志
-  def update_msform_and_write_logs(master_obj,slave,title={},other_attrs={})
+  def update_msform_and_write_logs(master_obj,master_xml,slave,slave_xml,title={},other_attrs={})
     title[:action] ||= "修改数据"
     title[:master_title] ||= "基本信息"
     title[:slave_title] ||= "明细信息"
-    attribute = prepare_params_for_save(master_obj.class,other_attrs) # 获取并整合主表参数信息
-    logs_remark = prepare_edit_logs_remark(master_obj,"修改#{title[:master_title]}") #主表日志--修改痕迹 先取日志再更新主表，否则无法判断修改前后的变化情况
+    attribute = prepare_params_for_save(master_obj.class,master_xml,other_attrs) # 获取并整合主表参数信息
+    logs_remark = prepare_edit_logs_remark(master_obj,master_xml,"修改#{title[:master_title]}") #主表日志--修改痕迹 先取日志再更新主表，否则无法判断修改前后的变化情况
     save_uploads(master_obj) # 保存附件,附件日志已经在文件上传时记录了
     master_obj.update_attributes(attribute) #更新主表
-    logs_remark << save_slaves(master_obj,slave,title[:slave_title]) # 保存从表并将日志添加到主表日志
+    logs_remark << save_slaves(master_obj,slave,slave_xml,title[:slave_title]) # 保存从表并将日志添加到主表日志
     unless logs_remark.blank?
       write_logs(master_obj,title[:action],logs_remark) # 写日志
     end
@@ -42,13 +42,13 @@ module SaveXmlForm
   end
 
   #创建并写日志
-  def create_and_write_logs(model,title={},other_attrs={})
+  def create_and_write_logs(model,xml,title={},other_attrs={})
     other_attrs = set_default_column(model,other_attrs)
     title[:action] ||= "录入数据"
     title[:master_title] ||= "详细信息"
-    attribute = prepare_params_for_save(model,other_attrs)
+    attribute = prepare_params_for_save(model,xml,other_attrs)
     obj = model.create(attribute)
-    logs_remark = prepare_origin_logs_remark(model,title[:master_title]) #主表日志
+    logs_remark = prepare_origin_logs_remark(model,xml,title[:master_title]) #主表日志
     logs_remark << save_uploads(obj) # 保存附件并将日志添加到主表日志
     unless logs_remark.blank?
       write_logs(obj,title[:action],logs_remark) # 写日志
@@ -57,11 +57,11 @@ module SaveXmlForm
   end
 
   #更新并写日志
-  def update_and_write_logs(obj,title={},other_attrs={})
+  def update_and_write_logs(obj,xml,title={},other_attrs={})
     title[:action] ||= "修改数据"
     title[:master_title] ||= "详细信息"
-    attribute = prepare_params_for_save(obj.class,other_attrs)
-    logs_remark = prepare_edit_logs_remark(obj,"修改#{title[:master_title]}") #主表日志--修改痕迹 先取日志再更新主表，否则无法判断修改前后的变化情况
+    attribute = prepare_params_for_save(obj.class,xml,other_attrs)
+    logs_remark = prepare_edit_logs_remark(obj,xml,"修改#{title[:master_title]}") #主表日志--修改痕迹 先取日志再更新主表，否则无法判断修改前后的变化情况
     save_uploads(obj) # 保存附件，附件日志已经上文件上传时记录了
     obj.update_attributes(attribute) #更新主表
     unless logs_remark.blank?
@@ -77,8 +77,8 @@ module SaveXmlForm
   end
 
   # 准备参数，column参数存到字段中，非column参数存到details中,other_attrs 是其他人为赋值字段
-  def prepare_params_for_save(model,other_attrs={})
-    tmp = get_xmlform_params(model)
+  def prepare_params_for_save(model,xml,other_attrs={})
+    tmp = get_xmlform_params(model,xml)
     result = tmp[0]
     unless tmp[1].blank?
       result["details"] = prepare_details(tmp[1]) if model.attribute_method?(:details)
@@ -95,16 +95,16 @@ module SaveXmlForm
 private
 
   #XML_FORM表单提交后生成的参数，返回二维数组，第一维是存入数据库的column参数，第二维是拼成details的name参数
-  def get_xmlform_params(model,who='',options={})
-    tmp = get_column_and_name_array(model,who,options)
+  def get_xmlform_params(model,xml)
+    tmp = get_column_and_name_array(model,xml)
     return [params.require(model.to_s.tableize.to_sym).permit(tmp[0]) ,params.require(model.to_s.tableize.to_sym).permit(tmp[1])]
   end
 
   # 返回二维数组，第一维是存入数据库的column参数，第二维是拼成details的name参数
-  def get_column_and_name_array(model,who='',options={})
+  def get_column_and_name_array(model,xml)
     column_params = []
     name_params = []
-    doc = Nokogiri::XML(model.xml(who,options))
+    doc = Nokogiri::XML(xml)
     doc.xpath("/root/node").each{|node|
       if node.attributes.has_key?("column")
         column_params << node.attributes["column"].to_s
@@ -152,10 +152,10 @@ private
   end
 
   # 准备创建纪录时的原始日志
-  def prepare_origin_logs_remark(model,title='详细信息',all_params={})
+  def prepare_origin_logs_remark(model,xml,title='详细信息',all_params={})
     all_params = params.require(model.to_s.tableize.to_sym) if all_params.length == 0
     spoor = ""
-    doc = Nokogiri::XML(model.xml)
+    doc = Nokogiri::XML(xml)
     doc.xpath("/root/node").each{|node|
       attr_name = node.attributes.has_key?("name") ? node.attributes["name"] : node.attributes["column"]
       if node.attributes.has_key?("column")
@@ -174,10 +174,10 @@ private
   end
 
   # 准备修改纪录时的痕迹纪录
-  def prepare_edit_logs_remark(obj,title='修改痕迹',all_params={})
+  def prepare_edit_logs_remark(obj,xml,title='修改痕迹',all_params={})
     all_params = params.require(obj.class.to_s.tableize.to_sym) if all_params.length == 0
     spoor = ""
-    doc = Nokogiri::XML(obj.class.xml)
+    doc = Nokogiri::XML(xml)
     doc.xpath("/root/node").each{|node|
       attr_name = node.attributes.has_key?("name") ? node.attributes["name"] : node.attributes["column"]
       if node.attributes.has_key?("column")
@@ -219,13 +219,13 @@ private
   # end
 
   # 保存从表数据
-  def save_slaves(master_obj,slave,slave_title="数据")
+  def save_slaves(master_obj,slave,slave_xml,slave_title="数据")
     logs_remark = "" # 从表不纪录日志,日志纪录到主表中去
     slave_params = params.require(slave.to_s.tableize.to_sym)
     foreign_key = "#{master_obj.class.to_s.underscore}_id"
     # 数据库中原来存在的从表记录
     tables_ids = slave.where(["#{foreign_key} = ?", master_obj.id]).map(&:id)
-    column_name = get_column_and_name_array(slave)
+    column_name = get_column_and_name_array(slave, slave_xml)
     # 参数的高度即slava的数量,预设必须有ID这个参数
     slave_params["id"].keys.each do |i|
       attribute = {}
@@ -238,10 +238,10 @@ private
         attribute[foreign_key] = master_obj.id #主键
         attribute.delete("id")
         obj = slave.create(attribute)
-        logs_remark << prepare_origin_logs_remark(slave,"添加#{slave_title}##{obj.id}",all_params)
+        logs_remark << prepare_origin_logs_remark(slave,slave_xml,"添加#{slave_title}##{obj.id}",all_params)
       else
         obj = slave.find(attribute["id"])
-        logs_remark << prepare_edit_logs_remark(obj,"修改#{slave_title}##{obj.id}",all_params)
+        logs_remark << prepare_edit_logs_remark(obj,slave_xml,"修改#{slave_title}##{obj.id}",all_params)
         obj.update_attributes(attribute)
       end
     end

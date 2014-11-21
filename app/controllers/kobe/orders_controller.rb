@@ -27,7 +27,7 @@ class Kobe::OrdersController < KobeController
   end
 
   def create
-    obj = create_msform_and_write_logs(Order,OrdersProduct,{:action => "下单", :master_title => "基本信息",:slave_title => "产品信息"})
+    obj = create_msform_and_write_logs(Order, Order.xml, OrdersProduct, OrdersProduct.xml, {:action => "下单", :master_title => "基本信息",:slave_title => "产品信息"})
     unless obj.id
       redirect_back_or
     else
@@ -36,7 +36,7 @@ class Kobe::OrdersController < KobeController
   end
 
   def update
-    update_msform_and_write_logs(@obj,OrdersProduct,{:action => "修改订单", :master_title => "基本信息",:slave_title => "产品信息"})
+    update_msform_and_write_logs(@obj, Order.xml, OrdersProduct, OrdersProduct.xml, {:action => "修改订单", :master_title => "基本信息",:slave_title => "产品信息"})
     redirect_to kobe_orders_path
   end
 

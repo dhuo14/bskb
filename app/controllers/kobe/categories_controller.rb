@@ -23,20 +23,20 @@ class Kobe::CategoriesController < KobeController
     category = Category.new
     category.parent_id = params[:pid] unless params[:pid].blank?
     slave_objs = [CategoriesParam.new(category_id: category.id)]
-    @ms_form = MasterSlaveForm.new(Category.xml, CategoriesParam.xml, category, slave_objs, { form_id: 'new_category', title: '<i class="fa fa-pencil-square-o"></i> 新增品目', action: kobe_categories_path, grid: 2 }, { title: '参数明细', grid: 2 })
+    @ms_form = MasterSlaveForm.new(Category.xml, CategoriesParam.xml, category, slave_objs, { form_id: 'new_category', title: '<i class="fa fa-pencil-square-o"></i> 新增品目', action: kobe_categories_path, grid: 2 }, { title: '参数明细', grid: 4 })
   end
 
   def edit
     slave_objs = @category.params.blank? ? [CategoriesParam.new(category_id: @category.id)] : @category.params
     if @category.is_childless? # 没有孩子 显示参数信息
-      @my_form = MasterSlaveForm.new(Category.xml, CategoriesParam.xml, @category, slave_objs, { title: '<i class="fa fa-wrench"></i> 修改品目', action: kobe_category_path(@category), method: "patch", grid: 2 }, { title: '参数明细', grid: 2 })
+      @my_form = MasterSlaveForm.new(Category.xml, CategoriesParam.xml, @category, slave_objs, { title: '<i class="fa fa-wrench"></i> 修改品目', action: kobe_category_path(@category), method: "patch", grid: 2 }, { title: '参数明细', grid: 4 })
     else
       @my_form = SingleForm.new(Category.xml, @category, { title: '<i class="fa fa-wrench"></i> 修改品目', form_id: "category_form", action: kobe_category_path(@category), method: "patch", grid: 2 })
     end
   end
 
   def create
-    category = create_msform_and_write_logs(Category, CategoriesParam, { :action => "新增品目", :master_title => "基本信息", :slave_title => "参数信息" })
+    category = create_msform_and_write_logs(Category, Category.xml, CategoriesParam, CategoriesParam.xml, { :action => "新增品目", :master_title => "基本信息", :slave_title => "参数信息" })
     unless category.id
       redirect_back_or
     else
@@ -45,7 +45,7 @@ class Kobe::CategoriesController < KobeController
   end
 
   def update
-    update_msform_and_write_logs(@category, CategoriesParam, { :action => "修改品目", :master_title => "基本信息", :slave_title => "参数信息" })
+    update_msform_and_write_logs(@category, Category.xml, CategoriesParam, CategoriesParam.xml, { :action => "修改品目", :master_title => "基本信息", :slave_title => "参数信息" })
     redirect_to kobe_categories_path(id: @category)
   end
 

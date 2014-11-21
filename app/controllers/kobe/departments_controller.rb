@@ -24,7 +24,7 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def create
-    dep = create_and_write_logs(Department)
+    dep = create_and_write_logs(Department, Department.xml)
     if dep
       tips_get("创建成功。")
       redirect_to kobe_departments_path(id: dep)

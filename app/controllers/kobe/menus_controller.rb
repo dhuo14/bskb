@@ -26,7 +26,7 @@ class Kobe::MenusController < KobeController
 
   def create
     # other_attrs = {"name" => "我是新名字,会覆盖哦"}
-    # menu = create_and_write_logs(Menu,other_attrs)
+    # menu = create_and_write_logs(Menu, Menu.xml, other_attrs)
     # if menu
     #   menu.XXXX
     #   tips_get("操作成功。")
@@ -36,7 +36,7 @@ class Kobe::MenusController < KobeController
     #   render 'index'
     # end
 
-    if create_and_write_logs(Menu)
+    if create_and_write_logs(Menu, Menu.xml)
       tips_get("创建成功。")
       redirect_to kobe_menus_path
     else

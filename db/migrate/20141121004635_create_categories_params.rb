@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateCategoriesParams < ActiveRecord::Migration
   def change
     create_table :categories_params do |t|
@@ -8,6 +9,8 @@ class CreateCategoriesParams < ActiveRecord::Migration
       t.boolean :is_required, :comment => "是否必填", :default => 0, :null => false
       t.string :hint, :comment => "提示"
       t.string :placeholder, :comment => "占位符"
+      t.text :data, :comment => "选择项"
+      t.string :rule, :comment => "参数格式"
       t.text :details, :comment => "明细"
       t.timestamps
     end
