@@ -38,7 +38,7 @@ gem "nokogiri", "~> 1.6.1"
 gem 'kaminari', '~> 0.15.1'
 
 # 静态配置信息
-gem "settingslogic", "~> 2.0.9"
+# gem "settingslogic", "~> 2.0.9"
 
 # 动态配置信息
 gem "rails-settings-cached", "~> 0.3.2"
@@ -56,10 +56,12 @@ gem "paperclip", "~> 3.5.2"
 # gem 'jquery-fileupload-rails', '~> 0.4.1'
 
 #图片处理
-gem "rmagick", "~> 2.13.2"
+# gem "rmagick", "~> 2.13.2"
+
+gem 'mini_magick', '4.0.0'
 
 #表单JS验证
-gem "jQuery-Validation-Engine-rails", "~> 0.0.2"
+# gem "jQuery-Validation-Engine-rails", "~> 0.0.2"
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'

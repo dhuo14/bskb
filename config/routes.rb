@@ -5,7 +5,7 @@ Bskb::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
    #root 'home#index'
-  root :to => 'home#testform'
+  root :to => 'home#index'
   
   captcha_route
 
@@ -13,8 +13,8 @@ Bskb::Application.routes.draw do
 
   resources :home, :only => :index  do 
     collection do
-      get :testform, :ajax_test, :test, :json_test
-      post :testform
+      get :form_test, :ajax_test, :test, :json_test
+      post :form_test
     end
   end
 
