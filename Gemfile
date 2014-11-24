@@ -38,7 +38,7 @@ gem "nokogiri", "~> 1.6.1"
 gem 'kaminari', '~> 0.15.1'
 
 # 静态配置信息
-# gem "settingslogic", "~> 2.0.9"
+gem "settingslogic", "~> 2.0.9"
 
 # 动态配置信息
 gem "rails-settings-cached", "~> 0.3.2"
