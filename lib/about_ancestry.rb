@@ -9,9 +9,10 @@ module AboutAncestry
   module AncestryClassMethods
 	  def get_json(name)
 	    if name.blank?
-	      nodes = self.all
+	      nodes = self.attribute_method?("status") ? self.where.not(status: 404) : self.all
 	    else
-	      sql = "SELECT DISTINCT a.id,a.name,a.ancestry FROM #{self.to_s.tableize} a INNER JOIN  #{self.to_s.tableize} b ON (FIND_IN_SET(a.id,REPLACE(b.ancestry,'/',',')) > 0 OR a.id=b.id OR (LOCATE(CONCAT(b.ancestry,'/',b.id),a.ancestry)>0)) WHERE b.name LIKE ? ORDER BY a.ancestry"
+        cdt = self.attribute_method?("status") ? "and status != 404" : ""
+	      sql = "SELECT DISTINCT a.id,a.name,a.ancestry FROM #{self.to_s.tableize} a INNER JOIN  #{self.to_s.tableize} b ON (FIND_IN_SET(a.id,REPLACE(b.ancestry,'/',',')) > 0 OR a.id=b.id OR (LOCATE(CONCAT(b.ancestry,'/',b.id),a.ancestry)>0)) WHERE b.name LIKE ? #{cdt} ORDER BY a.ancestry"
 	      nodes = self.find_by_sql([sql,"%#{name}%"])
 	    end
 	    json = nodes.map{|n|%Q|{"id":#{n.id}, "pId":#{n.pid}, "name":"#{n.name}"}|}

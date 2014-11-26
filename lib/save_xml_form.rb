@@ -92,6 +92,36 @@ module SaveXmlForm
     return %Q|<node 操作时间="#{Time.new.to_s(:db)}" 操作人ID="#{current_user.id}" 操作人姓名="#{current_user.name}" 操作人单位="#{current_user.department.nil? ? "暂无" : current_user.department.name}" 操作内容="#{action}" 当前状态="$STATUS$" 备注="#{remark}" IP地址="#{request.remote_ip}[#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}]"/>|
   end
 
+  # 生成XML 用于品目参数维护 返回XML
+  def create_xml(xml,model)
+    column_arr = Nokogiri::XML(xml).xpath("/root/node[@column]").map{ |node| node.attributes["column"].to_str }
+    doc = Nokogiri::XML::Document.new
+    doc.encoding = "UTF-8"
+    doc << "<root>"
+    params_arr = params.require(model.to_s.tableize.to_sym)
+    params_arr["name"].keys.each do |i|
+      node = doc.root.add_child("<node>").first
+      rule = []
+      column_arr.each do |column|
+        next if params_arr[column].blank? || params_arr[column][i].blank?
+        value = params_arr[column][i]
+        case column
+        when "data"
+          node[column] = value.split("|") 
+        when "is_required"
+          rule << "required" if value == "1"
+        when "rule"
+          rule << value
+          rule << "date_select" if ["dateISO", "date"].include?(value)
+        else
+          node[column] = value
+        end
+      end
+      node["class"] = rule.join(" ") unless rule.blank?
+    end
+    return doc.to_s
+  end
+
 private
 
   #XML_FORM表单提交后生成的参数，返回二维数组，第一维是存入数据库的column参数，第二维是拼成details的name参数

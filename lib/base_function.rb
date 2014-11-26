@@ -11,9 +11,9 @@ def get_node_value(obj,node,for_form=false)
     # 一般情况
     result = ""
     if node.attributes.has_key?("column") && obj.class.attribute_method?(node["column"])
-    	result = obj[node["column"]]
+    	result = obj.attributes[node["column"]]
     else
-    	if obj.class.attribute_method?("details") && !obj["details"].blank?
+    	if obj.class.attribute_method?("details") && !obj.attributes["details"].blank?
     		doc = Nokogiri::XML(obj["details"])
     		tmp = doc.xpath("/root/node[@name='#{node["name"]}']").first
     		result = tmp.blank? ? "" : tmp["value"]
@@ -86,7 +86,7 @@ def get_node_value(obj,node,for_form=false)
     end 
     doc = Nokogiri::XML(xml)
     # 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'的
-    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='hidden'][@data_type!='textarea'][@data_type!='richtext']")
+    tds = doc.xpath("/root/node[not(@data_type='textarea')][not(@data_type='richtext')][not(@data_type='hidden')][not(@display='skip')]")
     tds.each_slice(grid).with_index do |node,i|
       tbody << "<tr>"
       node.each_with_index{|n,ii|
@@ -189,6 +189,46 @@ def get_node_value(obj,node,for_form=false)
 
   def something_not_found
     "<div class='alert alert-danger fade in'><h4><i class='fa fa-frown-o font_24px'></i> 抱歉，没有找到相关信息。</h4></div>"
+  end
+
+  # 从XML中获取值 返回数组
+  def get_value_from_xml(xml,model)
+    arr = []
+    rule_arr = Dictionary.inputs.rule.map(&:first)
+    Nokogiri::XML(xml).xpath("/root/node").each do |node|
+      obj = model.new
+      node.attributes.each do |key, value|
+        case key
+        when "data"
+          obj.attributes[key] = eval(value.to_str).join("|") unless value.blank?
+        when "class"
+          cls_arr = value.to_str.split(" ")
+          obj.attributes["is_required"] = cls_arr.include?("required")
+          obj.attributes["rule"] = (cls_arr & rule_arr)[0]
+        else
+          obj.attributes[key] = value.to_str
+        end
+      end
+      arr << obj
+    end
+    return arr
+  end
+
+  #  截取字符串固定长度，支持中英文混合，length 为中文的长度，一个英文相当于0.5个中文长度
+  def text_truncate(text, length = 30, truncate_string = "...")
+    if text
+      l=0
+      char_array=text.unpack("U*")
+      char_array.each_with_index do |c,i|
+        l = l+ (c<127 ? 0.5 : 1)
+        if l>=length
+          return char_array[0..i].pack("U*")+(i ? truncate_string : "")
+        end
+      end
+      return text
+    else
+      return ""
+    end
   end
 
 end
