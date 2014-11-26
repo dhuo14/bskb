@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
   has_many :unread_notifications, -> { where "status=0" }, class_name: "Notification", foreign_key: "receiver_id"  
 
   include AboutStatus
-  validates_with MyValidator
+  validates_with MyValidator, on: :update
 
   # 为了在Model层使用current_user
   def self.current

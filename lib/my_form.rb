@@ -96,15 +96,17 @@ private
     if index.nil?
       # 校验规则
       if node_options.has_key?("rules") 
-        if node_options["rules"].to_s.include?("required:true")
-          name << _red_text("*") 
-        end
         self.rules << get_node_rules(table_name,obj,node_options,column)
       end
       # 校验提示消息
       if node_options.has_key?("messages") 
         self.messages << "'#{table_name}[#{column}]':'#{node_options["messages"]}'"
       end
+    end
+
+    # 必填字段要加上红*
+    if "#{node_options["rules"]}#{node_options["class"]}".index("required")
+      name << _red_text("*") 
     end
     
     # 没有标注数据类型的默认为字符
