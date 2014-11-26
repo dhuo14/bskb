@@ -75,6 +75,9 @@ Bskb::Application.routes.draw do
         get :ztree
         post :move, :valid_name
       end
+      member do
+        post :pause, :commit
+      end
     end
     resources :products
     # 意见反馈
