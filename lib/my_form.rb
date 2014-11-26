@@ -15,7 +15,7 @@ class MyForm
   	input_str = ""
   	doc = Nokogiri::XML(xml)
   	# 先生成输入框--针对没有data_type属性或者data_type属性不包括'大文本'、'富文本'、'隐藏'的
-    tds = doc.xpath("/root/node[not(@data_type)] | /root/node[@data_type!='textarea'][@data_type!='richtext'][@data_type!='hidden']")
+    tds = doc.xpath("/root/node[not(@data_type='textarea')][not(@data_type='richtext')][not(@data_type='hidden')][not(@display='skip')]")
     tds.each_slice(grid).with_index do |node,i|
       tmp = ""
       node.each{|n| tmp << _create_text_field(n,obj,table_name,grid,index)}
@@ -258,7 +258,7 @@ private
   end
   # 下拉单选
   def _create_select(input_opts)
-    data_str = ""
+    data_str = "<option value=''>请选择...</option>\n"
     form_state = _form_states('select',input_opts[:node_attr])
     input_opts[:data].each do |d| 
       if d.is_a?(Array)
