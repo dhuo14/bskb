@@ -14,6 +14,7 @@ class CreateProducts < ActiveRecord::Migration
     	t.text :summary, :comment => "基本描述"
     	t.integer :status, :comment => "状态", :limit => 2, :default => 0,:null => false
     	t.text :details, :comment => "明细"
+        t.belongs_to :user, :default => 0, :comment => "用户ID", :null => false
     	t.text :logs, :comment => "日志"
       t.timestamps
     end
