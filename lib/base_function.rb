@@ -38,9 +38,9 @@ def get_node_value(obj,node,for_form=false)
     return result
   end
 
-  # 对布尔型进行转换，在form里要显示1或0，在show时要显示是或否
-  def tranform_boolean(s,show_cn=true)
-    if show_cn
+  # 对布尔型进行转换，在form里要显示数字--1或0，在show时要显示中文--是或否
+  def tranform_boolean(s,show_num=true)
+    if show_num
       if s == true
         return 1 
       elsif s == false
