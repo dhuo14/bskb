@@ -191,29 +191,6 @@ def get_node_value(obj,node,for_form=false)
     "<div class='alert alert-danger fade in'><h4><i class='fa fa-frown-o font_24px'></i> 抱歉，没有找到相关信息。</h4></div>"
   end
 
-  # 从XML中获取值 返回数组
-  def get_value_from_xml(xml,model)
-    arr = []
-    rule_arr = Dictionary.inputs.rule.map(&:first)
-    Nokogiri::XML(xml).xpath("/root/node").each do |node|
-      obj = model.new
-      node.attributes.each do |key, value|
-        case key
-        when "data"
-          obj.attributes[key] = eval(value.to_str).join("|") unless value.blank?
-        when "class"
-          cls_arr = value.to_str.split(" ")
-          obj.attributes["is_required"] = cls_arr.include?("required")
-          obj.attributes["rule"] = (cls_arr & rule_arr)[0]
-        else
-          obj.attributes[key] = value.to_str
-        end
-      end
-      arr << obj
-    end
-    return arr
-  end
-
   #  截取字符串固定长度，支持中英文混合，length 为中文的长度，一个英文相当于0.5个中文长度
   def text_truncate(text, length = 30, truncate_string = "...")
     if text

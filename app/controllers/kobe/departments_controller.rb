@@ -1,9 +1,9 @@
 # -*- encoding : utf-8 -*-
 class Kobe::DepartmentsController < KobeController
 
-  skip_before_action :verify_authenticity_token, :only => [:move, :valid_dep_name, :destroy, :commit]
-  before_action :get_dep, :only => [:index, :show, :edit, :update, :destroy, :add_user, :freeze, :update_freeze, :upload, :update_upload, :commit]
-  layout :false, :only => [:show, :edit, :new, :add_user, :freeze, :upload, :commit]
+  skip_before_action :verify_authenticity_token, :only => [:move, :valid_dep_name, :commit]
+  before_action :get_dep, :only => [:index, :show, :edit, :update, :delete, :destroy, :add_user, :freeze, :update_freeze, :recover, :update_recover, :upload, :update_upload, :commit]
+  layout :false, :only => [:show, :edit, :new, :add_user, :delete, :freeze, :recover, :upload, :commit]
 
   def index
     
@@ -35,7 +35,7 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def update
-    if update_and_write_logs(@dep)
+    if update_and_write_logs(@dep, Department.xml)
       tips_get("更新单位信息成功。")
       redirect_to kobe_departments_path(id: @dep)
     else
@@ -55,12 +55,16 @@ class Kobe::DepartmentsController < KobeController
   end
 
   # 删除单位
+  def delete
+  end
+  
   def destroy
-    if @dep.destroy
-      render :text => "删除成功！"
+    if @dep.ztree_change_status_and_write_logs("已删除", batch_logs("删除",params[:opt_liyou]))
+      tips_get("删除单位成功。")
     else
-      render :text => "操作失败！"
+      flash_get(@dep.errors.full_messages)
     end
+    redirect_to kobe_departments_path(id: @dep.parent_id)
   end
 
   # 冻结单位
@@ -68,9 +72,21 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def update_freeze
-    logs = prepare_logs_content(@dep,"冻结单位",params[:opt_liyou])
-    if @dep.change_status_and_write_logs("冻结",logs)
+    if @dep.ztree_change_status_and_write_logs("冻结", batch_logs("冻结",params[:opt_liyou]))
       tips_get("冻结单位成功。")
+    else
+      flash_get(@dep.errors.full_messages)
+    end
+    redirect_to kobe_departments_path(id: @dep)
+  end
+
+  # 恢复单位
+  def recover
+  end
+
+  def update_recover
+    if @dep.ztree_change_status_and_write_logs("正常", batch_logs("恢复",params[:opt_liyou]))
+      tips_get("恢复单位成功。")
     else
       flash_get(@dep.errors.full_messages)
     end
@@ -82,9 +98,10 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def update_add_user
-    user = User.new(params.require(:user).permit(:login, :password, :password_confirmation))
+    attributes = params.require(:user).permit(:login, :password, :password_confirmation)
+    attributes[:department_id] = params[:id]
+    user = User.new(attributes)
     if user.save
-      user.update(department_id: params[:id])
       write_logs(user,"分配人员账号",'账号创建成功')
       tips_get("账号创建成功。")
       redirect_to kobe_departments_path(id: params[:id],u_id: user.id)
@@ -107,7 +124,7 @@ class Kobe::DepartmentsController < KobeController
   # 注册提交
   def commit
     logs = prepare_logs_content(@dep,"提交","注册完成，提交！")
-    if @dep.change_status_and_write_logs("未审核",logs)
+    if @dep.change_status_and_write_logs("等待审核",logs)
       tips_get("提交成功，请等待审核。")
     else
       flash_get(@dep.errors.full_messages)
