@@ -35,7 +35,7 @@ class Kobe::DepartmentsController < KobeController
   end
 
   def update
-    if update_and_write_logs(@dep)
+    if update_and_write_logs(@dep, Department.xml)
       tips_get("更新单位信息成功。")
       redirect_to kobe_departments_path(id: @dep)
     else

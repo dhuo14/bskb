@@ -41,6 +41,8 @@ class Order < ActiveRecord::Base
 	    ["已完成",3,"u",100,[1,4],[3,4]],
 	    ["未评价",4,"purple",100,[0,1,101],[3,4]],
 	    ["已删除",404,"red",100,[0,1,3,4],nil]
+      # 未下单 正在确认 等待审核 正在发货 已发货 已收货 正在退单 已退单 未评价 已完成
+      # 等待付款 部分付款 已付款 已退款 集中支付
     ]
   end
 
@@ -65,7 +67,7 @@ class Order < ActiveRecord::Base
     if [0,4,404].include?(self.status)
     	arr << [self.icon_action("提交"), "/kobe/orders/#{self.id}/submit"]
     end
-    # 审核
+    # 确认
     if [0,1,404].include?(self.status)
     	arr << [self.icon_action("确认订单"), "/kobe/orders/#{self.id}/confirm"]
     end
@@ -73,7 +75,7 @@ class Order < ActiveRecord::Base
     if [0,1,404].include?(self.status)
     	arr << [self.icon_action("审核"), "/kobe/orders/#{self.id}/audit"]
     end
-    # 审核
+    # 打印
     if [0,1,404].include?(self.status)
     	arr << [self.icon_action("打印"), "/kobe/orders/#{self.id}/print", target: "_blank"]
     end
