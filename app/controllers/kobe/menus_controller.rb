@@ -46,7 +46,7 @@ class Kobe::MenusController < KobeController
   end
 
   def update
-    if update_and_write_logs(@menu)
+    if update_and_write_logs(@menu, Menu.xml)
       tips_get("修改成功。")
       redirect_to kobe_menus_path
     else

@@ -26,7 +26,7 @@ Bskb::Application.routes.draw do
 
   resources :uploads, :only => [:index, :create, :destroy]
 
-  resources :users  do
+  resources :users, :except => :show  do
     collection do
       get :sign_in, :sign_up, :sign_out, :forgot_password
       post :login, :create_user_dep, :valid_dep_name, :valid_user_login, :valid_captcha, :valid_user
@@ -49,8 +49,8 @@ Bskb::Application.routes.draw do
         post :move, :valid_dep_name
       end
       member do 
-        get :add_user, :freeze, :upload
-        post :update_add_user, :update_freeze, :update_upload, :commit
+        get :add_user, :freeze, :upload, :delete, :recover
+        post :update_add_user, :update_freeze, :update_upload, :commit, :update_recover
       end
     end
     resources :articles do 
@@ -66,7 +66,7 @@ Bskb::Application.routes.draw do
     end
     resources :users, :except => :index do 
       member do
-        get :reset_password, :show_logs, :freeze
+        get :reset_password, :freeze
         post :update_password, :save_freeze
       end
     end
@@ -75,8 +75,9 @@ Bskb::Application.routes.draw do
         get :ztree
         post :move, :valid_name
       end
-      member do
-        post :pause, :commit
+      member do 
+        get :freeze, :delete, :recover
+        post :update_freeze, :update_recover
       end
     end
     resources :products
@@ -96,6 +97,7 @@ Bskb::Application.routes.draw do
     collection do
       delete :department, :area
       get :department, :area
+      post :get_ztree_title
     end
   end
 

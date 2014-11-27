@@ -2,7 +2,7 @@
 class Kobe::DepartmentsController < KobeController
 
   skip_before_action :verify_authenticity_token, :only => [:move, :valid_dep_name, :commit]
-  before_action :get_dep, :only => [:index, :show, :edit, :update, :delete, :destroy, :add_user, :freeze, :update_freeze, :recover, :update_recover, :upload, :update_upload, :commit]
+  before_action :get_dep, :only => [:index, :show, :edit, :update, :add_user, :delete, :destroy, :freeze, :update_freeze, :recover, :update_recover, :upload, :update_upload, :commit]
   layout :false, :only => [:show, :edit, :new, :add_user, :delete, :freeze, :recover, :upload, :commit]
 
   def index

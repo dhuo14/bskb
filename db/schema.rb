@@ -74,29 +74,15 @@ ActiveRecord::Schema.define(version: 20141121072504) do
     t.integer  "ancestry_depth",                                    comment: "层级"
     t.integer  "status",         limit: 2, default: 0, null: false, comment: "状态"
     t.integer  "sort",                                              comment: "排序"
-    t.text     "audit_rules",                                       comment: "审核规则"
+    t.text     "params",                                            comment: "参数"
     t.text     "details",                                           comment: "明细"
+    t.integer  "user_id",                  default: 0, null: false, comment: "用户ID"
     t.text     "logs",                                              comment: "日志"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   add_index "categories", ["name"], name: "index_categories_on_name", unique: true, using: :btree
-
-  create_table "categories_params", force: true do |t|
-    t.integer  "category_id", default: 0,     null: false, comment: "品目ID"
-    t.string   "name",                        null: false, comment: "参数名称"
-    t.string   "data_type",                   null: false, comment: "参数类型"
-    t.string   "column",                                   comment: "参数别名"
-    t.boolean  "is_required", default: false, null: false, comment: "是否必填"
-    t.string   "hint",                                     comment: "提示"
-    t.string   "placeholder",                              comment: "占位符"
-    t.text     "details",                                  comment: "明细"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "categories_params", ["category_id"], name: "index_categories_params_on_category_id", using: :btree
 
   create_table "departments", force: true do |t|
     t.string   "name",                                     null: false, comment: "单位名称"
@@ -139,7 +125,6 @@ ActiveRecord::Schema.define(version: 20141121072504) do
 
   add_index "departments", ["ancestry"], name: "index_departments_on_ancestry", using: :btree
   add_index "departments", ["name"], name: "index_departments_on_name", unique: true, using: :btree
-  add_index "departments", ["org_code"], name: "index_departments_on_org_code", unique: true, using: :btree
 
   create_table "departments_uploads", force: true do |t|
     t.integer  "master_id",           default: 0
@@ -209,7 +194,7 @@ ActiveRecord::Schema.define(version: 20141121072504) do
     t.string   "buyer_code",                                                                   comment: "采购单位编号"
     t.string   "seller",                                                                       comment: "供应商单位名称"
     t.string   "seller_code",                                                                  comment: "供应商单位编号"
-    t.decimal  "bugget",                   precision: 13, scale: 2, default: 0.0, null: false, comment: "总预算"
+    t.decimal  "bugget",                   precision: 13, scale: 2,                            comment: "总预算"
     t.decimal  "total",                    precision: 13, scale: 2, default: 0.0, null: false, comment: "总金额"
     t.date     "deliver_at",                                                                   comment: "交付时间"
     t.string   "invoice_number",                                                               comment: "发票编号"
@@ -238,8 +223,8 @@ ActiveRecord::Schema.define(version: 20141121072504) do
     t.decimal  "price",         precision: 13, scale: 2, default: 0.0, null: false, comment: "成交价格"
     t.integer  "quantity",                               default: 0,   null: false, comment: "数量"
     t.decimal  "total",         precision: 13, scale: 2, default: 0.0, null: false, comment: "总金额"
-    t.text     "summary"
-    t.text     "details"
+    t.text     "summary",                                                           comment: "基本情况（备注）"
+    t.text     "details",                                                           comment: "明细"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -257,7 +242,7 @@ ActiveRecord::Schema.define(version: 20141121072504) do
     t.datetime "updated_at"
   end
 
-  add_index "orders_uploads", ["master_id"], name: "index_infos_uploads_on_master_id", using: :btree
+  add_index "orders_uploads", ["master_id"], name: "index_Orders_uploads_on_master_id", using: :btree
 
   create_table "permissions", force: true do |t|
     t.string   "name",                       null: false, comment: "名称"
@@ -281,20 +266,20 @@ ActiveRecord::Schema.define(version: 20141121072504) do
   add_index "permissions_roles", ["role_id", "permission_id"], name: "index_permissions_roles_on_role_id_and_permission_id", using: :btree
 
   create_table "products", force: true do |t|
-    t.integer  "item_id",                                          default: 0, null: false, comment: "项目ID"
-    t.integer  "category_id",                                      default: 0, null: false, comment: "品目ID"
-    t.string   "category_code",                                                null: false, comment: "品目编号"
-    t.integer  "product_id",                                       default: 0, null: false, comment: "产品ID"
-    t.string   "brand",                                                                     comment: "品牌"
-    t.string   "model",                                                                     comment: "型号"
-    t.string   "version",                                                                   comment: "版本号"
-    t.string   "unit",                                                                      comment: "计量单位"
-    t.decimal  "market_price",            precision: 13, scale: 2,                          comment: "市场价格"
-    t.decimal  "bid_price",               precision: 13, scale: 2,                          comment: "中标价格"
-    t.text     "summary",                                                                   comment: "基本描述"
-    t.integer  "status",        limit: 2,                          default: 0, null: false, comment: "状态"
-    t.text     "details",                                                                   comment: "明细"
-    t.text     "logs",                                                                      comment: "日志"
+    t.integer  "item_id",                                          default: 0,   null: false, comment: "项目ID"
+    t.integer  "category_id",                                      default: 0,   null: false, comment: "品目ID"
+    t.string   "category_code",                                    default: "0", null: false, comment: "品目编号"
+    t.string   "brand",                                                                       comment: "品牌"
+    t.string   "model",                                                                       comment: "型号"
+    t.string   "version",                                                                     comment: "版本号"
+    t.string   "unit",                                                                        comment: "计量单位"
+    t.decimal  "market_price",            precision: 13, scale: 2,                            comment: "市场价格"
+    t.decimal  "bid_price",               precision: 13, scale: 2,                            comment: "中标价格"
+    t.text     "summary",                                                                     comment: "基本描述"
+    t.integer  "status",        limit: 2,                          default: 0,   null: false, comment: "状态"
+    t.text     "details",                                                                     comment: "明细"
+    t.integer  "user_id",                                          default: 0,   null: false, comment: "用户ID"
+    t.text     "logs",                                                                        comment: "日志"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -365,7 +350,7 @@ ActiveRecord::Schema.define(version: 20141121072504) do
     t.string   "gender",             limit: 2,                              comment: "性别"
     t.string   "identity_num",                                              comment: "身份证"
     t.string   "identity_pic",                                              comment: "身份证图片"
-    t.string   "email",                                        null: false, comment: "电子邮箱"
+    t.string   "email",                                                     comment: "电子邮箱"
     t.string   "mobile",                                                    comment: "手机"
     t.boolean  "is_visible",                   default: true,  null: false, comment: "是否公开,目前仅指身份证和手机号"
     t.string   "tel",                                                       comment: "电话"
@@ -382,6 +367,5 @@ ActiveRecord::Schema.define(version: 20141121072504) do
   end
 
   add_index "users", ["login"], name: "index_users_on_login", unique: true, using: :btree
-  add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
 
 end

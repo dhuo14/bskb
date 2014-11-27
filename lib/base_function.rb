@@ -41,17 +41,17 @@ def get_node_value(obj,node,for_form=false)
   # 对布尔型进行转换，在form里要显示数字--1或0，在show时要显示中文--是或否
   def tranform_boolean(s,show_num=true)
     if show_num
-      if s == true
+      if s == true || s.to_s == "1"
         return 1 
-      elsif s == false
+      elsif s == false || s.to_s == "0"
         return 0
       else
         return s
       end
     else
-      if s == true
+      if s == true || s.to_s == "1"
         return "是"
-      elsif s == false
+      elsif s == false || s.to_s == "0"
         return "否"
       else
         return s

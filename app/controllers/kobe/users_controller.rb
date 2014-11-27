@@ -1,8 +1,8 @@
 # -*- encoding : utf-8 -*-
 class Kobe::UsersController < KobeController
 
-  before_action :get_user, :only => [:edit, :show, :update, :reset_password, :update_password, :show_logs, :freeze, :save_freeze]
-  layout :false, :only => [:show, :edit, :reset_password, :show_logs]
+  before_action :get_user, :only => [:edit, :show, :update, :reset_password, :update_password, :freeze, :save_freeze]
+  layout :false, :only => [:show, :edit, :reset_password]
 
 
   def edit
@@ -10,16 +10,16 @@ class Kobe::UsersController < KobeController
   end
 
   def show
+    @arr  = []
+    @arr << { title: "详细信息", icon: "fa-info", content: show_obj_info(@user, User.xml) }
+    @arr << { title: "历史记录", icon: "fa-clock-o", content: show_logs(@user) }
   end
 
   def reset_password
   end
 
-  def show_logs
-  end
-
   def update()
-    if update_and_write_logs(@user)
+    if update_and_write_logs(@user, User.xml)
       tips_get("更新用户信息成功。")
       redirect_to kobe_departments_path(id: @user.department.id)
     else

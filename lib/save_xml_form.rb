@@ -88,7 +88,8 @@ module SaveXmlForm
   end
 
   # 批量操作要替换的日志
-  def batch_logs(action,remark='来自批量操作')
+  def batch_logs(action,remark='')
+    remark = remark.blank? ? "来自批量操作" : "#{remark}[来自批量操作]"
     return %Q|<node 操作时间="#{Time.new.to_s(:db)}" 操作人ID="#{current_user.id}" 操作人姓名="#{current_user.name}" 操作人单位="#{current_user.department.nil? ? "暂无" : current_user.department.name}" 操作内容="#{action}" 当前状态="$STATUS$" 备注="#{remark}" IP地址="#{request.remote_ip}[#{IPParse.parse(request.remote_ip).gsub("Unknown", "未知")}]"/>|
   end
 
@@ -120,6 +121,29 @@ module SaveXmlForm
       node["class"] = rule.join(" ") unless rule.blank?
     end
     return doc.to_s
+  end
+
+  # 从XML中生成model的n个实例 返回数组
+  def create_objs_from_xml_model(xml,model)
+    arr = []
+    rule_arr = Dictionary.inputs.rule.map(&:first)
+    Nokogiri::XML(xml).xpath("/root/node").each do |node|
+      obj = model.new
+      node.attributes.each do |key, value|
+        case key
+        when "data"
+          obj.attributes[key] = eval(value.to_str).join("|") unless value.blank?
+        when "class"
+          cls_arr = value.to_str.split(" ")
+          obj.attributes["is_required"] = cls_arr.include?("required")
+          obj.attributes["rule"] = (cls_arr & rule_arr)[0]
+        else
+          obj.attributes[key] = value.to_str
+        end
+      end
+      arr << obj
+    end
+    return arr
   end
 
 private

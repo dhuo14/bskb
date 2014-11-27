@@ -55,6 +55,10 @@ defaults: &defaults
     "未读": "fa-eye-slash"
     "已读": "fa-eye"
     "标记": "fa-flag"
+    "增加": "fa-plus"
+    "冻结": "fa-minus-circle"
+    "密码": "fa-lock"
+    "日志": "fa-clock-o"
     "其他": "fa-tag"
 
   # 用于Category配置参数 生成XML

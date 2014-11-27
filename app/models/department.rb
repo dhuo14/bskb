@@ -2,22 +2,20 @@
 
 class Department < ActiveRecord::Base
 	has_many :user, dependent: :destroy
-  # 树形结构
-  has_ancestry :cache_depth => true
-  default_scope -> {order(:ancestry, :sort, :id)}
   has_many :uploads, class_name: :DepartmentsUpload, foreign_key: :master_id
-  validates :name, presence: true, length: { in: 2..30 }, uniqueness: { case_sensitive: false }
+  # validates :name, presence: true, length: { in: 2..30 }, uniqueness: { case_sensitive: false }
 
   include AboutAncestry
   include AboutStatus
 
+  # 中文意思 状态值 标签颜色 进度 
   def self.status_array
-		[
-      ["资料未填写",0,"light",10], 
-      ["正常",1,"u",100], 
-      ["冻结",2,"yellow",100], 
-      ["未审核",3,"orange",20],
-      ["已删除",98,"red",100]
+    [
+      ["未提交",0,"orange",10],
+      ["正常",1,"u",100],
+      ["等待审核",2,"blue",50],
+      ["冻结",3,"yellow",20],
+      ["已删除",404,"red",0]
     ]
   end
 
@@ -65,38 +63,31 @@ class Department < ActiveRecord::Base
 	end
 
 	def cando_list(action='')
-		show_div = '.tab-content .active.in .show_content .show_ajax_div'
-    title = ""
+		show_div = '#show_ztree_content #ztree_content'
     dialog = "#opt_dialog"
     arr = [] 
     # 查看单位信息
-    arr << ["<i class='fa fa-pencil'></i> 查看单位信息", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}', '.tab-content .active.in .show_content')"]
+    arr << [self.icon_action("详细"), "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}', '#{show_div}')"]
     # 提交
     if [0].include?(self.status) && self.get_tips.blank?
-      title = "<i class='fa fa-pencil'></i> 提交"
-      arr << [title, "/kobe/departments/#{self.id}/commit", method: "post", data: { confirm: "提交后不允许再修改，确定提交吗?" }]
+      arr << [self.icon_action("提交"), "/kobe/departments/#{self.id}/commit", method: "post", data: { confirm: "提交后不允许再修改，确定提交吗?" }]
     end
     # 修改单位信息
     if [0,1,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 修改单位信息", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/edit','#{show_div}')"]
+      arr << [self.icon_action("修改"), "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/edit','#{show_div}')"]
     end
     # 修改资质证书
-    if [0,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 修改资质证书", "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/upload','#{show_div}','edit_upload_fileupload')"]
+    if [0,1,404].include?(self.status)
+      arr << [self.icon_action("上传资质"), "javascript:void(0)", onClick: "show_content('/kobe/departments/#{self.id}/upload','#{show_div}','edit_upload_fileupload')"]
     end
     # 增加下属单位
     if [0,1,404].include?(self.status)
-      arr << ["<i class='fa fa-pencil'></i> 增加下属单位", "javascript:void(0)", onClick: "show_content('/kobe/departments/new?pid=#{self.id}','#{show_div}')"]
+      arr << [self.icon_action("增加下属单位"), "javascript:void(0)", onClick: "show_content('/kobe/departments/new?pid=#{self.id}','#{show_div}')"]
     end
     # 分配人员账号
     if [0,1,404].include?(self.status)
-      title = "<i class='fa fa-pencil'></i> 分配人员账号"
+      title = self.icon_action("增加人员")
       arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/departments/#{self.id}/add_user', '#{dialog}') }]
-    end
-    # 冻结单位
-    if [1,404].include?(self.status)
-      title = "<i class='fa fa-pencil'></i> 冻结单位"
-      arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/departments/#{self.id}/freeze', '#{dialog}') }]
     end
     return arr
   end
@@ -105,9 +96,9 @@ class Department < ActiveRecord::Base
   def get_tips
     msg = []
     if [0].include?(self.status)
-      msg << "单位信息填写不完整，请点击[修改单位信息]。" if self.org_code.blank?
-      msg << "没有上传资质证书，请点击[修改资质证书]。" if self.uploads.blank?
-      msg << "用户信息填写不完整，请点击[修改用户信息]。" if self.user.find{ |u| !u.name.blank? }.blank?
+      msg << "单位信息填写不完整，请点击[修改]。" if self.org_code.blank?
+      msg << "没有上传资质证书，请点击[上传资质]。" if self.uploads.blank?
+      msg << "用户信息填写不完整，请在用户列表中点击[修改]。" if self.user.find{ |u| !u.name.blank? }.blank?
     end
     return msg
   end

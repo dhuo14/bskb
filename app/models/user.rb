@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
       ["资料未填写",0,"light",10], 
       ["正常",1,"u",100], 
       ["冻结",2,"yellow",100], 
-      ["未审核",3,"orange",20],
+      ["等待审核",3,"orange",20],
       ["已删除",98,"red",100]
     ]
   end
@@ -63,7 +63,7 @@ class User < ActiveRecord::Base
         <node name='登录名' column='login' class='required rangelength_6_20' display='disabled'/>
         <node name='电子邮箱' column='email' class='required email' display='disabled'/>
         <node name='姓名' column='name' class='required'/>
-        <node name='出生日期' column='birthday' class='date_select' class='required dateISO'/>
+        <node name='出生日期' column='birthday' class='date_select required dateISO'/>
         <node name='性别' column='gender' data_type='radio' class='required' data='["男","女"]'/>
         <node name='身份证' column='identity_num'/>
         <node name='手机' column='mobile' class='required'/>
@@ -80,24 +80,23 @@ class User < ActiveRecord::Base
 
   def cando_list(action='')
     arr = [] 
-    title = ""
     dialog = "#opt_dialog"
+    # 详细
+    title = self.icon_action("详细")
+    arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}', '#{dialog}') }]
     # 修改
     if [0,404].include?(self.status)
-      title = "<i class='fa fa-pencil'></i> 修改"
+      title = self.icon_action("修改")
       arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}/edit', '#{dialog}') }]
     end
-    # 查看日志
-    title = "<i class='fa fa-clock-o'></i> 查看日志"
-    arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}/show_logs', '#{dialog}') }]
     # 重置密码
     if [0,404].include?(self.status)
-      title = "<i class='fa fa-lock'></i> 重置密码"
+      title = self.icon_action("重置密码")
       arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}/reset_password', '#{dialog}') }]
     end
     # 冻结
     if [0,404].include?(self.status)
-      title = "<i class='fa fa-minus-circle'></i> 冻结"
+      title = self.icon_action("冻结")
       arr << [title, dialog, "data-toggle" => "modal", onClick: %Q{ modal_dialog_show("#{title}", '/kobe/users/#{self.id}/freeze', '#{dialog}') }]
     end
     return arr

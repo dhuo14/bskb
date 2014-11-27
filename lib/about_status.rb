@@ -3,11 +3,13 @@ module AboutStatus
 
 	def self.included(base)
     base.extend(StatusClassMethods)
+    base.class_eval do 
+    	scope :status_not_in, lambda { |status| where(["status not in (?) ", status]) }
+    end
   end
 
   # 拓展类方法
   module StatusClassMethods
-
 	  # 获取状态的属性数组 i表示状态数组的维度，0按中文查找，1按数字查找
 	  def get_status_attributes(status,i=0)
 			arr = self.status_array
