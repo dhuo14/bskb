@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 EasyCaptcha.setup do |config|
   # Cache
   # config.cache          = true

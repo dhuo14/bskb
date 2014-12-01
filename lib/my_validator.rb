@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class MyValidator < ActiveModel::Validator
   def validate(record)
     Nokogiri::XML(record.class.xml).xpath("/root/node[@class]").each do |node|

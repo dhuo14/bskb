@@ -4,11 +4,21 @@
   <title>Bskb</title>
   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+
+  <!--[if lte IE 6]>
+    <link type="text/css" rel="stylesheet" href="/assets/bootstrap-ie6.min.css"/>
+    <link type="text/css" rel="stylesheet" href="/assets/ie.css"/>
+  <![endif]-->
   <%= csrf_meta_tags %>
 </head>
 <body>
 
 <%= yield %>
 
+
+  <!--[if lte IE 6]>
+  <!-- bsie js 补丁只在IE6中才执行 -->
+    <script type="text/javascript" src="/assets/bootstrap-ie.js"></script>
+  <![endif]-->
 </body>
 </html>
